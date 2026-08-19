@@ -28,7 +28,7 @@ sites e painel de administração Django.
 
 .. note::
    🌐 **Documentação Oficial e Suíte**: Para tutoriais unificados e outros temas da organização, acesse `django-adminthemes.github.io <https://django-adminthemes.github.io>`_.
-   🛠️ **Desenvolvimento Local**: Contribuições utilizam o `workspace privado <https://github.com/django-adminthemes/workspace>`_ da organização com a CLI ``datw``.
+   🛠️ **Desenvolvimento Local**: Contribuições utilizam o `workspace privado <https://github.com/django-adminthemes/workspace>`_ da organização com a CLI ``dbkw``.
 
 📋 Sobre
 --------

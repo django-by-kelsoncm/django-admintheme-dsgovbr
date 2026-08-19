@@ -54,10 +54,10 @@ git clone git@github.com:django-adminthemes/workspace.git ~/projetos/PESSOAL/dja
 cd ~/projetos/PESSOAL/django-adminthemes/workspace
 
 # 2. Inicialize o ambiente (clona repositórios e configura a CLI)
-./datw setup
+./dbkw setup
 
 # 3. Suba o container do DSGovBR sandbox
-datw launch dsgovbr
+dbkw launch dsgovbr
 ```
 
 Para mais detalhes sobre os comandos CLI e o ambiente de desenvolvimento, veja a documentação do [workspace/README.md](https://github.com:django-adminthemes/workspace).
