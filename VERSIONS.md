@@ -1,5 +1,12 @@
 # Histórico de Versões
 
+## 6.0.1
+
+### Correções de segurança
+
+- **Dependências de desenvolvimento**: atualização do `uv.lock` para versões corrigidas de Django (6.0.8), Pillow
+  (13.0.0), black, certifi, filelock, sqlparse, tablib, urllib3 e virtualenv, resolvendo os alertas do Dependabot.
+
 ## 6.0.0
 
 ### Compatibilidade com Django 6.0.x
