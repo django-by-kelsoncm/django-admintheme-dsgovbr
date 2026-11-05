@@ -1,181 +1,139 @@
-{% load i18n static dsgovbr compress %}
-
+{% load i18n static dsgovbr %}
+{% comment %}
+  Header do GOV.BR DS composto com a navbar do Bootstrap (ver o exemplo
+  "Painel administrativo" do dsgovbr-bootstraped).
+{% endcomment %}
 {% if not is_popup %}
-  <header class="br-header {% if dsgovbr.header.type == 'compact' %}compact{% endif %}" id="header" data-sticky="data-sticky">
-    <div class="container-{{dsgovbr.header.width_style}}">
-      <div class="header-top">
-        {% if dsgovbr.header.logo.show or dsgovbr.header.assinatura.show %}
-          <div class="header-logo">
-            {% if dsgovbr.header.logo.show %}
-              <a href="{{ dsgovbr.header.logo.link }}">
-                {% if dsgovbr.header.logo.type == 'compact' %}
-                  <img src="{{ dsgovbr.header.logo.compact_url }}" aria-hidden="true" />
-                {% else %}
-                  <img src="{{ dsgovbr.header.logo.default_url }}" aria-hidden="true" />
-                {% endif %}
-              </a>
-            {% endif %}
-            {% if dsgovbr.header.logo.show and dsgovbr.header.assinatura.show %}
-              <span class="br-divider vertical"></span>
-            {% endif %}
-            {% if dsgovbr.header.assinatura.show %}
-              <div class="header-sign">{{ dsgovbr.header.assinatura.label }}</div>
-            {% endif %}
-          </div>
+  <header class="navbar bg-body{% if dsgovbr.header.type == 'compact' %} py-2{% endif %}" id="header">
+    <div class="container-{{ dsgovbr.header.width_style|default:'fluid' }} d-block">
+
+      <!-- linha de cima: logo, assinatura e ações -->
+      <div class="d-flex align-items-center gap-3">
+        {% if dsgovbr.header.logo.show %}
+          <a href="{{ dsgovbr.header.logo.link }}">
+            <img src="{% if dsgovbr.header.logo.type == 'compact' %}{{ dsgovbr.header.logo.compact_url }}{% else %}{{ dsgovbr.header.logo.default_url }}{% endif %}" height="40" alt="Página inicial">
+          </a>
         {% endif %}
-        <div class="header-actions">
+        {% if dsgovbr.header.assinatura.show %}
+          {% if dsgovbr.header.logo.show %}<div class="vr d-none d-sm-block"></div>{% endif %}
+          <span class="navbar-text p-0 fw-medium d-none d-sm-block">{{ dsgovbr.header.assinatura.label }}</span>
+        {% endif %}
+
+        <div class="d-flex align-items-center gap-1 ms-auto">
           {% if dsgovbr.header.links.show %}
-            <div class="header-links dropdown">
-              <button class="br-button circle small" type="button" data-toggle="dropdown" aria-label="Abrir Acesso Rápido"><i class="fas fa-ellipsis-v" aria-hidden="true"></i></button>
-              <div class="br-list">
-                <div class="header"><div class="title">Acesso Rápido</div></div>
+            <div class="dropdown">
+              <button class="btn btn-link btn-sm rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Abrir acesso rápido"><i class="fas fa-ellipsis-v" aria-hidden="true"></i></button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><h2 class="dropdown-header">Acesso rápido</h2></li>
                 {% for item in dsgovbr.header.links.items %}
-                  <a class="br-item" href="{{ item.url }}" {% if item.target %} target="{{ item.target }}"{% endif %}>
-                    {% if item.icon %}<i class="{{ item.icon }}" aria-hidden="true"></i>{% endif %}
-                    {{ item.label }}
-                    {% if item.external %}<i class="fas fa-external-link-alt"></i>{% endif %}
-                  </a>
+                  <li>
+                    <a class="dropdown-item" href="{{ item.url }}"{% if item.target %} target="{{ item.target }}" rel="noopener"{% endif %}>
+                      {% if item.icon %}<i class="{{ item.icon }} me-2" aria-hidden="true"></i>{% endif %}{{ item.label }}
+                      {% if item.external %}<i class="fas fa-external-link-alt ms-1" aria-hidden="true"></i>{% endif %}
+                    </a>
+                  </li>
                 {% endfor %}
-              </div>
+              </ul>
             </div>
           {% endif %}
           {% if dsgovbr.header.links.show and dsgovbr.header.funcionalidades.show %}
-            <span class="br-divider vertical mx-half mx-sm-1"></span>
+            <div class="vr mx-1"></div>
           {% endif %}
           {% if dsgovbr.header.funcionalidades.show %}
-            <div class="header-functions dropdown">
-              <button class="br-button circle small" type="button" data-toggle="dropdown" aria-label="Abrir Funcionalidades do Sistema">
-                <i class="fas fa-th" aria-hidden="true"></i>
-              </button>
-              <div class="br-list">
-                <div class="header">
-                  <div class="title">Funcionalidades do Sistema</div>
-                </div>
+            <div class="dropdown">
+              <button class="btn btn-link btn-sm rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Abrir funcionalidades do sistema"><i class="fas fa-th" aria-hidden="true"></i></button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><h2 class="dropdown-header">Funcionalidades do sistema</h2></li>
                 {% for item in dsgovbr.header.funcionalidades.items %}
-                  <div class="br-item">
-                    <button class="br-button circle small" type="button" aria-label="{{ item.label }}">
-                      {% if item.icon %}<i class="{{ item.icon }}" aria-hidden="true"></i>{% endif %}
-                      <span class="text">{{ item.label }}</span>
-                    </button>
-                  </div>
+                  <li>
+                    {% if item.url %}
+                      <a class="dropdown-item" href="{{ item.url }}"{% if item.target %} target="{{ item.target }}" rel="noopener"{% endif %}>{% if item.icon %}<i class="{{ item.icon }} me-2" aria-hidden="true"></i>{% endif %}{{ item.label }}</a>
+                    {% else %}
+                      <button class="dropdown-item" type="button">{% if item.icon %}<i class="{{ item.icon }} me-2" aria-hidden="true"></i>{% endif %}{{ item.label }}</button>
+                    {% endif %}
+                  </li>
                 {% endfor %}
-              </div>
+              </ul>
             </div>
           {% endif %}
+
           {% if dsgovbr.header.search.show %}
-            <div class="header-search-trigger">
-              <button class="br-button circle" type="button" aria-label="Abrir Busca" data-toggle="search" data-target=".header-search"><i class="fas fa-search" aria-hidden="true"></i>
-              </button>
-            </div>
+            <button class="btn btn-link rounded-circle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#main-searchbox" aria-expanded="false" aria-controls="main-searchbox" aria-label="Abrir busca"><i class="fas fa-search" aria-hidden="true"></i></button>
           {% endif %}
+
           {% if dsgovbr.header.login.show %}
-            <div class="header-login">
-              {% if not user.is_authenticated %}
-                <div class="header-sign-in">
-                  <button class="br-sign-in small" type="button" data-trigger="login">
-                    <i class="fas fa-user" aria-hidden="true"></i>
-                    <span class="d-sm-inline">Entrar</span>
-                  </button>
-                </div>
-              {% else %}
-                <div class="header-avatar">
-                  <button class="br-sign-in" type="button" aria-label="{{dsgovbr.header.login.saudacao|default_if_none:''}}{{ user.get_full_name }}" aria-expanded="false" aria-controls="avatar-menu" tabindex="0" {% if dsgovbr.header.login.dropdown.show %} id="avatar-dropdown-trigger" data-visible="false" data-toggle="dropdown" data-target="avatar-menu"{% endif %}>
-                    <span class="br-avatar" aria-hidden="true">
-                      <span class="content bg-green-50 text-pure-0">
-                        {% if dsgovbr.header.login.type == 'fotografico' %}
-                          {% if user.avatar_url %}
-                            <img src="{{user.avatar_url}}" alt="Avatar"/>
-                          {% else %}
-                            <i class="fas fa-user" aria-hidden="true"></i>
-                          {% endif %}
-                        {% elif dsgovbr.header.login.type == 'iconico' %}
-                          <i class="fas fa-user" aria-hidden="true"></i>
-                        {% else %}
-                          {{ user|user_letters }}
-                        {% endif %}
-                      </span>
+            {% if not user.is_authenticated %}
+              <a class="btn btn-light btn-sm ms-1" href="{% url 'admin:login' %}"><i class="fas fa-user" aria-hidden="true"></i><span>Entrar</span></a>
+            {% else %}
+              <div class="dropdown ms-1">
+                <button class="btn btn-light btn-sm{% if dsgovbr.header.login.dropdown.show %} dropdown-toggle{% endif %}" type="button" id="avatar-dropdown-trigger"{% if dsgovbr.header.login.dropdown.show %} data-bs-toggle="dropdown" aria-expanded="false"{% endif %}>
+                  <span class="dsgovbr-avatar" aria-hidden="true">
+                    {% if dsgovbr.header.login.type == 'fotografico' and user.avatar_url %}
+                      <img src="{{ user.avatar_url }}" alt="">
+                    {% elif dsgovbr.header.login.type == 'fotografico' or dsgovbr.header.login.type == 'iconico' %}
+                      <i class="fas fa-user"></i>
+                    {% else %}
+                      {{ user|user_letters }}
+                    {% endif %}
+                  </span>
+                  {% if dsgovbr.header.login.name_to_show == 'first' or dsgovbr.header.login.name_to_show == 'last' %}
+                    <span class="d-none d-sm-inline" aria-hidden="true">
+                      {{ dsgovbr.header.login.saudacao|default_if_none:"" }}
+                      {% if dsgovbr.header.login.name_to_show == 'first' %}{{ user.first_name|first_word }}{% else %}{{ user.last_name|last_word }}{% endif %}
                     </span>
-                    {% if dsgovbr.header.login.name_to_show == 'first' or dsgovbr.header.login.name_to_show == 'last' %}
-                      <span class="ml-2 text-gray-80 text-weight-regular">
-                        {{dsgovbr.header.login.saudacao|default_if_none:""}}
-                        {% if dsgovbr.header.login.name_to_show == 'first' %}
-                          <span class="text-weight-semi-bold">{{ user.first_name | first_word }}</span>
-                        {% elif dsgovbr.header.login.name_to_show == 'last' %}
-                          <span class="text-weight-semi-bold">{{ user.last_name | last_word }}</span>
+                  {% endif %}
+                  <span class="visually-hidden">{{ dsgovbr.header.login.saudacao|default_if_none:"" }}{{ user.get_full_name|default:user.get_username }}</span>
+                </button>
+                {% if dsgovbr.header.login.dropdown.show %}
+                  <div class="dropdown-menu dropdown-menu-end" id="avatar-menu" aria-labelledby="avatar-dropdown-trigger">
+                    {% if dsgovbr.header.login.dropdown.show_large_avatar or dsgovbr.header.login.dropdown.show_full_name or dsgovbr.header.login.dropdown.show_role %}
+                      <div class="px-3 py-2 text-center">
+                        {% if dsgovbr.header.login.dropdown.show_large_avatar %}
+                          <span class="dsgovbr-avatar dsgovbr-avatar-lg fs-2 mb-2" aria-hidden="true">
+                            {% if user.avatar_url %}<img src="{{ user.avatar_url }}" alt="">{% else %}<i class="fas fa-user"></i>{% endif %}
+                          </span>
                         {% endif %}
-                      </span>
-                    {% endif %}
-                    {% if dsgovbr.header.login.dropdown.show %}
-                      <i class="fas fa-caret-down" aria-hidden="true"></i>
-                    {% endif %}
-                  </button>
-                  <div class="br-list" id="avatar-menu" hidden="hidden" role="menu" aria-labelledby="avatar-dropdown-trigger" style="left: auto; right: 0; padding: 1em; background: var(--background);">
-                    {% if dsgovbr.header.login.dropdown.show_large_avatar %}
-                      <span class="br-avatar large">
-                        <span class="content bg-green-50 text-pure-0">
-                          {% if user.avatar_url %}
-                            <img src="{{user.avatar_url}}" alt="Avatar"/>
-                          {% else %}
-                            <i class="fas fa-user" aria-hidden="true"></i>
-                          {% endif %}
-                        </span>
-                      </span>
-                    {% endif %}
-                    {% if dsgovbr.header.login.dropdown.show_full_name or dsgovbr.header.login.dropdown.show_role %}
-                      <p class="" style="padding-top: 1em; text-align: center;">
                         {% if dsgovbr.header.login.dropdown.show_full_name %}
-                            <span class="br-avatar-name">{{ user.get_full_name }}</span><br/>
+                          <p class="fw-bold m-0">{{ user.get_full_name }}</p>
                         {% endif %}
                         {% if dsgovbr.header.login.dropdown.show_role %}
-                            <span class="br-avatar-role">{{ user.main_role | default_if_none:'Sem papel definido' }}</span>
+                          <p class="small m-0">{{ user.main_role|default_if_none:'Sem papel definido' }}</p>
                         {% endif %}
-                      </p>
-                    {% endif %}
-                    {% if dsgovbr.header.login.dropdown.show_large_avatar or dsgovbr.header.login.dropdown.show_full_name or dsgovbr.header.login.dropdown.show_role %}
-                      <span class="br-divider horizontal mx-half mx-sm-1"></span>
+                      </div>
+                      <hr class="dropdown-divider">
                     {% endif %}
                     {% for item in dsgovbr.header.login.dropdown.items %}
-                      <a class="br-item" href="{{ item.url }}" {% if item.target %} target="{{ item.target }}"{% endif %}>
-                        {% if item.icon %}<i class="{{ item.icon }}" aria-hidden="true"></i>{% endif %}
-                        {{ item.label }}
-                        {% if item.external %}<i class="fas fa-external-link-alt"></i>{% endif %}
+                      <a class="dropdown-item" href="{{ item.url }}"{% if item.target %} target="{{ item.target }}" rel="noopener"{% endif %}>
+                        {% if item.icon %}<i class="{{ item.icon }} me-2" aria-hidden="true"></i>{% endif %}{{ item.label }}
+                        {% if item.external %}<i class="fas fa-external-link-alt ms-1" aria-hidden="true"></i>{% endif %}
                       </a>
                     {% endfor %}
                   </div>
-                </div>
-              {% endif %}
-            </div>
+                {% endif %}
+              </div>
+            {% endif %}
           {% endif %}
         </div>
       </div>
-      <div class="header-bottom">
-        <div class="header-menu">
-          {% if dsgovbr.header.menu.show %}
-            <div class="header-menu-trigger" id="header-navigation">
-              <button class="br-button small circle" type="button" aria-label="Menu" data-toggle="menu" data-target="#main-navigation" id="navigation">
-                <i class="fas fa-bars" aria-hidden="true"></i>
-              </button>
-            </div>
-          {% endif %}
-          <div class="header-info">
-            <div class="header-title">{{ dsgovbr.header.titulo.label }}</div>
-            {% if dsgovbr.header.subtitulo.show %}<div class="header-subtitle">{{ dsgovbr.header.subtitulo.label }}</div>{% endif %}
-          </div>
+
+      <!-- linha de baixo: menu, título, subtítulo e busca -->
+      <div class="d-flex flex-wrap align-items-start gap-3 mt-2">
+        {% if dsgovbr.header.menu.show %}
+          <button class="btn btn-link btn-sm rounded-circle mt-1{% if dsgovbr.header.menu.localizacao != 'flutuante' %} d-xl-none{% endif %}" type="button" data-bs-toggle="offcanvas" data-bs-target="#main-navigation" aria-controls="main-navigation" aria-label="Abrir menu" id="navigation"><i class="fas fa-bars" aria-hidden="true"></i></button>
+        {% endif %}
+        <div class="me-auto">
+          <a class="navbar-brand p-0 m-0" href="{% url 'admin:index' %}">{{ dsgovbr.header.titulo.label }}</a>
+          {% if dsgovbr.header.subtitulo.show %}<span class="navbar-text">{{ dsgovbr.header.subtitulo.label }}</span>{% endif %}
         </div>
         {% if dsgovbr.header.search.show %}
-          <form action="{{ dsgovbr.header.search.url }}" method="get" class="header-search" id="main-searchbox">
-            <div class="br-input has-icon">
-              <label for="searchbox">Texto da pesquisa</label>
-              <input id="searchbox" name="q" type="text" placeholder="O que você procura?" autocomplete="off"
-                     {% if dsgovbr.header.search.autocomplete.show %}data-autocomplete-url="{{ dsgovbr.header.search.autocomplete.url }}"{% endif %}>
-              <button class="br-button circle small" type="submit" aria-label="Pesquisar"><i class="fas fa-search" aria-hidden="true"></i>
-              </button>
-            </div>
+          <form action="{{ dsgovbr.header.search.url }}" method="get" class="collapse d-lg-block col-12 col-lg-5 col-xl-4 position-relative" id="main-searchbox" role="search">
+            <label class="visually-hidden" for="searchbox">Texto da pesquisa</label>
+            <input class="form-control" id="searchbox" name="q" type="search" placeholder="O que você procura?" autocomplete="off"
+                   {% if dsgovbr.header.search.autocomplete.show %}data-autocomplete-url="{{ dsgovbr.header.search.autocomplete.url }}" aria-controls="searchbox-autocomplete-results"{% endif %}>
+            <button class="btn btn-link btn-sm rounded-circle" type="submit" aria-label="Pesquisar"><i class="fas fa-search" aria-hidden="true"></i></button>
             {% if dsgovbr.header.search.autocomplete.show %}
-              <div class="br-list autocomplete-results" id="searchbox-autocomplete-results"></div>
+              <div class="list-group dsgovbr-autocomplete shadow" id="searchbox-autocomplete-results"></div>
             {% endif %}
-            <button class="br-button circle search-close ml-1" type="button" aria-label="Fechar Busca" data-dismiss="search"><i class="fas fa-times" aria-hidden="true"></i>
-            </button>
           </form>
         {% endif %}
       </div>

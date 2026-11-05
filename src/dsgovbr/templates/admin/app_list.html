@@ -1,33 +1,28 @@
 {% load i18n %}
 
 {% if app_list %}
-  <ul>
+  <div class="list-group list-group-flush">
     {% for app in app_list %}
-      <li class="menu-folder{% if app.app_url in request.path|urlencode %} active{% endif %}">
-        <a class="menu-item" href="javascript:void(0);" {% if app.app_url in request.path|urlencode %}aria-expanded="true"{% else %}aria-expanded="false"{% endif %}>
-          <span class="icon"><i class="{{ app.icon|default:'fas fa-folder' }}" aria-hidden="true"></i></span>
-          <span class="content">{{ app.name }}</span>
-        </a>
-        <ul>
+      <button class="list-group-item list-group-item-action{% if app.app_url not in request.path|urlencode %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#menu-app-{{ app.app_label }}" aria-expanded="{% if app.app_url in request.path|urlencode %}true{% else %}false{% endif %}" aria-controls="menu-app-{{ app.app_label }}">
+        <i class="{{ app.icon|default:'fas fa-folder' }}" aria-hidden="true"></i>{{ app.name }}
+      </button>
+      <div class="collapse{% if app.app_url in request.path|urlencode %} show{% endif %}" id="menu-app-{{ app.app_label }}">
+        <div class="list-group list-group-flush">
           {% for model in app.models %}
-            <li>
-              {% if model.admin_url %}
-                <a class="menu-item{% if model.admin_url in request.path|urlencode %} active{% endif %}" href="{{ model.admin_url }}" {% if model.admin_url in request.path|urlencode %}aria-current="page"{% endif %}>
-                  <span class="icon"><i class="{{ model.icon|default:'fas fa-angle-right' }}" aria-hidden="true"></i></span>
-                  <span class="content">{{ model.name }}</span>
-                </a>
-              {% else %}
-                <span class="menu-item">
-                  <span class="icon"><i class="{{ model.icon|default:'fas fa-angle-right' }}" aria-hidden="true"></i></span>
-                  <span class="content">{{ model.name }}</span>
-                </span>
-              {% endif %}
-            </li>
+            {% if model.admin_url %}
+              <a class="list-group-item list-group-item-action{% if model.admin_url in request.path|urlencode %} active{% endif %}" href="{{ model.admin_url }}"{% if model.admin_url in request.path|urlencode %} aria-current="page"{% endif %}>
+                <i class="{{ model.icon|default:'fas fa-angle-right' }}" aria-hidden="true"></i>{{ model.name }}
+              </a>
+            {% else %}
+              <span class="list-group-item disabled" aria-disabled="true">
+                <i class="{{ model.icon|default:'fas fa-angle-right' }}" aria-hidden="true"></i>{{ model.name }}
+              </span>
+            {% endif %}
           {% endfor %}
-        </ul>
-      </li>
+        </div>
+      </div>
     {% endfor %}
-  </ul>
+  </div>
 {% else %}
-  <p>{% translate 'You don’t have permission to view or edit anything.' %}</p>
+  <p class="px-4 py-3">{% translate 'You don’t have permission to view or edit anything.' %}</p>
 {% endif %}

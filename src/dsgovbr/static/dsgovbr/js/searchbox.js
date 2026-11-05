@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
     resultsContainer.innerHTML = '';
     if (!items || items.length === 0) {
       const emptyDiv = document.createElement('div');
-      emptyDiv.className = 'br-item empty-result';
+      emptyDiv.className = 'list-group-item empty-result';
       emptyDiv.textContent = 'Nenhum resultado encontrado';
       resultsContainer.appendChild(emptyDiv);
       resultsContainer.classList.add('active');
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const button = document.createElement('button');
       button.type = 'button';
-      button.className = 'br-item';
+      button.className = 'list-group-item list-group-item-action';
       button.textContent = label;
       button.addEventListener('click', function() {
         searchInput.value = value;

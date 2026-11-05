@@ -1,84 +1,55 @@
 {% load i18n admin_urls %}
-<div class="submit-row">
+<div class="submit-row d-flex flex-wrap align-items-center gap-2 mb-4">
     {% block submit-row %}
         {% if show_change %}
-            <div>
-                {% url opts|admin_urlname:'change' original.pk|admin_urlquote as change_url %}
-                <span class="br-magic-button">
-                    <a href="{{ change_url }}" class="br-button primary">
-                        {% translate 'Change' %}
-                    </a>
-                </span>
+            {% url opts|admin_urlname:'change' original.pk|admin_urlquote as change_url %}
+            <a href="{{ change_url }}" class="btn btn-primary">{% translate 'Change' %}</a>
 
-                {% if show_change_form_export %}
-                    <input type="submit" value="{% translate 'Export' %}" class="br-button secondary small ml-3" name="_export-item">
-                {% endif %}
+            {% if show_change_form_export %}
+                <input type="submit" value="{% translate 'Export' %}" class="btn btn-outline-primary btn-sm" name="_export-item">
+            {% endif %}
 
-                {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
-                <a href="{% add_preserved_filters history_url %}" class="br-button secondary small historylink">
-                    {% translate "History" %}
-                </a>
-            </div>
-            <div>
-                {% url opts|admin_urlname:'changelist' as changelist_url %}
-                <a href="{% add_preserved_filters changelist_url %}" class="br-button secondary small changelist">
-                    {% translate 'Voltar' %}
-                </a>
-            </div>
+            {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+            <a href="{% add_preserved_filters history_url %}" class="btn btn-outline-primary btn-sm historylink">{% translate "History" %}</a>
+
+            {% url opts|admin_urlname:'changelist' as changelist_url %}
+            <a href="{% add_preserved_filters changelist_url %}" class="btn btn-link btn-sm changelist ms-auto">{% translate 'Voltar' %}</a>
         {% else %}
-            <div>
-                    {% if show_save %}
-                    <span class="br-magic-button">
-                        <div class="dropdown d-inline-block" style="position: relative;">
-                            <button type="submit" class="br-button primary" name="_save" style="border-top-right-radius: 0; border-bottom-right-radius: 0; padding-right: 0.5em; ">
-                                {% translate 'Save' %}
-                            </button>
-                            <button type="button" class="br-button primary dropdown-toggle" id="saveDropdownIconBtn" style="padding-left: 0.5em; padding-right: 1em; border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -4px;" aria-haspopup="true" aria-expanded="false">
-                                <span>&#x25BC;</span>
-                            </button>
-                            <div class="br-list" aria-labelledby="saveDropdownIconBtn" hidden="hidden" role="menu" aria-labelledby="avatar-dropdown-trigger" style="display: none; position: absolute; z-index: 1000; min-width: 180px; box-shadow: var(--surface-shadow-sm); box-sizing: border-box;">
-                                {% csrf_token %}
-                                {% if show_save_and_continue %}
-                                    <button type="submit" class="br-item" name="_continue">
-                                        {% if can_change %}
-                                            {% translate 'e continuar editando' %}
-                                        {% else %}
-                                            {% translate 'e ver' %}
-                                        {% endif %}
-                                    </button>
-                                {% endif %}
-                                {% if show_save_and_add_another %}
-                                    <button type="submit" class="br-item" name="_addanother">
-                                        {% translate 'e criar novo' %}
-                                    </button>
-                                {% endif %}
-                                {% if show_save and original %}
-                                    <button type="submit" class="br-item" name="_saveasnew">
-                                        {% translate 'como cópia' %}
-                                    </button>
-                                {% endif %}
-                            </div>
+            {% if show_save %}
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" name="_save">{% translate 'Save' %}</button>
+                    {% if show_save_and_continue or show_save_and_add_another or original %}
+                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden">{% translate 'Outras opções de salvar' %}</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            {% if show_save_and_continue %}
+                                <button type="submit" class="dropdown-item" name="_continue">
+                                    {% if can_change %}{% translate 'e continuar editando' %}{% else %}{% translate 'e ver' %}{% endif %}
+                                </button>
+                            {% endif %}
+                            {% if show_save_and_add_another %}
+                                <button type="submit" class="dropdown-item" name="_addanother">{% translate 'e criar novo' %}</button>
+                            {% endif %}
+                            {% if original %}
+                                <button type="submit" class="dropdown-item" name="_saveasnew">{% translate 'como cópia' %}</button>
+                            {% endif %}
                         </div>
-                    </span>
-                {% endif %}
+                    {% endif %}
+                </div>
+            {% endif %}
 
-                {% url opts|admin_urlname:'changelist' as changelist_url %}
-                <a href="{% add_preserved_filters changelist_url %}" class="br-button secondary small changelist">
-                    {% translate 'Cancel' %}
-                </a>
+            {% url opts|admin_urlname:'changelist' as changelist_url %}
+            <a href="{% add_preserved_filters changelist_url %}" class="btn btn-outline-primary btn-sm changelist">{% translate 'Cancel' %}</a>
 
-            </div>
-            <div>
+            <div class="ms-auto">
                 {% block submit-row-before-delete %}
                 {% endblock %}
                 {% if show_delete_link and original %}
                     {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
-                    <a href="{% add_preserved_filters delete_url %}" class="br-button small danger" style="float: right">
-                        {% translate "Delete" %}
-                    </a>
+                    <a href="{% add_preserved_filters delete_url %}" class="btn btn-danger btn-sm deletelink">{% translate "Delete" %}</a>
                 {% endif %}
             </div>
         {% endif %}
-
     {% endblock submit-row %}
 </div>

@@ -323,7 +323,7 @@ def result_list_tag(parser, token):
         parser,
         token,
         func=result_list,
-        template_name="change_list_results.html",
+        template_name="change_list_dsgovbr_results.html",
         takes_context=False,
     )
 

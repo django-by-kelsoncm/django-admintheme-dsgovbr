@@ -1,110 +1,26 @@
-{% load admin_list %}
+{% load admin_list dsgovbr %}
 {% load i18n %}
 
-<nav class="br-pagination" aria-label="paginação" data-total="50" data-current="1" data-per-page="20">
+<div class="d-flex flex-wrap align-items-center gap-3">
+    <p class="m-0" aria-live="polite">
+        {% if pagination_required %}
+            {{ cl.page_obj.start_index }}&ndash;{{ cl.page_obj.end_index }} de
+        {% endif %}
+        {{ cl.result_count }}
+        {% if cl.result_count == 1 %}{{ cl.opts.verbose_name }}{% else %}{{ cl.opts.verbose_name_plural }}{% endif %}
+    </p>
+
     {% if pagination_required %}
-        {% comment %} <!-- Page size -->
-            <div class="pagination-per-page">
-                <div class="br-select">
-                    <div class="br-input">
-                    <label for="per-page-selection">{% translate 'Exibir' %}</label>
-                    <input id="per-page-selection" type="text" placeholder=""/>
-                    <button class="br-button" type="button" aria-label="{% translate 'Exibir lista' %}" tabindex="-1" data-trigger="data-trigger">
-                        <i class="fas fa-angle-down" aria-hidden="true"></i>
-                    </button>
-                    </div>
-                    <div class="br-list" tabindex="0">
-                        <div class="br-item" tabindex="-1">
-                            <div class="br-radio">
-                            <input id="per-page" type="radio" name="per-page" value="10" checked="checked"/>
-                            <label for="per-page">10</label>
-                            </div>
-                        </div>
-                        <div class="br-item" tabindex="-1">
-                            <div class="br-radio">
-                            <input id="per-page-20-random-64610" type="radio" name="per-page-random-64610" value="per-page-20-random-64610"/>
-                            <label for="per-page-20-random-64610">20</label>
-                            </div>
-                        </div>
-                        <div class="br-item" tabindex="-1">
-                            <div class="br-radio">
-                            <input id="per-page-30-random-64610" type="radio" name="per-page-random-64610" value="per-page-30-random-64610"/>
-                            <label for="per-page-30-random-64610">30</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        <!--/Page size -->{% endcomment %}
-
-        <!-- Page infos -->
-            <span class="br-divider d-none d-sm-block mx-3"></span>
-
-            <div class="pagination-information d-none d-sm-flex">
-                {# Exemplo: "21-40 de 100 itens" #}
-                {{ cl.page_obj.start_index }}
-                &ndash;
-                {{ cl.page_obj.end_index }}
-                &nbsp;de&nbsp;
-                {{ cl.result_count }}
-                &nbsp;
-                {% if cl.result_count == 1 %}
-                    {{ cl.opts.verbose_name }}
-                {% else %}
-                    {{ cl.opts.verbose_name_plural }}
-                {% endif %}
-            </div>
-        <!--/Page infos -->
-
-        <!--Page navbar -->
-            <div class="pagination-go-to-page d-none d-sm-flex ml-auto">
-
-                <div class="br-select">
-                    <div class="br-input">
-                        <label for="go-to-selection-random-43734">{% translate 'Página' %}</label>
-                        <input id="go-to-selection-random-43734" type="text" placeholder=" "/>
-                        <button class="br-button" type="button" aria-label="{% translate 'Exibir lista' %}" tabindex="-1" data-trigger="data-trigger"><i class="fas fa-angle-down" aria-hidden="true"></i></button>
-                    </div>
-                    <div class="br-list" tabindex="0">
-                            {% for i in page_range %}
-                                <div class="br-item" tabindex="-1">
-                                    <div class="br-radio">
-                                        <input id="go-to-{{ i }}" type="radio" name="go-to-" value="go-to-{{ i }}" {% if i == 1 %}checked="checked"{% endif %}/>
-                                        <label for="go-to-{{ i }}">{{ i }}</label>
-                                    </div>
-                                </div>
-                                {% paginator_number cl i %}
-                            {% endfor %}
-                    </div>
-                </div>
-            </div>
-
-            <span class="br-divider d-none d-sm-block mx-3"></span>
-
-            <div class="pagination-arrows ml-auto ml-sm-0">
-                <button class="br-button circle" type="button" aria-label="Voltar página"><i class="fas fa-angle-left" aria-hidden="true"></i></button>
-                <button class="br-button circle" type="button" aria-label="Página seguinte"><i class="fas fa-angle-right" aria-hidden="true"></i></button>
-            </div>
-        <!--/Page navbar -->
+        <nav class="ms-auto" aria-label="{% translate 'Paginação' %}">
+            <ul class="pagination m-0">
+                {% for i in page_range %}
+                    {% page_item cl i %}
+                {% endfor %}
+            </ul>
+        </nav>
     {% endif %}
-</nav>
 
-{% if show_all_url %}
-    <a href="{{ show_all_url }}" class="showall">
-        {% translate 'Show all' %}
-    </a>
-{% endif %}
-
-{% comment %}
-    {% if cl.formset and cl.result_count %}
-        <input type="submit" name="_save" class="default" value="{% translate 'Save' %}">
+    {% if show_all_url %}
+        <a href="{{ show_all_url }}" class="showall btn btn-link btn-sm">{% translate 'Show all' %}</a>
     {% endif %}
-{% endcomment %}
-{% comment %}
-        <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>
-            {% csrf_token %}
-            {% if cl.formset %}
-                <div>{{ cl.formset.management_form }}</div>
-            {% endif %}
-        </form>
-{% endcomment %}
+</div>

@@ -3,14 +3,14 @@
 {% block content %}
 <div class="row">
   <div class="col-sm-12 mb-4">
-    <div class="br-card" style="border: 1px solid #ccc; border-radius: 4px; padding: 16px;">
+    <div class="card h-100">
       <h3>Modo de Renderização do Formulário</h3>
       <p>Selecione um modo abaixo para tensionar visualmente diferentes fallbacks do Django:</p>
       <div class="d-flex g-2">
-        <a href="?mode=manual" class="br-button {% if mode == 'manual' %}primary{% else %}secondary{% endif %} mr-2">Renderização Manual (Grid)</a>
-        <a href="?mode=as_div" class="br-button {% if mode == 'as_div' %}primary{% else %}secondary{% endif %} mr-2">as_div()</a>
-        <a href="?mode=as_p" class="br-button {% if mode == 'as_p' %}primary{% else %}secondary{% endif %} mr-2">as_p()</a>
-        <a href="?mode=as_ul" class="br-button {% if mode == 'as_ul' %}primary{% else %}secondary{% endif %}">as_ul()</a>
+        <a href="?mode=manual" class="btn {% if mode == 'manual' %}btn-primary{% else %}btn-outline-primary{% endif %} me-2">Renderização Manual (Grid)</a>
+        <a href="?mode=as_div" class="btn {% if mode == 'as_div' %}btn-primary{% else %}btn-outline-primary{% endif %} me-2">as_div()</a>
+        <a href="?mode=as_p" class="btn {% if mode == 'as_p' %}btn-primary{% else %}btn-outline-primary{% endif %} me-2">as_p()</a>
+        <a href="?mode=as_ul" class="btn {% if mode == 'as_ul' %}btn-primary{% else %}btn-outline-primary{% endif %}">as_ul()</a>
       </div>
     </div>
   </div>
@@ -18,29 +18,27 @@
   <div class="col-sm-12">
     {% if messages %}
       {% for message in messages %}
-        <div class="br-message {{ message.tags }} mb-3" role="alert">
-          <div class="icon"><i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i></div>
-          <div class="content">{{ message }}</div>
+        <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}{{ message.level_tag }}{% endif %} mb-3" role="alert">
+          <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}" aria-hidden="true"></i>
+          {{ message }}
         </div>
       {% endfor %}
     {% endif %}
 
-    <div class="br-card" style="border: 1px solid #ccc; border-radius: 4px; padding: 24px;">
+    <div class="card h-100">
       <div class="card-header">
         <h2>Solicitação de Serviço Público</h2>
       </div>
-      <div class="card-content">
+      <div class="card-body">
         <form method="post" enctype="multipart/form-data" novalidate>
           {% csrf_token %}
 
           {% if form.non_field_errors %}
-            <div class="br-message danger mb-3" role="alert">
-              <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
-              <div class="content">
-                {% for error in form.non_field_errors %}
-                  <p class="m-0">{{ error }}</p>
-                {% endfor %}
-              </div>
+            <div class="alert alert-danger mb-3" role="alert">
+              <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+              {% for error in form.non_field_errors %}
+              <p class="m-0">{{ error }}</p>
+              {% endfor %}
             </div>
           {% endif %}
 
@@ -51,14 +49,14 @@
                   {{ field }}
                 {% else %}
                   <div class="col-md-6 mb-3">
-                    <div class="br-input {% if field.errors %}state-danger{% endif %}">
-                      <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                    <div class="mb-3{% if field.errors %} errors{% endif %}">
+                      <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
                       {{ field }}
                       {% if field.help_text %}
-                        <p class="help-text">{{ field.help_text }}</p>
+                        <div class="form-text">{{ field.help_text }}</div>
                       {% endif %}
                       {% if field.errors %}
-                        <p class="feedback danger"><i class="fas fa-exclamation-circle"></i> {{ field.errors.0 }}</p>
+                        <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle" aria-hidden="true"></i> {{ field.errors.0 }}</div>
                       {% endif %}
                     </div>
                   </div>
@@ -66,7 +64,7 @@
               {% endfor %}
             </div>
           {% elif mode == 'as_div' %}
-            <div class="br-form-divs">
+            <div class="dsgovbr-form-divs">
               {{ form.as_div }}
             </div>
           {% elif mode == 'as_p' %}
@@ -77,8 +75,8 @@
             </ul>
           {% endif %}
 
-          <div class="text-right mt-4">
-            <button type="submit" class="br-button primary">Enviar Solicitação</button>
+          <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary">Enviar Solicitação</button>
           </div>
         </form>
       </div>

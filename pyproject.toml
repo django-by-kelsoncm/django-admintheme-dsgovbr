@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-dsgovbr"
-version = "6.0.1"
+version = "7.0.0"
 description = "Compliance com o https://www.gov.br/ds/home"
 readme = "README.md"
 authors = [
@@ -51,7 +51,7 @@ package-dir = {"" = "src"}
 include-package-data = true
 
 [tool.setuptools.package-data]
-"*" = ["*.html", "*.css", "*.scss", "*.js", "*.png", "*.jpg", "*.gif", "*.svg", "*.ico", "*.webmanifest", "*.txt"]
+"*" = ["*.html", "*.css", "*.scss", "*.js", "*.map", "LICENSE", "*.png", "*.jpg", "*.gif", "*.svg", "*.ico", "*.webmanifest", "*.txt"]
 
 [dependency-groups]
 dev = [

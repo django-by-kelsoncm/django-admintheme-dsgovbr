@@ -3,14 +3,14 @@
 {% block content %}
 <div class="row">
   <div class="col-sm-12">
-    <div class="br-card text-center" style="border: 1px solid #ccc; border-radius: 4px; padding: 48px;">
-      <div class="card-content">
+    <div class="card h-100 text-center">
+      <div class="card-body">
         <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
         <h2>Solicitação Recebida com Sucesso!</h2>
         <p class="lead">Os seus dados de teste foram gravados com sucesso no banco de dados.</p>
         <div class="mt-4">
-          <a href="{% url 'public_forms:demo' %}" class="br-button primary mr-2">Criar Nova Solicitação</a>
-          <a href="/" class="br-button secondary">Voltar ao Início</a>
+          <a href="{% url 'public_forms:demo' %}" class="btn btn-primary me-2">Criar Nova Solicitação</a>
+          <a href="/" class="btn btn-outline-primary">Voltar ao Início</a>
         </div>
       </div>
     </div>

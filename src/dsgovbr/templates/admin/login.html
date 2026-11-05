@@ -1,165 +1,128 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static compress %}
+{% load i18n static %}
 
 {% block title %}{% if form.errors %}{% translate "Error:" %} {% endif %}{{ block.super }}{% endblock %}
 
-{% block extrastyle %}
-{{ block.super }}
-{% compress css %}
-<link rel="stylesheet" type="text/x-scss" href="{% static 'dsgovbr/scss/dsgovbr_login.scss' %}">
-{% endcompress %}
-{% endblock %}
-
 {% block content_container_class %}container-lg{% endblock %}
 
-{% block bodyclass %}{{ block.super }} login{% endblock %}
+{% block bodyclass %}{{ block.super }} login bg-body-tertiary{% endblock %}
+
+{% block preheader %}
+  <a class="visually-hidden-focusable" href="#main-content">Ir para o conteúdo</a>
+{% endblock %}
 
 {% block header %}
-<header class="br-header login-header-wrapper" id="login-header">
-  <div class="container-lg d-flex justify-content-between align-items-center">
-    <div class="header-logo">
-      <img src="{% static 'vendors/serpro/govbr.svg' %}" alt="Logo gov.br" class="login-header-logo-img">
-    </div>
-    <div class="header-actions">
-      <span class="login-header-label">Painel Administrativo</span>
-    </div>
+<header class="navbar bg-body border-bottom" id="login-header">
+  <div class="container-lg">
+    <img src="{% static 'vendors/serpro/govbr.svg' %}" alt="gov.br" height="32">
+    <span class="navbar-text fw-semibold p-0">Painel Administrativo</span>
   </div>
 </header>
 {% endblock %}
 
+{% block menu %}{% endblock %}
+
 {% block content %}
-<div class="container-lg py-5">
-  <div class="row justify-content-center align-items-stretch">
-    <!-- Coluna da Esquerda: Formulário de Login (Inspirado no Gov.br) -->
-    <div class="col-12 col-md-6 d-flex align-items-stretch mb-4 mb-md-0">
-      <div class="login-card w-100 p-4 d-flex flex-column justify-content-between">
-        <div>
-          <div class="pb-3 mb-4 login-main-card-header">
-            <h2 class="login-main-card-title mb-1">Identifique-se no portal</h2>
-            <p class="login-main-card-subtitle m-0">Acesse a sua conta administrativa</p>
+<div class="row justify-content-center g-4 py-3">
+  <!-- formulário -->
+  <div class="col-12 col-md-6 d-flex">
+    <div class="card w-100">
+      <div class="card-body p-4">
+        <div class="border-bottom pb-3 mb-4">
+          <h2 class="h4 mb-1">Identifique-se no portal</h2>
+          <p class="small m-0">Acesse a sua conta administrativa</p>
+        </div>
+
+        <form action="{{ app_path }}" method="post" id="login-form" novalidate>{% csrf_token %}
+          {% for error in form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+          {% if form.errors and not form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">{% translate "Please correct the errors below." %}</div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label class="form-label" for="id_username">Usuário</label>
+            <input class="form-control{% if form.username.errors %} is-invalid{% endif %}" id="id_username" type="text" name="username" value="{{ form.username.value|default:'' }}" placeholder="Digite seu usuário ou CPF" autocomplete="username" required autofocus{% if form.username.errors %} aria-describedby="id_username_error"{% endif %}>
+            {% if form.username.errors %}<div class="invalid-feedback" id="id_username_error">{{ form.username.errors.0 }}</div>{% endif %}
           </div>
 
-          <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
-            {% if form.non_field_errors %}
-              {% for error in form.non_field_errors %}
-                <div class="br-message error mb-3 login-error-alert" role="alert">
-                  <i class="fas fa-times-circle mr-3 login-error-alert-icon"></i>
-                  <span>{{ error }}</span>
-                </div>
-              {% endfor %}
-            {% endif %}
+          <div class="mb-4">
+            <label class="form-label" for="id_password">Senha</label>
+            <input class="form-control{% if form.password.errors %} is-invalid{% endif %}" id="id_password" type="password" name="password" placeholder="Digite sua senha" autocomplete="current-password" required{% if form.password.errors %} aria-describedby="id_password_error"{% endif %}>
+            {% if form.password.errors %}<div class="invalid-feedback" id="id_password_error">{{ form.password.errors.0 }}</div>{% endif %}
+          </div>
 
-            {% if form.errors and not form.non_field_errors %}
-              <div class="br-message error mb-3 login-error-alert" role="alert">
-                <i class="fas fa-times-circle mr-3 login-error-alert-icon"></i>
-                <span>{% translate "Please correct the errors below." %}</span>
-              </div>
-            {% endif %}
+          <input type="hidden" name="next" value="{{ next }}">
 
-            <div class="br-input mb-3">
-              <label for="id_username">Usuário</label>
-              <input id="id_username" type="text" name="username" value="{{ form.username.value|default:'' }}" placeholder="Digite seu usuário ou CPF" required autofocus>
-              {% if form.username.errors %}
-                <div class="login-field-error mt-1">
-                  {{ form.username.errors.0 }}
-                </div>
-              {% endif %}
-            </div>
+          <button class="btn btn-primary w-100" type="submit">Entrar</button>
 
-            <div class="br-input mb-4">
-              <label for="id_password">Senha</label>
-              <input id="id_password" type="password" name="password" placeholder="Digite sua senha" required>
-              {% if form.password.errors %}
-                <div class="login-field-error mt-1">
-                  {{ form.password.errors.0 }}
-                </div>
-              {% endif %}
-            </div>
+          <div class="text-center border-top mt-4 pt-3">
+            {% url 'register' as register_url %}
+            <p class="mb-2">Ainda não tem conta? <a href="{% if register_url %}{{ register_url }}{% else %}#{% endif %}" class="fw-bold">Cadastre-se</a></p>
+            {% url 'admin_password_reset' as password_reset_url %}
+            <a href="{% if password_reset_url %}{{ password_reset_url }}{% else %}#{% endif %}">Esqueci minha senha</a>
+          </div>
+        </form>
 
-            <input type="hidden" name="next" value="{{ next }}">
-
-            <div class="mb-4">
-              <button class="btn-govbr-primary" type="submit">Entrar</button>
-            </div>
-            <div class="mt-4 pt-3 text-center login-extra-links-container">
-              {% url 'register' as register_url %}
-              <div class="mb-3">
-                <span>Ainda não tem conta?</span>
-                <a href="{% if register_url %}{{ register_url }}{% else %}#{% endif %}" class="login-register-link ml-1"><strong>Cadastre-se</strong></a>
-              </div>
-              {% url 'admin_password_reset' as password_reset_url %}
-              <div>
-                <a href="{% if password_reset_url %}{{ password_reset_url }}{% else %}#{% endif %}" class="login-forgot-password-link">Esqueci minha senha</a>
-              </div>
-            </div>
-          </form>
-
-          {% if login_alternative_methods %}
-          <!-- Divisor alternativo -->
-          <div class="d-flex align-items-center my-4">
-            <hr class="flex-grow-1 login-divider-line">
-            <span class="mx-3 login-divider-text">OUTRAS OPÇÕES</span>
-            <hr class="flex-grow-1 login-divider-line">
+        {% if login_alternative_methods %}
+          <div class="d-flex align-items-center gap-3 my-4">
+            <hr class="flex-grow-1 m-0">
+            <span class="small fw-bold text-uppercase">Outras opções</span>
+            <hr class="flex-grow-1 m-0">
           </div>
 
           {% for method in login_alternative_methods %}
             {% if method.type == 'govbr' %}
-            <!-- Botão decorativo oficial do GOV.BR -->
-            <div class="mb-3">
-              <a href="{{ method.url }}" {% if method.target %}target="{{ method.target }}"{% endif %} class="govbr-icon-button">
-                <img src="{% static method.icon_svg|default:'vendors/serpro/govbr.svg' %}" alt="{{ method.alt|default:'gov.br' }}">
-                {{ method.title|default:'Entrar com gov.br' }}
+              <a href="{{ method.url }}"{% if method.target %} target="{{ method.target }}" rel="noopener"{% endif %} class="btn btn-light w-100 mb-3">
+                {{ method.title|default:'Entrar com' }} <img src="{% static method.icon_svg|default:'vendors/serpro/govbr.svg' %}" alt="{{ method.alt|default:'gov.br' }}">
               </a>
-            </div>
             {% endif %}
           {% endfor %}
 
-          <div class="br-list login-alt-options-container">
+          <div class="list-group">
             {% for method in login_alternative_methods %}
               {% if method.type != 'govbr' %}
-              <a href="{{ method.url }}" class="alt-option-item" {% if method.target %}target="{{ method.target }}"{% endif %}>
-                {% if method.icon %}
-                <i class="{{ method.icon }}"></i>
-                {% endif %}
-                <span>{{ method.title }}</span>
-              </a>
+                <a href="{{ method.url }}" class="list-group-item list-group-item-action"{% if method.target %} target="{{ method.target }}" rel="noopener"{% endif %}>
+                  {% if method.icon %}<i class="{{ method.icon }}" aria-hidden="true"></i>{% endif %}
+                  {{ method.title }}
+                </a>
               {% endif %}
             {% endfor %}
           </div>
-          {% endif %}
-        </div>
-
-
+        {% endif %}
       </div>
     </div>
+  </div>
 
-    <!-- Coluna da Direita: Informações sobre a Conta Gov.br -->
-    <div class="col-12 col-md-6 d-flex align-items-stretch">
-      <div class="w-100 p-4 text-white d-flex flex-column justify-content-center login-right-panel">
-        <h3 class="login-right-panel-title mb-3">Uma conta para tudo</h3>
-        <p class="login-right-panel-text mb-4">A sua conta gov.br permite o acesso a centenas de serviços públicos digitais e, agora, ao painel administrativo de controle.</p>
+  <!-- informações sobre a conta gov.br -->
+  <div class="col-12 col-md-6 d-flex">
+    <div class="card w-100 text-bg-primary border-0">
+      <div class="card-body p-4 d-flex flex-column justify-content-center">
+        <h2 class="h4 mb-3">Uma conta para tudo</h2>
+        <p class="mb-4">A sua conta gov.br permite o acesso a centenas de serviços públicos digitais e, agora, ao painel administrativo de controle.</p>
 
-        <div class="d-flex align-items-start mb-4">
-          <div class="mr-3 login-benefit-item-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <i class="fas fa-shield-alt fs-4" aria-hidden="true"></i>
           <div>
-            <h4 class="login-benefit-item-title m-0">Segurança da informação</h4>
-            <p class="login-benefit-item-desc m-0">Garanta a integridade das suas ações administrativas através de um ambiente altamente seguro e criptografado.</p>
+            <h3 class="h6 fw-bold m-0">Segurança da informação</h3>
+            <p class="small m-0">Garanta a integridade das suas ações administrativas através de um ambiente altamente seguro e criptografado.</p>
           </div>
         </div>
 
-        <div class="d-flex align-items-start mb-4">
-          <div class="mr-3 login-benefit-item-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <i class="fas fa-check-circle fs-4" aria-hidden="true"></i>
           <div>
-            <h4 class="login-benefit-item-title m-0">Identidade Digital Unificada</h4>
-            <p class="login-benefit-item-desc m-0">Siga os padrões oficiais de usabilidade e acessibilidade do Governo Federal Brasileiro.</p>
+            <h3 class="h6 fw-bold m-0">Identidade Digital Unificada</h3>
+            <p class="small m-0">Siga os padrões oficiais de usabilidade e acessibilidade do Governo Federal Brasileiro.</p>
           </div>
         </div>
 
-        <div class="d-flex align-items-start">
-          <div class="mr-3 login-benefit-item-icon"><i class="fas fa-clock"></i></div>
+        <div class="d-flex align-items-start gap-3">
+          <i class="fas fa-clock fs-4" aria-hidden="true"></i>
           <div>
-            <h4 class="login-benefit-item-title m-0">Agilidade e Eficiência</h4>
-            <p class="login-benefit-item-desc m-0">Acesse rapidamente todas as ferramentas necessárias para gerenciar dados acadêmicos ou institucionais.</p>
+            <h3 class="h6 fw-bold m-0">Agilidade e Eficiência</h3>
+            <p class="small m-0">Acesse rapidamente todas as ferramentas necessárias para gerenciar dados acadêmicos ou institucionais.</p>
           </div>
         </div>
       </div>
@@ -169,16 +132,13 @@
 {% endblock %}
 
 {% block footer %}
-<footer class="br-footer login-footer-wrapper" id="login-footer">
-  <div class="container-lg text-center">
-    <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
-      <a href="https://www.gov.br/pt-br/termos-de-uso-e-politica-de-privacidade" target="_blank" class="login-footer-link">Termos de Uso e Privacidade</a>
-      <span class="login-footer-divider d-none d-sm-inline">|</span>
-      <a href="https://www.gov.br/ds/home" target="_blank" class="login-footer-link">Design System Gov.BR</a>
-    </div>
-    <div class="login-footer-copyright">
-      {{ project_copyright|default:"© 2026 Governo Federal" }} | Versão {{ project_version|default:"6.0.0" }}
-    </div>
+<footer class="bg-body" data-bs-theme="dark" id="footer">
+  <div class="container-lg text-center py-4">
+    <nav class="d-flex justify-content-center flex-wrap gap-3 mb-2" aria-label="Links do rodapé">
+      <a href="https://www.gov.br/pt-br/termos-de-uso-e-politica-de-privacidade" target="_blank" rel="noopener">Termos de Uso e Privacidade</a>
+      <a href="https://www.gov.br/ds/home" target="_blank" rel="noopener">Design System Gov.BR</a>
+    </nav>
+    <p class="small m-0">{{ project_copyright|default:"© 2026 Governo Federal" }} | Versão {{ project_version }}</p>
   </div>
 </footer>
 {% endblock %}

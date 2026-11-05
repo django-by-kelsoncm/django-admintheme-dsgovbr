@@ -31,7 +31,7 @@ pip install django-dsgovbr
 ### 2. Configuração no `settings.py`
 
 Troque o `'django.contrib.admin'` pelas apps do tema (o `DSGovBrAdminConfig` é o admin do Django com o site do tema) e
-adicione o `compressor`, que compila o SCSS do DS Gov.BR:
+adicione o `compressor`, que compila o SCSS próprio do tema:
 
 ```python
 INSTALLED_APPS = [
@@ -69,6 +69,23 @@ PROJECT_RELEASES_URL = "https://github.com/org/projeto/releases/tag/"  # + PROJE
 ```
 
 Para o `DSGovBrModelAdmin` com importação/exportação, instale o extra: `pip install django-dsgovbr[import-export]`.
+
+### 3. Aparência: Bootstrap 5 com o GOV.BR DS
+
+Desde a versão 7.0.0 os templates usam classes do [Bootstrap 5.3](https://getbootstrap.com/docs/5.3/) com o tema
+[dsgovbr-bootstraped](https://github.com/abrasileirado/dsgovbr-bootstraped), que dá ao Bootstrap a aparência do
+GOV.BR DS. O CSS do tema (v0.10.0) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`; o JS do
+GOV.BR DS (`core-init.js`) não é mais carregado.
+
+- **Nos seus templates**: use classes do Bootstrap (`btn btn-primary`, `alert alert-success`, `card`, `form-control`…)
+  em vez de `br-*`. Exemplos de cada componente no
+  [catálogo do dsgovbr-bootstraped](https://abrasileirado.github.io/dsgovbr-bootstraped/componentes/).
+- **Formulários**: o `dsgovbr/js/dsgovbr_forms.js` aplica `.form-control`, `.form-select` e `.form-check-input` aos
+  campos do Django, com qualquer `FORM_RENDERER`. Para ignorar um campo ou bloco, use `data-dsgovbr-ignore`.
+- **Menu**: `DSGOVBR_HEADER["menu"]["localizacao"] = "fixo"` (padrão) deixa o menu aberto ao lado do conteúdo a partir
+  de 1200px; `"flutuante"` só abre pelo botão.
+- **Cookiebar**: o bloco `cookie_consent` do `dsgovbr/base.html` vem vazio; sobrescreva-o com um
+  `.offcanvas.offcanvas-bottom` para exibir o aviso.
 
 ---
 

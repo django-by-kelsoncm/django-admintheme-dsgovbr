@@ -1,5 +1,37 @@
 # Histórico de Versões
 
+## 7.0.0
+
+### Bootstrap 5 com o dsgovbr-bootstraped (quebra de compatibilidade)
+
+- **Aparência**: os templates trocam as classes `br-*` do GOV.BR DS por classes do Bootstrap 5.3 com o tema
+  [dsgovbr-bootstraped](https://github.com/abrasileirado/dsgovbr-bootstraped) v0.10.0. O CSS do tema e o
+  `bootstrap.bundle.min.js` 5.3.8 vêm em `static/vendors/`; o `core-init.js` do GOV.BR DS e o flatpickr não são mais
+  carregados, e o SCSS do tema não importa mais o `vendors/serpro`.
+- **Quem estende os templates**: markup próprio com `br-*` (botões, mensagens, cards, campos) deixa de ter estilo. Use as
+  classes do Bootstrap (`btn btn-primary`, `alert`, `card`, `form-control`…). Utilitários do Bootstrap 4 usados pelo
+  GOV.BR DS (`mr-*`, `ml-*`, `text-right`, `sr-only`) viram os do Bootstrap 5 (`me-*`, `ms-*`, `text-end`,
+  `visually-hidden`).
+- **Header, menu e rodapé**: header com a navbar; menu num offcanvas com list group e pastas por Collapse
+  (`menu.localizacao`: `fixo` deixa o menu aberto a partir de 1200px, `flutuante` só pelo botão); novo bloco `menu` no
+  `dsgovbr/base.html`; rodapé com `data-bs-theme="dark"`; skiplink com `.visually-hidden-focusable`.
+- **Lista do admin**: busca e filtros em Collapse, ações em dropdown, tabela `.table`, paginação `.pagination` e
+  densidade da tabela em `dsgovbr_admin_density.js` (substitui o `dsgovbr_admin_submit_line.js`, removido).
+- **Formulários**: fieldset em grade, erros com `.invalid-feedback` e o novo `dsgovbr/js/dsgovbr_forms.js`, que aplica
+  `.form-control`, `.form-select` e `.form-check-input` aos campos do Django (também nos inlines e no
+  `filter_horizontal`).
+- **Login e `registration/`**: cards, alertas e campos do Bootstrap; o `dsgovbr_login.scss` foi removido.
+- **Cookiebar**: o bloco `cookie_consent` vem vazio (antes era um `div.br-cookiebar` oculto e sem conteúdo).
+
+### Correções no admin
+
+- **Lista do admin**: a tag `dsgovbr_result_list` usava o `change_list_results.html` do Django em vez do
+  `change_list_dsgovbr_results.html` do tema.
+- **Mídia da lista**: os JS do `ModelAdmin` eram incluídos duas vezes no `change_list.html`.
+- **Formulário**: o `submit_buttons_top` imprimia o `{{ request }}` na página.
+- **Paginação**: `page_item` monta o HTML com `format_html` (antes, `mark_safe` com f-string), sem `tabindex` por página
+  e com `aria-current` na página atual.
+
 ## 6.0.1
 
 ### Compatibilidade com Django 6.1

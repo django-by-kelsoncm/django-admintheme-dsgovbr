@@ -1,5 +1,6 @@
 from django import template
-from django.utils.safestring import SafeString, mark_safe
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from django.contrib.admin.views.main import PAGE_VAR
 
 register = template.Library()
@@ -23,16 +24,20 @@ def user_letters(user):
 
 @register.simple_tag
 def page_item(cl, page) -> SafeString:
+    """Item da paginação do Bootstrap (.page-item/.page-link) para a lista do admin."""
     if page == cl.paginator.ELLIPSIS:
-        extra_class = "disabled"
-    elif page == cl.page_num:
-        extra_class = "active"
-    else:
-        extra_class = ""
-
-    url = cl.get_query_string({PAGE_VAR: page})
-
-    return mark_safe(
-        f"""<li class="paginate_button page-item {extra_class}"><a href="{url}"
-            data-dt-idx="{page}" tabindex="{page}" class="page-link">{page}</a></li>"""
+        return format_html(
+            '<li class="page-item disabled"><span class="page-link">{}</span></li>',
+            page,
+        )
+    if page == cl.page_num:
+        return format_html(
+            '<li class="page-item active" aria-current="page">'
+            '<span class="page-link">{}</span></li>',
+            page,
+        )
+    return format_html(
+        '<li class="page-item"><a class="page-link" href="{}">{}</a></li>',
+        cl.get_query_string({PAGE_VAR: page}),
+        page,
     )

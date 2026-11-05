@@ -1,27 +1,8 @@
 
 window.dsgovbrAdminFiltersInit = function() {
-    var filterBtn = document.getElementById('button-input-filter');
     var filterBar = document.getElementById('filter-bar');
-    var filterDismissBtn = filterBar ? filterBar.querySelector('[data-dismiss="filter"]') : null;
     var tagsContainer = document.getElementById('filter-tags');
     var form = document.getElementById('changelist-form'); // Corrigido para o form correto
-
-    if (tagsContainer) tagsContainer.style.display = 'flex';
-
-    if (filterBtn && filterBar) {
-        filterBtn.addEventListener('click', function() {
-            filterBar.hidden = false;
-            filterBar.classList.add('active');
-            var searchBar = document.querySelector('.search-bar');
-            if (searchBar) searchBar.hidden = true;
-        });
-    }
-    if (filterDismissBtn && filterBar) {
-        filterDismissBtn.addEventListener('click', function() {
-            filterBar.hidden = true;
-            filterBar.classList.remove('active');
-        });
-    }
 
     // Evita múltiplos event listeners
     if (filterBar && !filterBar._dsgovbrFilterListenerAdded) {
@@ -43,7 +24,7 @@ window.dsgovbrAdminFiltersInit = function() {
 
             // Remove tag/input antigos para o mesmo filtro
             if (tagsContainer) {
-                var oldTag = tagsContainer.querySelector('.br-tag[data-field-name="' + fieldName + '"]');
+                var oldTag = tagsContainer.querySelector('[data-field-name="' + fieldName + '"]');
                 if (oldTag) oldTag.remove();
             }
             if (form) {
@@ -52,25 +33,14 @@ window.dsgovbrAdminFiltersInit = function() {
             }
 
             var tag = document.createElement('span');
-            tag.className = 'br-tag interaction small';
+            tag.className = 'badge text-bg-primary d-inline-flex align-items-center gap-2';
             tag.setAttribute('data-field-name', fieldName);
-            tag.setAttribute('style', "padding-right: 0;");
-
-            var textSpan = document.createElement('span');
-            textSpan.className = 'br-tag__text';
-            textSpan.textContent = fieldTitle + ': ' + display;
-            tag.appendChild(textSpan);
+            tag.appendChild(document.createTextNode(fieldTitle + ': ' + display));
 
             var closeButton = document.createElement('button');
-            closeButton.className = 'br-tag__close br-button inverted';
+            closeButton.className = 'btn-close btn-close-white';
             closeButton.type = 'button';
-            closeButton.setAttribute('aria-label', 'Fechar');
-
-            var closeIcon = document.createElement('i');
-            closeIcon.className = 'fas fa-times';
-            closeIcon.setAttribute('aria-hidden', 'true');
-            closeButton.appendChild(closeIcon);
-
+            closeButton.setAttribute('aria-label', 'Remover o filtro ' + fieldTitle);
             tag.appendChild(closeButton);
 
             if (tagsContainer) tagsContainer.appendChild(tag);
@@ -81,7 +51,7 @@ window.dsgovbrAdminFiltersInit = function() {
             input.value = value;
             if (form) form.appendChild(input);
 
-            tag.querySelector('.br-tag__close').addEventListener('click', function() {
+            closeButton.addEventListener('click', function() {
                 tag.remove();
                 input.remove();
             });

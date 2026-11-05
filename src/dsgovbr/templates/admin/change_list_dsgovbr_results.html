@@ -9,33 +9,32 @@
 {% endif %}
 
 {% if results %}
-    <div class="results">
-        <table id="result_list" class="responsive">
+    <div class="results table-responsive">
+        <table id="result_list" class="table table-hover align-middle">
             <thead>
                 <tr>
                     {% for header in result_headers %}
                     <th scope="col"{{ header.class_attrib }}>
-                        {% if header.sortable and header.sort_priority > 0 %}
-                            <div class="sortoptions">
-                                <a class="sortremove" href="{{ header.url_remove }}" title="{% translate "Remove from sorting" %}"></a>
-
-                                {% if num_sorted_fields > 1 %}
-                                    <span class="sortpriority" title="{% blocktranslate with priority_number=header.sort_priority %}Sorting priority: {{ priority_number }}{% endblocktranslate %}">
-                                        {{ header.sort_priority }}
-                                    </span>
-                                {% endif %}
-
-                                <a href="{{ header.url_toggle }}" class="toggle {{ header.ascending|yesno:'ascending,descending' }}" title="{% translate "Toggle sorting" %}"></a>
-                            </div>
-                        {% endif %}
-                        <div class="text">
+                        <div class="d-flex align-items-center gap-1">
                             {% if header.sortable %}
                                 <a href="{{ header.url_primary }}">{{ header.text|capfirst }}</a>
                             {% else %}
                                 <span>{{ header.text|capfirst }}</span>
                             {% endif %}
+                            {% if header.sortable and header.sort_priority > 0 %}
+                                <span class="sortoptions d-inline-flex align-items-center gap-1">
+                                    {% if num_sorted_fields > 1 %}
+                                        <span class="badge text-bg-secondary sortpriority" title="{% blocktranslate with priority_number=header.sort_priority %}Sorting priority: {{ priority_number }}{% endblocktranslate %}">{{ header.sort_priority }}</span>
+                                    {% endif %}
+                                    <a href="{{ header.url_toggle }}" class="toggle {{ header.ascending|yesno:'ascending,descending' }}" title="{% translate "Toggle sorting" %}">
+                                        <i class="fas {{ header.ascending|yesno:'fa-sort-up,fa-sort-down' }}" aria-hidden="true"></i><span class="visually-hidden">{% translate "Toggle sorting" %}</span>
+                                    </a>
+                                    <a class="sortremove" href="{{ header.url_remove }}" title="{% translate "Remove from sorting" %}">
+                                        <i class="fas fa-times" aria-hidden="true"></i><span class="visually-hidden">{% translate "Remove from sorting" %}</span>
+                                    </a>
+                                </span>
+                            {% endif %}
                         </div>
-                        <div class="clear"></div>
                     </th>{% endfor %}
                 </tr>
             </thead>
@@ -58,28 +57,7 @@
         </table>
     </div>
 {% else %}
-    <div class="results">
-        <table id="result_list" class="responsive dsgov-table">
-        </table>
-    </div>
-    <div class="br-message warning" style="max-width: 550px; margin: 2em auto;">
-        <div class="icon">
-            <i class="fas fa-exclamation-triangle fa-lg" aria-hidden="true"></i>
-        </div>
-        <div class="content" role="alert">
-            <span class="message-title">{% trans "Atenção." %}</span>
-            <span class="message-body">{% trans "Não há resultados para esta consulta." %}</span>
-        </div>
-        <div class="close">
-            <button class="br-button circle small" type="button" aria-label="{% trans "Fechar a mensagem de alerta" %}">
-                <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
-        </div>
-    </div>
-{% endif %}
-
-{% if result_hidden_fields %}
-    <div class="hiddenfields">{# DIV for HTML validation #}
-    {% for item in result_hidden_fields %}{{ item }}{% endfor %}
+    <div class="alert alert-warning mx-auto my-4" role="alert">
+        <strong>{% translate "Atenção." %}</strong> {% translate "Não há resultados para esta consulta." %}
     </div>
 {% endif %}
