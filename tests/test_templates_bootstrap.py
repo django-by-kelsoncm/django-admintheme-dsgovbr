@@ -29,6 +29,7 @@ REESCRITOS = [
     "admin/change_form.html",
     "admin/change_list.html",
     "admin/change_list_header.html",
+    "admin/change_list_tools.html",
     "admin/change_list_dsgovbr_results.html",
     "admin/change_list_object_tools.html",
     "admin/includes/fieldset.html",

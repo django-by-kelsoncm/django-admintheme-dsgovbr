@@ -82,8 +82,12 @@ GOV.BR DS (`core-init.js`) não é mais carregado.
   [catálogo do dsgovbr-bootstraped](https://abrasileirado.github.io/dsgovbr-bootstraped/componentes/).
 - **Formulários**: o `dsgovbr/js/dsgovbr_forms.js` aplica `.form-control`, `.form-select` e `.form-check-input` aos
   campos do Django, com qualquer `FORM_RENDERER`. Para ignorar um campo ou bloco, use `data-dsgovbr-ignore`.
-- **Menu**: `DSGOVBR_HEADER["menu"]["localizacao"] = "fixo"` (padrão) deixa o menu aberto ao lado do conteúdo a partir
-  de 1200px; `"flutuante"` só abre pelo botão.
+- **Layout**: segue o exemplo "Painel administrativo" do dsgovbr-bootstraped. Header, conteúdo e rodapé usam
+  `container-lg` (`DSGOVBR_HEADER["width_style"]`: `sm`, `md`, `lg`, `xl`, `xxl` ou `fluid`).
+- **Menu**: offcanvas aberto pelo botão (`DSGOVBR_HEADER["menu"]["localizacao"] = "flutuante"`, padrão); com `"fixo"`
+  fica aberto ao lado do conteúdo a partir de 1200px.
+- **Título da página**: o bloco `title_actions` do `dsgovbr/base.html` põe ações à direita do título (na lista: busca,
+  filtros, mais opções e "Adicionar").
 - **Cookiebar**: o bloco `cookie_consent` do `dsgovbr/base.html` vem vazio; sobrescreva-o com um
   `.offcanvas.offcanvas-bottom` para exibir o aviso.
 

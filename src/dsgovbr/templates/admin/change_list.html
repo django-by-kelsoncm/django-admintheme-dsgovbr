@@ -34,6 +34,18 @@
 
 {% block coltype %}{% endblock coltype %}
 
+{% block title_actions %}
+  <div class="d-flex flex-wrap align-items-center gap-2">
+    {% include "admin/change_list_tools.html" %}
+    {% if has_add_permission %}
+        {% url cl.opts|admin_urlname:'add' as add_url %}
+        <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink btn btn-primary">
+            {% blocktranslate with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktranslate %}
+        </a>
+    {% endif %}
+  </div>
+{% endblock title_actions %}
+
 {% block content %}
 
     <!-- #changelist -->

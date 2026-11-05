@@ -169,3 +169,14 @@ $dsgovbr-selector-gap: 0.5rem;
     display: none;
   }
 }
+
+// Cabeçalho da tabela da lista: texto como no exemplo do dsgovbr-bootstraped;
+// a ordenação continua no link, sem cor de link nem sublinhado.
+#result_list thead a {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
