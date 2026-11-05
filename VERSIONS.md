@@ -2,6 +2,27 @@
 
 ## 6.0.1
 
+### Compatibilidade com Django 6.1
+
+- **`dsgovbr_result_list`**: passa o nome da tag ao `InclusionAdminNode`, exigido a partir do Django 6.1 (a lista do
+  admin quebrava com `missing 1 required positional argument: 'token'`).
+
+### Correções
+
+- **Menu do admin**: `get_full_admin_app_list` usava `admin.site.get_app_list`, que no `DSGovBrAdminSite` chama o
+  próprio menu (recursão infinita e menu vazio). Agora usa a implementação base do `AdminSite`.
+- **Sair**: o item "Sair" usa a rota `logout` ou, na falta dela, `admin:logout`, em vez de quebrar.
+- **Logs**: `print` de depuração removidos; erros vão para o `logging`.
+- **Links fixos**: o rodapé do menu não mostra mais "Link externo 1/2"; os links vêm de
+  `DSGOVBR_HEADER["menu"]["footer"]["links"]`. A versão no rodapé só tem link com `PROJECT_RELEASES_URL` (antes
+  apontava para o repositório `cte-zl-ifrn/integration-integrador_ava`).
+
+### Dependências
+
+- **Declaradas**: `django-compressor` e `django-libsass`, usados pelos templates (`{% compress %}` com SCSS).
+- **Extra `import-export`**: `django-import-export`, para o `DSGovBrModelAdmin`.
+- **Documentação**: configuração do compressor, `COMPRESS_OFFLINE` e `DSGovBrAdminConfig` no README.
+
 ### Correções de segurança
 
 - **Dependências de desenvolvimento**: atualização do `uv.lock` para versões corrigidas de Django (6.0.8), Pillow

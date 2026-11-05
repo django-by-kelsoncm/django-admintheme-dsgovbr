@@ -124,3 +124,25 @@ def test_autocomplete_disabled(request_with_user):
         assert autocomplete_ctx["ativo"] is False
         assert autocomplete_ctx["show"] is False
         assert autocomplete_ctx["url"] == ""
+
+
+def test_logout_url_sem_rota_logout(request_with_user):
+    from django.urls import NoReverseMatch
+
+    from dsgovbr import context_processors
+
+    def sem_logout(name, *args, **kwargs):
+        raise NoReverseMatch(name)
+
+    original = context_processors.reverse
+    context_processors.reverse = sem_logout
+    try:
+        assert context_processors._logout_url() == ""
+    finally:
+        context_processors.reverse = original
+
+
+def test_logout_url_com_rota_logout():
+    from dsgovbr.context_processors import _logout_url
+
+    assert _logout_url() == "/logout/"

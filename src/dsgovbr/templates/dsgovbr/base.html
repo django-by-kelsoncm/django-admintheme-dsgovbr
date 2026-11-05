@@ -91,16 +91,16 @@
                   {% endif %}
 
                   <div class="menu-footer">
-                    <div class="menu-links">
-                      <a href="javascript: void(0)">
-                        <span class="mr-1">Link externo 1</span>
-                        <i class="fas fa-external-link-square-alt" aria-hidden="true"></i>
-                      </a>
-                      <a href="javascript: void(0)">
-                        <span class="mr-1">Link externo 2</span>
-                        <i class="fas fa-external-link-square-alt" aria-hidden="true"></i>
-                      </a>
-                    </div>
+                    {% if dsgovbr.header.menu.footer.links %}
+                      <div class="menu-links">
+                        {% for link in dsgovbr.header.menu.footer.links %}
+                          <a href="{{ link.url }}"{% if link.target %} target="{{ link.target }}"{% endif %}>
+                            <span class="mr-1">{{ link.label }}</span>
+                            <i class="{{ link.icon|default:'fas fa-external-link-square-alt' }}" aria-hidden="true"></i>
+                          </a>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
 
                     <div class="menu-info">
                     </div>
@@ -187,7 +187,7 @@
             <div class="info">
               <div class="text-down-01 text-medium pb-3">
                {{ project_copyright }}.
-               <a href="https://github.com/cte-zl-ifrn/integration-integrador_ava/releases/tag/{{ project_version }}">v{{ project_version }}</a>.
+               {% if project_releases_url %}<a href="{{ project_releases_url }}{{ project_version }}">v{{ project_version }}</a>{% else %}v{{ project_version }}{% endif %}.
                <a href="{{ project_license_url }}" target="_blank">{{ project_license }}.</a></strong>
                 <!-- app_last_startup:{{ app_last_startup }} -->
               </div>

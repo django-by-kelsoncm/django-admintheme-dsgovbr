@@ -1,5 +1,7 @@
 from django.utils.translation import gettext as _
 import datetime
+
+import django
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 from django.contrib.admin.utils import (
     display_for_field,
@@ -220,9 +222,7 @@ def items_for_result(cl, result, form):
             # display just the result's representation.
             try:
                 url = cl.url_for_result(result)
-                print(f"URL for result {result}: {url}")
-            except NoReverseMatch as e:
-                print(f"URL for result_repr {result_repr}: {e}")
+            except NoReverseMatch:
                 link_or_text = result_repr
             else:
                 url = add_preserved_filters(
@@ -316,7 +316,10 @@ def result_list(cl):
 
 @register.tag(name="dsgovbr_result_list")
 def result_list_tag(parser, token):
+    # Django 6.1 passou a exigir o nome da tag como primeiro argumento
+    nome = ("dsgovbr_result_list",) if django.VERSION >= (6, 1) else ()
     return InclusionAdminNode(
+        *nome,
         parser,
         token,
         func=result_list,

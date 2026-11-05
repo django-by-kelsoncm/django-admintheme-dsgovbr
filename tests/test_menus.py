@@ -178,3 +178,14 @@ def test_item_visibility_and_permissions(clean_registry):
     menu_list = menus.get_menu_list(request_admin)
     assert len(menu_list) == 2
     assert {m["app_label"] for m in menu_list} == {"app_pub", "app_priv"}
+
+
+def test_full_admin_app_list_nao_recursa_com_site_dsgovbr(monkeypatch):
+    from django.contrib import admin
+
+    from dsgovbr.admin import DSGovBrAdminSite
+
+    site = DSGovBrAdminSite()
+    monkeypatch.setattr(admin, "site", site)
+    request = RequestFactory().get("/")
+    assert menus.get_full_admin_app_list(request) == []

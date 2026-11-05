@@ -1,3 +1,5 @@
+import logging
+
 from django.urls import reverse, NoReverseMatch
 from django.utils.module_loading import autodiscover_modules
 
@@ -102,8 +104,12 @@ class MenuFolder:
         }
 
 
+logger = logging.getLogger(__name__)
+
+
 def get_full_admin_app_list(request):
     from django.contrib import admin
+    from django.contrib.admin import AdminSite
 
     class DummyUser:
         is_active = True
@@ -135,9 +141,10 @@ def get_full_admin_app_list(request):
 
     mock_req = MockRequest(request)
     try:
-        return admin.site.get_app_list(mock_req)
-    except Exception as e:
-        print(f"Error getting admin app list with mock request: {e}")
+        # implementação base: o DSGovBrAdminSite.get_app_list monta o menu a partir daqui (evita recursão)
+        return AdminSite.get_app_list(admin.site, mock_req)
+    except Exception:
+        logger.exception("Erro ao obter a lista de apps do admin")
         return []
 
 
@@ -343,8 +350,8 @@ class MenuRegistry:
                 res = callback(active_folders)
                 if res is not None:
                     active_folders = res
-            except Exception as e:
-                print(f"Error in menu reorder callback: {e}")
+            except Exception:
+                logger.exception("Erro no callback de reordenação do menu")
 
         return active_folders
 

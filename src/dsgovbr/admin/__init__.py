@@ -37,9 +37,6 @@ class ActionSpec:
         Retorna o nome da URL admin customizada para este handler.
         Uso: action.get_admin_url_name(admin)
         """
-        print(
-            f"admin:{self.admin.opts.app_label}_{self.admin.opts.model_name}_{self.handler}"
-        )  # DEBUG
         return f"admin:{self.admin.opts.app_label}_{self.admin.opts.model_name}_{self.handler}"
 
 
