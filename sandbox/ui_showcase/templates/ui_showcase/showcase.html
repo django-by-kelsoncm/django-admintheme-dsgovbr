@@ -11,16 +11,16 @@
 
   <!-- Botões -->
   <div class="col-md-6 mb-4">
-    <div class="br-card" style="border: 1px solid #ccc; border-radius: 4px; padding: 16px;">
+    <div class="card h-100">
       <div class="card-header"><h3 class="m-0">Botões</h3></div>
       <div class="card-body">
-        <div class="d-flex flex-wrap" style="gap: 8px;">
-          <button class="br-button primary" type="button">Primário</button>
-          <button class="br-button secondary" type="button">Secundário</button>
-          <button class="br-button success" type="button">Sucesso</button>
-          <button class="br-button danger" type="button">Perigo</button>
-          <button class="br-button warning" type="button">Alerta</button>
-          <button class="br-button info" type="button">Info</button>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-primary" type="button">Primário</button>
+          <button class="btn btn-outline-primary" type="button">Secundário</button>
+          <button class="btn btn-success" type="button">Sucesso</button>
+          <button class="btn btn-danger" type="button">Perigo</button>
+          <button class="btn btn-warning" type="button">Alerta</button>
+          <button class="btn btn-info" type="button">Info</button>
         </div>
       </div>
     </div>
@@ -28,15 +28,15 @@
 
   <!-- Tags / Badges -->
   <div class="col-md-6 mb-4">
-    <div class="br-card" style="border: 1px solid #ccc; border-radius: 4px; padding: 16px;">
+    <div class="card h-100">
       <div class="card-header"><h3 class="m-0">Tags / Badges</h3></div>
       <div class="card-body">
-        <div class="d-flex flex-wrap" style="gap: 8px;">
-          <span class="br-tag">Padrão</span>
-          <span class="br-tag success">Sucesso</span>
-          <span class="br-tag danger">Perigo</span>
-          <span class="br-tag warning">Alerta</span>
-          <span class="br-tag info">Info</span>
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge text-bg-primary">Padrão</span>
+          <span class="badge text-bg-success">Sucesso</span>
+          <span class="badge text-bg-danger">Perigo</span>
+          <span class="badge text-bg-warning">Alerta</span>
+          <span class="badge text-bg-info">Info</span>
         </div>
       </div>
     </div>
@@ -44,24 +44,24 @@
 
   <!-- Alertas / Mensagens -->
   <div class="col-sm-12 mb-4">
-    <div class="br-card" style="border: 1px solid #ccc; border-radius: 4px; padding: 16px;">
+    <div class="card h-100">
       <div class="card-header"><h3 class="m-0">Mensagens de Feedback (Alerts)</h3></div>
       <div class="card-body">
-        <div class="br-message success mb-3" role="alert">
-          <div class="icon"><i class="fas fa-check-circle"></i></div>
-          <div class="content"><strong>Sucesso!</strong> Operação realizada com êxito.</div>
+        <div class="alert alert-success mb-3" role="alert">
+          <i class="fas fa-check-circle" aria-hidden="true"></i>
+          <strong>Sucesso!</strong> Operação realizada com êxito.
         </div>
-        <div class="br-message danger mb-3" role="alert">
-          <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
-          <div class="content"><strong>Erro!</strong> Houve um erro crítico ao processar os dados.</div>
+        <div class="alert alert-danger mb-3" role="alert">
+          <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+          <strong>Erro!</strong> Houve um erro crítico ao processar os dados.
         </div>
-        <div class="br-message warning mb-3" role="alert">
-          <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
-          <div class="content"><strong>Atenção!</strong> Verifique os dados inseridos.</div>
+        <div class="alert alert-warning mb-3" role="alert">
+          <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+          <strong>Atenção!</strong> Verifique os dados inseridos.
         </div>
-        <div class="br-message info" role="alert">
-          <div class="icon"><i class="fas fa-info-circle"></i></div>
-          <div class="content"><strong>Informação!</strong> Esta é uma notificação do sistema.</div>
+        <div class="alert alert-info" role="alert">
+          <i class="fas fa-info-circle" aria-hidden="true"></i>
+          <strong>Informação!</strong> Esta é uma notificação do sistema.
         </div>
       </div>
     </div>
@@ -69,7 +69,7 @@
 
   <!-- Cards -->
   <div class="col-md-6 mb-4">
-    <div class="br-card" style="border: 1px solid #ccc; border-radius: 4px; padding: 16px;">
+    <div class="card h-100">
       <div class="card-header">
         <div class="title">Título do Card</div>
       </div>
@@ -81,19 +81,19 @@
 
   <!-- Inputs Puros -->
   <div class="col-md-6 mb-4">
-    <div class="br-card" style="border: 1px solid #ccc; border-radius: 4px; padding: 16px;">
+    <div class="card h-100">
       <div class="card-header"><h3 class="m-0">Campos de Entrada</h3></div>
       <div class="card-body">
-        <div class="br-input mb-3">
+        <div class="mb-3">
           <label for="input-demo">Campo Padrão</label>
           <input id="input-demo" type="text" placeholder="Digite algo...">
         </div>
-        <div class="br-input state-danger mb-3">
+        <div class="mb-3 errors">
           <label for="input-danger">Campo com Erro</label>
           <input id="input-danger" type="text" placeholder="Entrada inválida...">
-          <p class="feedback danger"><i class="fas fa-exclamation-circle"></i> Este campo contém um erro.</p>
+          <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle" aria-hidden="true"></i> Este campo contém um erro.</div>
         </div>
-        <div class="br-input mb-3">
+        <div class="mb-3">
           <label for="input-disabled">Campo Desabilitado</label>
           <input id="input-disabled" type="text" placeholder="Não editável..." disabled>
         </div>

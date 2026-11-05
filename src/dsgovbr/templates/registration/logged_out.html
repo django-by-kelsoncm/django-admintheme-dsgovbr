@@ -3,14 +3,14 @@
 {% block content %}
 <div class="row justify-content-center my-5">
   <div class="col-md-6 col-lg-5">
-    <div class="br-card text-center" style="border: 1px solid #ccc; border-radius: 4px; padding: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-      <div class="card-content">
-        <i class="fas fa-sign-out-alt fa-4x text-info mb-4"></i>
+    <div class="card text-center">
+      <div class="card-body p-4">
+        <i class="fas fa-sign-out-alt fa-4x text-primary mb-4" aria-hidden="true"></i>
         <h2>Sessão Encerrada</h2>
         <p class="lead">Você saiu da sua conta com segurança.</p>
         <div class="mt-4">
-          <a href="{% url 'login' %}" class="br-button primary mr-2">Entrar Novamente</a>
-          <a href="/" class="br-button secondary">Voltar ao Início</a>
+          <a href="{% url 'login' %}" class="btn btn-primary me-2">Entrar Novamente</a>
+          <a href="/" class="btn btn-outline-primary">Voltar ao Início</a>
         </div>
       </div>
     </div>

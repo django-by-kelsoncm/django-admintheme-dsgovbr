@@ -6,22 +6,22 @@
 <div class="row">
   <!-- Cabeçalho Principal -->
   <div class="col-sm-12 mb-4">
-    <div class="br-card">
+    <div class="card h-100">
       <div class="card-header">
         <div class="d-flex align-items-center">
-          <i class="fas fa-info-circle fa-2x text-primary mr-3"></i>
+          <i class="fas fa-info-circle fa-2x text-primary me-3"></i>
           <div>
             <h2 class="m-0">Ambiente de Validação & Homologação</h2>
             <p class="m-0 text-muted">Validação visual e funcional do tema <strong>DSGovBR</strong> para Django 5.2 LTS e 6.0.</p>
           </div>
         </div>
       </div>
-      <div class="card-content">
+      <div class="card-body">
         <p class="mt-3">
           Esta aplicação de referência (sandbox) foi projetada para testar o comportamento visual e estrutural do tema baseado no <strong>Design System do Governo Federal (dsgovbr)</strong>. Ela cobre as superfícies críticas do Django que costumam apresentar quebras em temas customizados: o painel administrativo (<code>django.contrib.admin</code>), fluxos nativos de autenticação (<code>django.contrib.auth</code>) e a renderização de formulários públicos (<code>django.forms</code>).
         </p>
         <div class="mt-4 text-center">
-          <a href="{% url 'core:dashboard' %}" class="br-button primary large"><i class="fas fa-cubes mr-2"></i> Acessar dashboard de teste</a>
+          <a href="{% url 'core:dashboard' %}" class="btn btn-primary btn-lg"><i class="fas fa-cubes me-2"></i> Acessar dashboard de teste</a>
         </div>
       </div>
     </div>
@@ -29,29 +29,29 @@
 
   <!-- Instruções de Uso (README Visual) -->
   <div class="col-md-6 mb-4">
-    <div class="sandbox-instruction-card">
+    <div class="card h-100">
       <div class="card-header">
-        <h3 class="m-0"><i class="fas fa-terminal mr-2 text-primary"></i> Como usar a Sandbox</h3>
+        <h3 class="m-0"><i class="fas fa-terminal me-2 text-primary"></i> Como usar a Sandbox</h3>
       </div>
       <div class="card-body">
         <p>Siga os passos abaixo para preparar o ambiente local de testes:</p>
-        <ol class="br-list">
-          <li class="br-item py-2">
+        <ol class="list-group mb-0">
+          <li class="list-group-item py-2">
             <strong>1. Instalar dependências e preparar o banco:</strong><br>
             Certifique-se de usar o gerenciador de pacotes <code>uv</code> para consistência:
             <pre class="bg-light p-2 rounded mt-1"><code>uv run python manage.py migrate</code></pre>
           </li>
-          <li class="br-item py-2">
+          <li class="list-group-item py-2">
             <strong>2. Popular o banco (Seed):</strong><br>
             Popule permissões, grupos, dados simulados e usuários de testes:
             <pre class="bg-light p-2 rounded mt-1"><code>uv run python manage.py seed_sandbox</code></pre>
           </li>
-          <li class="br-item py-2">
+          <li class="list-group-item py-2">
             <strong>3. Iniciar o servidor local:</strong><br>
             Suba o servidor de desenvolvimento:
             <pre class="bg-light p-2 rounded mt-1"><code>uv run python manage.py runserver</code></pre>
           </li>
-          <li class="br-item py-2">
+          <li class="list-group-item py-2">
             <strong>4. Simular Sessões de Usuário:</strong><br>
             Acesse o painel <a href="/qa/">QA Orchestrator</a> para alternar instantaneamente entre perfis com diferentes níveis de permissão sem precisar digitar senhas.
           </li>
@@ -62,14 +62,14 @@
 
   <!-- Contas de Usuários Disponíveis -->
   <div class="col-md-6 mb-4">
-    <div class="sandbox-instruction-card">
+    <div class="card h-100">
       <div class="card-header">
-        <h3 class="m-0"><i class="fas fa-users mr-2 text-primary"></i> Massa de Usuários de Teste</h3>
+        <h3 class="m-0"><i class="fas fa-users me-2 text-primary"></i> Massa de Usuários de Teste</h3>
       </div>
       <div class="card-body">
         <p>Todos os usuários usam a senha padrão: <code>Senha123!</code></p>
         <div>
-          <table>
+          <table class="table">
             <thead>
               <tr>
                 <th>Usuário</th>
@@ -81,42 +81,42 @@
               <tr>
                 <td><code>superuser</code></td>
                 <td>Superusuário (Total)</td>
-                <td><span class="br-tag success">Sim</span></td>
+                <td><span class="badge text-bg-success">Sim</span></td>
               </tr>
               <tr>
                 <td><code>staff_admin_total</code></td>
                 <td>Admin Global (Todos os apps)</td>
-                <td><span class="br-tag success">Sim</span></td>
+                <td><span class="badge text-bg-success">Sim</span></td>
               </tr>
               <tr>
                 <td><code>staff_editorial_full</code></td>
                 <td>Gestão de Editorial (M2M/Tags)</td>
-                <td><span class="br-tag success">Sim</span></td>
+                <td><span class="badge text-bg-success">Sim</span></td>
               </tr>
               <tr>
                 <td><code>staff_editorial_readonly</code></td>
                 <td>Apenas Leitura no Editorial</td>
-                <td><span class="br-tag success">Sim</span></td>
+                <td><span class="badge text-bg-success">Sim</span></td>
               </tr>
               <tr>
                 <td><code>staff_atendimento_sem_delete</code></td>
                 <td>Chamados (Add/Change/View)</td>
-                <td><span class="br-tag success">Sim</span></td>
+                <td><span class="badge text-bg-success">Sim</span></td>
               </tr>
               <tr>
                 <td><code>staff_eventos_sem_add</code></td>
                 <td>Eventos (Sem permissão de criar)</td>
-                <td><span class="br-tag success">Sim</span></td>
+                <td><span class="badge text-bg-success">Sim</span></td>
               </tr>
               <tr>
                 <td><code>staff_cadastro_view_only</code></td>
                 <td>Apenas Leitura no Cadastro</td>
-                <td><span class="br-tag success">Sim</span></td>
+                <td><span class="badge text-bg-success">Sim</span></td>
               </tr>
               <tr>
                 <td><code>user_autenticado_comum</code></td>
                 <td>Cidadão comum (Área pública)</td>
-                <td><span class="br-tag text-muted">Não</span></td>
+                <td><span class="badge text-bg-secondary">Não</span></td>
               </tr>
             </tbody>
           </table>

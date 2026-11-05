@@ -12,9 +12,9 @@
   <div class="col-sm-12">
     {% if messages %}
       {% for message in messages %}
-        <div class="br-message {{ message.tags }} mb-3" role="alert">
-          <div class="icon"><i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i></div>
-          <div class="content">{{ message }}</div>
+        <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}{{ message.level_tag }}{% endif %} mb-3" role="alert">
+          <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}" aria-hidden="true"></i>
+          {{ message }}
         </div>
       {% endfor %}
     {% endif %}
@@ -22,20 +22,20 @@
 
   <!-- Ações Gerais -->
   <div class="col-md-4 mb-4">
-    <div class="br-card" style="border: 1px solid #ccc; border-radius: 4px; padding: 16px; height: 100%;">
+    <div class="card h-100">
       <div class="card-header"><h3 class="m-0"><i class="fas fa-database"></i> Massa de Dados</h3></div>
       <div class="card-body">
         <p>Apaga todos os registros atuais de testes e recarrega os dados seed padronizados.</p>
       </div>
       <div class="card-footer">
-        <a href="{% url 'qa_orchestrator:reset_db' %}" class="br-button primary block text-center">Reiniciar e Semear Banco</a>
+        <a href="{% url 'qa_orchestrator:reset_db' %}" class="btn btn-primary w-100 text-center">Reiniciar e Semear Banco</a>
       </div>
     </div>
   </div>
 
   <!-- Sessão Atual -->
   <div class="col-md-8 mb-4">
-    <div class="br-card" style="border: 1px solid #ccc; border-radius: 4px; padding: 16px; height: 100%;">
+    <div class="card h-100">
       <div class="card-header"><h3 class="m-0"><i class="fas fa-user-circle"></i> Sessão Autenticada</h3></div>
       <div class="card-body">
         <p>Usuário Atual: <strong>{{ current_user.username|default:"Anônimo" }}</strong></p>
@@ -43,7 +43,7 @@
         {% if current_user.is_authenticated %}
           <p>Grupos:
             {% for g in current_user.groups.all %}
-              <span class="br-tag info">{{ g.name }}</span>
+              <span class="badge text-bg-info">{{ g.name }}</span>
             {% empty %}
               Nenhum
             {% endfor %}
@@ -55,72 +55,72 @@
 
   <!-- Tabela de Perfis -->
   <div class="col-sm-12">
-    <div class="br-card" style="border: 1px solid #ccc; border-radius: 4px; padding: 24px;">
+    <div class="card h-100">
       <div class="card-header"><h3>Simular Login Rápido (1-Click Login)</h3></div>
       <div class="card-body">
-        <table class="table" style="width: 100%; border-collapse: collapse;">
+        <table class="table align-middle">
           <thead>
-            <tr style="border-bottom: 2px solid #ccc;">
-              <th style="padding: 12px; text-align: left;">Usuário</th>
-              <th style="padding: 12px; text-align: left;">Grupo / Perfil</th>
-              <th style="padding: 12px; text-align: left;">Permissões Principais</th>
-              <th style="padding: 12px; text-align: right;">Ação</th>
+            <tr>
+              <th>Usuário</th>
+              <th>Grupo / Perfil</th>
+              <th>Permissões Principais</th>
+              <th class="text-end">Ação</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px;"><strong>superuser</strong></td>
-              <td style="padding: 12px;">Administrador Geral</td>
-              <td style="padding: 12px;">Acesso irrestrito total</td>
-              <td style="padding: 12px; text-align: right;"><a href="{% url 'qa_orchestrator:login_as' 'superuser' %}" class="br-button secondary small">Simular</a></td>
+            <tr>
+              <td><strong>superuser</strong></td>
+              <td>Administrador Geral</td>
+              <td>Acesso irrestrito total</td>
+              <td class="text-end"><a href="{% url 'qa_orchestrator:login_as' 'superuser' %}" class="btn btn-outline-primary btn-sm">Simular</a></td>
             </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px;"><strong>staff_admin_total</strong></td>
-              <td style="padding: 12px;">Admin Global (Sem Superuser)</td>
-              <td style="padding: 12px;">Add/Change/Delete em todos os modelos</td>
-              <td style="padding: 12px; text-align: right;"><a href="{% url 'qa_orchestrator:login_as' 'staff_admin_total' %}" class="br-button secondary small">Simular</a></td>
+            <tr>
+              <td><strong>staff_admin_total</strong></td>
+              <td>Admin Global (Sem Superuser)</td>
+              <td>Add/Change/Delete em todos os modelos</td>
+              <td class="text-end"><a href="{% url 'qa_orchestrator:login_as' 'staff_admin_total' %}" class="btn btn-outline-primary btn-sm">Simular</a></td>
             </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px;"><strong>staff_editorial_full</strong></td>
-              <td style="padding: 12px;">Gestor Editorial</td>
-              <td style="padding: 12px;">Add/Change/Delete no app Editorial</td>
-              <td style="padding: 12px; text-align: right;"><a href="{% url 'qa_orchestrator:login_as' 'staff_editorial_full' %}" class="br-button secondary small">Simular</a></td>
+            <tr>
+              <td><strong>staff_editorial_full</strong></td>
+              <td>Gestor Editorial</td>
+              <td>Add/Change/Delete no app Editorial</td>
+              <td class="text-end"><a href="{% url 'qa_orchestrator:login_as' 'staff_editorial_full' %}" class="btn btn-outline-primary btn-sm">Simular</a></td>
             </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px;"><strong>staff_editorial_readonly</strong></td>
-              <td style="padding: 12px;">Leitor Editorial</td>
-              <td style="padding: 12px;">Apenas visualização no app Editorial</td>
-              <td style="padding: 12px; text-align: right;"><a href="{% url 'qa_orchestrator:login_as' 'staff_editorial_readonly' %}" class="br-button secondary small">Simular</a></td>
+            <tr>
+              <td><strong>staff_editorial_readonly</strong></td>
+              <td>Leitor Editorial</td>
+              <td>Apenas visualização no app Editorial</td>
+              <td class="text-end"><a href="{% url 'qa_orchestrator:login_as' 'staff_editorial_readonly' %}" class="btn btn-outline-primary btn-sm">Simular</a></td>
             </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px;"><strong>staff_atendimento_sem_delete</strong></td>
-              <td style="padding: 12px;">Suporte Atendimento</td>
-              <td style="padding: 12px;">Add/Change no app Atendimento (Sem excluir)</td>
-              <td style="padding: 12px; text-align: right;"><a href="{% url 'qa_orchestrator:login_as' 'staff_atendimento_sem_delete' %}" class="br-button secondary small">Simular</a></td>
+            <tr>
+              <td><strong>staff_atendimento_sem_delete</strong></td>
+              <td>Suporte Atendimento</td>
+              <td>Add/Change no app Atendimento (Sem excluir)</td>
+              <td class="text-end"><a href="{% url 'qa_orchestrator:login_as' 'staff_atendimento_sem_delete' %}" class="btn btn-outline-primary btn-sm">Simular</a></td>
             </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px;"><strong>staff_eventos_sem_add</strong></td>
-              <td style="padding: 12px;">Gestor de Eventos</td>
-              <td style="padding: 12px;">Change/Delete no app Eventos (Sem criar novos)</td>
-              <td style="padding: 12px; text-align: right;"><a href="{% url 'qa_orchestrator:login_as' 'staff_eventos_sem_add' %}" class="br-button secondary small">Simular</a></td>
+            <tr>
+              <td><strong>staff_eventos_sem_add</strong></td>
+              <td>Gestor de Eventos</td>
+              <td>Change/Delete no app Eventos (Sem criar novos)</td>
+              <td class="text-end"><a href="{% url 'qa_orchestrator:login_as' 'staff_eventos_sem_add' %}" class="btn btn-outline-primary btn-sm">Simular</a></td>
             </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px;"><strong>staff_cadastro_view_only</strong></td>
-              <td style="padding: 12px;">Leitor de Cadastros</td>
-              <td style="padding: 12px;">Apenas visualização no app Cadastro</td>
-              <td style="padding: 12px; text-align: right;"><a href="{% url 'qa_orchestrator:login_as' 'staff_cadastro_view_only' %}" class="br-button secondary small">Simular</a></td>
+            <tr>
+              <td><strong>staff_cadastro_view_only</strong></td>
+              <td>Leitor de Cadastros</td>
+              <td>Apenas visualização no app Cadastro</td>
+              <td class="text-end"><a href="{% url 'qa_orchestrator:login_as' 'staff_cadastro_view_only' %}" class="btn btn-outline-primary btn-sm">Simular</a></td>
             </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px;"><strong>user_autenticado_comum</strong></td>
-              <td style="padding: 12px;">Cidadão / Usuário Geral</td>
-              <td style="padding: 12px;">Sem acesso de Staff. Pode acessar forms públicos</td>
-              <td style="padding: 12px; text-align: right;"><a href="{% url 'qa_orchestrator:login_as' 'user_autenticado_comum' %}" class="br-button secondary small">Simular</a></td>
+            <tr>
+              <td><strong>user_autenticado_comum</strong></td>
+              <td>Cidadão / Usuário Geral</td>
+              <td>Sem acesso de Staff. Pode acessar forms públicos</td>
+              <td class="text-end"><a href="{% url 'qa_orchestrator:login_as' 'user_autenticado_comum' %}" class="btn btn-outline-primary btn-sm">Simular</a></td>
             </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px;"><strong>user_inativo</strong></td>
-              <td style="padding: 12px;">Usuário Desabilitado</td>
-              <td style="padding: 12px;">is_active = False. Acesso bloqueado</td>
-              <td style="padding: 12px; text-align: right;"><a href="{% url 'qa_orchestrator:login_as' 'user_inativo' %}" class="br-button secondary small">Simular</a></td>
+            <tr>
+              <td><strong>user_inativo</strong></td>
+              <td>Usuário Desabilitado</td>
+              <td>is_active = False. Acesso bloqueado</td>
+              <td class="text-end"><a href="{% url 'qa_orchestrator:login_as' 'user_inativo' %}" class="btn btn-outline-primary btn-sm">Simular</a></td>
             </tr>
           </tbody>
         </table>

@@ -6,7 +6,7 @@
 
 <fieldset class="module {{ inline_admin_formset.classes }}" aria-labelledby="{{ inline_admin_formset.formset.prefix }}-heading">
   {% if inline_admin_formset.is_collapsible %}<details><summary>{% endif %}
-  <h2 id="{{ inline_admin_formset.formset.prefix }}-heading" class="inline-heading">
+  <h2 id="{{ inline_admin_formset.formset.prefix }}-heading" class="inline-heading h5">
   {% if inline_admin_formset.formset.max_num == 1 %}
     {{ inline_admin_formset.opts.verbose_name|capfirst }}
   {% else %}
@@ -20,8 +20,8 @@
 
 {% for inline_admin_form in inline_admin_formset %}
 <div>
-  <div class="br-card">
-    <div class="inline-related card-content {% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if forloop.last and inline_admin_formset.has_add_permission %}empty{% else %}{{ forloop.counter0 }}{% endif %}">
+  <div class="card mb-3">
+    <div class="inline-related card-body {% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if forloop.last and inline_admin_formset.has_add_permission %}empty{% else %}{{ forloop.counter0 }}{% endif %}">
       {% comment %}
       <p><b>{{ inline_admin_formset.opts.verbose_name|capfirst }}:</b> <span class="inline_label">
         {% if inline_admin_form.original %}
@@ -59,36 +59,3 @@
   {% if inline_admin_formset.is_collapsible %}</details>{% endif %}
 </fieldset>
 </div>
-
-<style>
-.inline-related .delete {
-    float: right;
-}
-.add-row > .addlink {
-    margin-top: 1em;
-    position: absolute;
-    background-color: var(--background-light);
-    border: 1px solid var(--interactive);
-    align-items: center;
-    border-radius: var(--button-radius);
-    color: var(--interactive);
-    cursor: pointer;
-    display: inline-flex;
-    font-size: var(--font-size-scale-up-01);
-    font-weight: var(--font-weight-semi-bold);
-    height: var(--button-size);
-    justify-content: center;
-    padding: 0 var(--spacing-scale-3x);
-    /* position: relative; */
-    text-align: center;
-    vertical-align: middle;
-    white-space: nowrap;
-    width: auto;
-    --button-radius: 100em;
-    --button-xsmall: 24px;
-    --button-small: 32px;
-    --button-medium: 40px;
-    --button-large: 48px;
-    text-decoration: none;
-}
-</style>

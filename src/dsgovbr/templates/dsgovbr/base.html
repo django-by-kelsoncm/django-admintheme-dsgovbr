@@ -6,15 +6,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>{% block title %}{{ project_title }}{% endblock title %}</title>
 
   <!-- Fontes -->
   <link rel="stylesheet" href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900&amp;display=swap" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha512-0S+nbAYis87iX26mmj/+fWt1MmaKCv80H+Mbo+Ne7ES4I6rxswpfnC6PxmLiw33Ywj2ghbtTw0FkLbMWqh4F7Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <!-- Design System de Governo-->
+  <!-- Bootstrap 5 com a aparência do GOV.BR DS (dsgovbr-bootstraped) -->
+  <link rel="stylesheet" href="{% static 'vendors/dsgovbr-bootstraped/dsgovbr-bootstraped.min.css' %}" />
   {% compress css %}
   <link rel="stylesheet" type="text/x-scss" href="{% static 'dsgovbr/scss/dsgovbr.scss' %}" />
   {% endcompress %}
@@ -22,194 +21,119 @@
   {% include 'dsgovbr/favicon.html' %}
 
   {% block dark-mode-vars %}{% endblock dark-mode-vars %}
-  {% if not is_popup and is_nav_sidebar_enabled %}{% endif %}
   {% block extrastyle %}{% endblock extrastyle %}
   {% block extrahead %}{% endblock extrahead %}
   {% block responsive %}{% endblock responsive %}
   {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock blockbots %}
 </head>
 
-<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}" data-admin-utc-offset="{% now "Z" %}">
-  <div class="template-base">
+<body class="d-flex flex-column min-vh-100 {% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}" data-admin-utc-offset="{% now "Z" %}">
 
-    {% block preheader %}
-      <nav class="br-skiplink" role="menubar">
-        <a class="br-item" href="#main-content" role="menuitem" accesskey="1">
-          Ir para o conteúdo
-          <span aria-hidden="true">(1/4)</span>
-          <span aria-hidden="true" class="br-tag text ml-1">1</span>
-        </a>
-        <a class="br-item" href="#header-navigation" role="menuitem" accesskey="2">
-          Ir para o menu
-          <span aria-hidden="true">(2/4)</span>
-          <span aria-hidden="true" class="br-tag text ml-1">2</span>
-        </a>
-        {% if dsgovbr.header.search.show %}
-          <a class="br-item" href="#main-searchbox" role="menuitem" accesskey="3">
-            Ir para a busca
-            <span aria-hidden="true">(3/4)</span>
-            <span aria-hidden="true" class="br-tag text ml-1">3</span>
-          </a>
-        {% endif %}
-        <a class="br-item" href="#footer" role="menuitem" accesskey="4">
-          Ir para o rodapé
-          <span aria-hidden="true">(4/4)</span>
-            <span aria-hidden="true" class="br-tag text ml-1">4</span>
-        </a>
-      </nav>
-    {% endblock preheader %}
+  {% block preheader %}
+    <nav class="visually-hidden-focusable" aria-label="Atalhos da página">
+      <a href="#main-content" accesskey="1">Ir para o conteúdo <span class="badge text-bg-primary ms-2" aria-hidden="true">1</span></a>
+      {% if dsgovbr.header.menu.show and not is_popup %}
+        <a href="#main-navigation" accesskey="2">Ir para o menu <span class="badge text-bg-primary ms-2" aria-hidden="true">2</span></a>
+      {% endif %}
+      {% if dsgovbr.header.search.show and not is_popup %}
+        <a href="#searchbox" accesskey="3">Ir para a busca <span class="badge text-bg-primary ms-2" aria-hidden="true">3</span></a>
+      {% endif %}
+      {% if not is_popup %}
+        <a href="#footer" accesskey="4">Ir para o rodapé <span class="badge text-bg-primary ms-2" aria-hidden="true">4</span></a>
+      {% endif %}
+    </nav>
+  {% endblock preheader %}
 
-    {% block header %}
-      {% include 'dsgovbr/header.html' %}
-    {% endblock header %}
+  {% block header %}
+    {% include 'dsgovbr/header.html' %}
+  {% endblock header %}
 
-    <div id="container">
-      <main class="d-flex flex-fill mb-5" id="main">
-        <div class="container-fluid">
-          <div class="row">
-            <div class="br-menu push" id="main-navigation" aria-expanded="true">
-              <div class="menu-container">
-                <div class="menu-panel">
-                  <div class="menu-header">
-                    <div class="menu-title">
-                      <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Gov.br_logo.svg/500px-Gov.br_logo.svg.png"
-                        alt="Imagem ilustrativa">
-                      <span>Integrador AVA</span>
-                    </div>
-                    <div class="menu-close">
-                      <button class="br-button circle" type="button" aria-label="Fechar o menu" data-dismiss="menu">
-                        <i class="fas fa-times" aria-hidden="true"></i>
-                      </button>
-                    </div>
-                  </div>
+  <div class="d-flex flex-fill">
+    {% block menu %}
+      {% if dsgovbr.header.menu.show and not is_popup %}
+        {% include 'dsgovbr/menu.html' %}
+      {% endif %}
+    {% endblock menu %}
 
-                  {% if dsgovbr.header.menu.show %}
-                    <nav class="menu-body" role="tree">
-                      {% include 'admin/app_list.html' with app_list=available_apps show_changelinks=False %}
-                    </nav>
-                  {% endif %}
+    <main class="flex-fill py-4" id="main">
+      <div class="{% block content_container_class %}container-fluid{% endblock %}">
+        <nav aria-label="{% translate 'Breadcrumbs' %}">
+          <ol class="breadcrumb">
+            {# o dsgovbr-bootstraped desenha a casa no primeiro nível #}
+            <li class="breadcrumb-item"><a href="/"><span class="visually-hidden">Página inicial</span></a></li>
+            {% block breadcrumb %}
+              {% for bread in breadcrumb %}
+                <li class="breadcrumb-item"><a href="{{ bread.url }}">{{ bread.label }}</a></li>
+              {% endfor %}
+              <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+            {% endblock breadcrumb %}
+          </ol>
+        </nav>
 
-                  <div class="menu-footer">
-                    {% if dsgovbr.header.menu.footer.links %}
-                      <div class="menu-links">
-                        {% for link in dsgovbr.header.menu.footer.links %}
-                          <a href="{{ link.url }}"{% if link.target %} target="{{ link.target }}"{% endif %}>
-                            <span class="mr-1">{{ link.label }}</span>
-                            <i class="{{ link.icon|default:'fas fa-external-link-square-alt' }}" aria-hidden="true"></i>
-                          </a>
-                        {% endfor %}
-                      </div>
-                    {% endif %}
-
-                    <div class="menu-info">
-                    </div>
-
-                  </div>
-                </div>
-                <div class="menu-scrim" data-dismiss="menu" tabindex="0"></div>
-              </div>
-
-            </div><!-- #main-navigation -->
-
-            <div class="col mb-5">
-              <div class="{% block content_container_class %}container-fluid{% endblock %}">
-                <nav class="br-breadcrumb">
-                <ol class="crumb-list" role="list">
-                  <li class="crumb home"><a class="br-button circle" href="/"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
-                  {% block breadcrumb %}
-                    {% for bread in breadcrumb %}
-                      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{ bread.url }}">{{ bread.label }}</a></li>
-                    {% endfor %}
-                    <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span tabindex="0" aria-current="page">{{ title }}</span></li>
-                  {% endblock breadcrumb %}
-                </ol>
-              </nav>
-
-              {% comment %}
-                {% if not is_popup and is_nav_sidebar_enabled %}
-                  {% block nav-sidebar %}
-                    {% include "admin/nav_sidebar.html" %}
-                  {% endblock %}
-                {% endif %}
-              {% endcomment %}
-
-              {% block messages %}
-                {% if messages %}
-                  <ul class="messagelist">{% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message|capfirst }}</li>
-                      {% endfor %}
-                  </ul>
-                {% endif %}
-              {% endblock messages %}
-
-              <div class="main-content pl-sm-3 mt-4" id="main-content">
-
-                {% block pretitle %}
-                {% endblock pretitle %}
-
-                <h1>
-                  {% block content_title %}
-                    {% if title %}
-                      {{ title }}{% if subtitle %}:{% endif %}
-                    {% endif %}
-                  {% endblock content_title %}
-                  {% block content_subtitle %}
-                    {% if subtitle %}{{ subtitle }}{% endif %}
-                  {% endblock %}
-                </h1>
-
-                <!-- Content -->
-                <div id="content" class="{% block coltype %}colM{% endblock %}">
-
-                  {% block content %}
-                    {{ content }}
-                  {% endblock %}
-
-                  {% block sidebar %}
-                  {% endblock %}
-
-                  <br class="clear">
-                </div>
-                <!-- END Content -->
-              </div>
+        {% block messages %}
+          {% for message in messages %}
+            <div class="alert alert-{% if message.level_tag == 'error' %}danger{% elif message.level_tag == 'debug' %}secondary{% else %}{{ message.level_tag|default:'info' }}{% endif %} alert-dismissible" role="alert">
+              {{ message|capfirst }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% translate 'Close' %}"></button>
             </div>
-            </div>
+          {% endfor %}
+        {% endblock messages %}
+
+        <div class="main-content" id="main-content" tabindex="-1">
+
+          {% block pretitle %}
+          {% endblock pretitle %}
+
+          <h1 class="mb-4">
+            {% block content_title %}
+              {% if title %}
+                {{ title }}{% if subtitle %}:{% endif %}
+              {% endif %}
+            {% endblock content_title %}
+            {% block content_subtitle %}
+              {% if subtitle %}{{ subtitle }}{% endif %}
+            {% endblock %}
+          </h1>
+
+          <div id="content" class="{% block coltype %}colM{% endblock %}">
+            {% block content %}
+              {{ content }}
+            {% endblock %}
+
+            {% block sidebar %}
+            {% endblock %}
           </div>
         </div>
-      </main>
-    </div>
-
-    {% block footer %}
-      {% if not is_popup %}
-        <footer class="br-footer pt-3" id="footer">
-          <div class="container-fluid">
-            <div class="info">
-              <div class="text-down-01 text-medium pb-3">
-               {{ project_copyright }}.
-               {% if project_releases_url %}<a href="{{ project_releases_url }}{{ project_version }}">v{{ project_version }}</a>{% else %}v{{ project_version }}{% endif %}.
-               <a href="{{ project_license_url }}" target="_blank">{{ project_license }}.</a></strong>
-                <!-- app_last_startup:{{ app_last_startup }} -->
-              </div>
-            </div>
-          </div>
-        </footer>
-      {% endif %}
-    {% endblock footer %}
-
-    {% block cookie_consent %}
-      {% if is_cookie_consent_enabled and not is_popup %}
-          <div class="br-cookiebar default d-none" tabindex="-1"></div>
-      {% endif %}
-    {% endblock cookie_consent %}
-
+      </div>
+    </main>
   </div>
 
-  <script src="https://unpkg.com/@popperjs/core@2" type="text/javascript"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr" type="text/javascript"></script>
-  <script src="https://docs-ds.estaleiro.serpro.gov.br/govbr-ds-core/dist/core-init.js" type="text/javascript"></script>
+  {% block footer %}
+    {% if not is_popup %}
+      <footer class="bg-body" data-bs-theme="dark" id="footer" tabindex="-1">
+        <div class="container-fluid">
+          <p class="small fw-medium text-center py-3 m-0">
+            {{ project_copyright }}.
+            {% if project_releases_url %}<a href="{{ project_releases_url }}{{ project_version }}">v{{ project_version }}</a>{% else %}v{{ project_version }}{% endif %}.
+            <a href="{{ project_license_url }}" target="_blank" rel="noopener">{{ project_license }}.</a>
+            <!-- app_last_startup:{{ app_last_startup }} -->
+          </p>
+        </div>
+      </footer>
+    {% endif %}
+  {% endblock footer %}
+
+  {% comment %}
+    Sem markup padrão: o GOV.BR DS só monta o cookiebar com o JS próprio
+    (BRCookiebar). Para exibir um aviso, sobrescreva este bloco com um
+    .offcanvas.offcanvas-bottom (ver o componente Auxiliares do dsgovbr-bootstraped).
+  {% endcomment %}
+  {% block cookie_consent %}{% endblock cookie_consent %}
+
+  <script src="{% static 'vendors/bootstrap/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'dsgovbr/js/dsgovbr_forms.js' %}"></script>
   {% if dsgovbr.header.search.autocomplete.show %}
-    <script src="{% static 'dsgovbr/js/searchbox.js' %}" type="text/javascript"></script>
+    <script src="{% static 'dsgovbr/js/searchbox.js' %}"></script>
   {% endif %}
   {% block extrabody %}{% endblock extrabody %}
 </body>

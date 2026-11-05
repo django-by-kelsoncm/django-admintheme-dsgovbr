@@ -50,12 +50,12 @@
         {% endif %}
       >
         {% if field.field.initial_field %}
-          <p style="padding: 0;">{% translate "This exporter will export the following fields: " %}</p>
+          <p>{% translate "This exporter will export the following fields: " %}</p>
           {% if form.visible_fields|length >= 2 %}
-            <div class="br-checkbox">
-              <input type="checkbox" class="select-toggle" name="select-all-toggle"
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input select-toggle" name="select-all-toggle" id="select-all-toggle"
                     onchange="onSelectToggleChange(event)" checked>
-              <label style="font-weight: bold;" for="select-all-toggle">
+              <label class="form-check-label fw-bold" for="select-all-toggle">
                 {% translate "Select all" %}
               </label>
             </div>
@@ -94,12 +94,8 @@
     {% endif %}
   </div>
 
-  <div class="submit-row">
-    <div>
-      <span class="br-magic-button">
-        <input type="submit" class="br-button primary" value="{% translate "Submit" %}">
-      </span>
-    </div>
+  <div class="submit-row mt-4">
+    <input type="submit" class="btn btn-primary" value="{% translate "Submit" %}">
   </div>
 </form>
 {% endblock %}

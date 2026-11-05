@@ -54,7 +54,9 @@ Via PyPI (Recomendado)
 3. Configure o compressor (SCSS)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Os templates compilam o SCSS do DS Gov.BR com o ``django-compressor``:
+A aparência vem do `dsgovbr-bootstraped <https://github.com/abrasileirado/dsgovbr-bootstraped>`_
+(Bootstrap 5 com a cara do GOV.BR DS), já incluído no pacote. Os templates
+compilam só o SCSS próprio do tema com o ``django-compressor``:
 
 .. code-block:: python
 
@@ -93,30 +95,26 @@ Use os templates base do DSGovBR nos seus templates Django:
    {% block title %}Minha Página Gov.BR{% endblock %}
 
    {% block content %}
-   <div class="br-container">
+   <div class="container-fluid">
        <h1>Bem-vindo ao Sistema</h1>
 
-       <!-- Botão Primário -->
-       <button class="br-button primary" type="button">
+       <!-- Botão primário -->
+       <button class="btn btn-primary" type="button">
            Ação Principal
        </button>
 
-       <!-- Mensagem de Sucesso -->
-       <div class="br-message success">
-           <div class="icon">
-               <i class="fas fa-check-circle"></i>
-           </div>
-           <div class="content">
-               Operação realizada com sucesso!
-           </div>
+       <!-- Mensagem de sucesso -->
+       <div class="alert alert-success" role="alert">
+           <i class="fas fa-check-circle" aria-hidden="true"></i>
+           Operação realizada com sucesso!
        </div>
 
        <!-- Card -->
-       <div class="br-card">
+       <div class="card">
            <div class="card-header">
-               <h3>Título do Card</h3>
+               <h2 class="h5 m-0">Título do Card</h2>
            </div>
-           <div class="card-content">
+           <div class="card-body">
                <p>Conteúdo do card seguindo o padrão Gov.BR</p>
            </div>
        </div>
@@ -126,7 +124,10 @@ Use os templates base do DSGovBR nos seus templates Django:
 Formulários Django
 ^^^^^^^^^^^^^^^^^^
 
-Os formulários Django automaticamente usam os estilos do DS Gov.BR:
+Os campos dos formulários renderizados nas páginas do tema recebem as classes do
+Bootstrap (``.form-control``, ``.form-select``, ``.form-check-input``) pelo
+``dsgovbr/js/dsgovbr_forms.js``, com qualquer ``FORM_RENDERER``. Para declarar
+a classe no próprio widget:
 
 .. code-block:: python
 
@@ -138,7 +139,7 @@ Os formulários Django automaticamente usam os estilos do DS Gov.BR:
            label="Nome Completo",
            max_length=100,
            widget=forms.TextInput(attrs={
-               'class': 'br-input',
+               'class': 'form-control',
                'placeholder': 'Digite seu nome'
            })
        )
@@ -146,7 +147,7 @@ Os formulários Django automaticamente usam os estilos do DS Gov.BR:
        email = forms.EmailField(
            label="E-mail",
            widget=forms.EmailInput(attrs={
-               'class': 'br-input',
+               'class': 'form-control',
                'placeholder': 'seuemail@exemplo.gov.br'
            })
        )
@@ -154,7 +155,7 @@ Os formulários Django automaticamente usam os estilos do DS Gov.BR:
        mensagem = forms.CharField(
            label="Mensagem",
            widget=forms.Textarea(attrs={
-               'class': 'br-textarea',
+               'class': 'form-control',
                'rows': 5
            })
        )
@@ -185,26 +186,26 @@ Classes CSS Principais
 .. code-block:: html
 
    <!-- Botões -->
-   <button class="br-button primary">Primário</button>
-   <button class="br-button secondary">Secundário</button>
-   <button class="br-button tertiary">Terciário</button>
+   <button class="btn btn-primary">Primário</button>
+   <button class="btn btn-outline-primary">Secundário</button>
+   <button class="btn btn-link">Terciário</button>
 
    <!-- Mensagens -->
-   <div class="br-message info">Informação</div>
-   <div class="br-message success">Sucesso</div>
-   <div class="br-message warning">Aviso</div>
-   <div class="br-message error">Erro</div>
+   <div class="alert alert-info">Informação</div>
+   <div class="alert alert-success">Sucesso</div>
+   <div class="alert alert-warning">Aviso</div>
+   <div class="alert alert-danger">Erro</div>
 
    <!-- Cards -->
-   <div class="br-card">
+   <div class="card">
        <div class="card-header">Cabeçalho</div>
-       <div class="card-content">Conteúdo</div>
+       <div class="card-body">Conteúdo</div>
        <div class="card-footer">Rodapé</div>
    </div>
 
-   <!-- Inputs -->
-   <input type="text" class="br-input" placeholder="Digite aqui...">
-   <textarea class="br-textarea"></textarea>
-   <select class="br-select">
+   <!-- Campos -->
+   <input type="text" class="form-control" placeholder="Digite aqui...">
+   <textarea class="form-control"></textarea>
+   <select class="form-select">
        <option>Opção 1</option>
    </select>

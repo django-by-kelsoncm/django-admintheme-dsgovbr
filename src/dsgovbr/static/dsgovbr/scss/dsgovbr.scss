@@ -1,83 +1,171 @@
-//--sign-in-img=40px
-@import "../../vendors/serpro/core";
+// Ajustes do tema sobre o dsgovbr-bootstraped (Bootstrap 5 com a aparência
+// do GOV.BR DS, carregado antes deste arquivo). Só variáveis CSS do Bootstrap.
 
-#avatar-menu {
-  margin-top: 1em;
-  z-index: 1;
+$dsgovbr-menu-width: 18rem;
+$dsgovbr-avatar-size: 1.5rem;
+$dsgovbr-avatar-size-lg: 5rem;
+$dsgovbr-autocomplete-max-height: 280px;
+$dsgovbr-breakpoint-xl: 1200px;
+
+// Conteúdo pode encolher ao lado do menu fixo (tabelas largas rolam).
+#main {
+  min-width: 0;
 }
 
-#avatar-menu .br-avatar.large {
-  display: flex;
-  margin-left: auto;
-  margin-right: auto;
+// Menu fixo (DSGOVBR_HEADER["menu"]["localizacao"] = "fixo"): a partir de
+// 1200px o .offcanvas-xl fica aberto à esquerda do conteúdo.
+@media (min-width: $dsgovbr-breakpoint-xl) {
+  .dsgovbr-menu-fixo {
+    flex-shrink: 0;
+    width: $dsgovbr-menu-width;
+    border-right: var(--bs-border-width) solid var(--bs-border-color);
+
+    .offcanvas-body {
+      flex-grow: 1;
+    }
+  }
 }
 
-#avatar-dropdown-trigger {
+// Avatar do usuário no Sign-in e no menu do usuário.
+.dsgovbr-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $dsgovbr-avatar-size;
+  height: $dsgovbr-avatar-size;
+  overflow: hidden;
+  font-weight: bolder;
+  color: var(--bs-primary);
+  text-transform: uppercase;
+  background-color: var(--bs-primary-bg-subtle);
+  border-radius: 50%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.dsgovbr-avatar-lg {
+  width: $dsgovbr-avatar-size-lg;
+  height: $dsgovbr-avatar-size-lg;
+}
+
+// Sugestões da busca do header (dsgovbr/js/searchbox.js).
+.dsgovbr-autocomplete {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  z-index: var(--bs-dropdown-zindex, 1000);
+  display: none;
+  max-height: $dsgovbr-autocomplete-max-height;
+  overflow-y: auto;
+
+  &.active {
+    display: flex;
+  }
+
+  .empty-result {
+    font-style: italic;
+  }
+}
+
+// Lista do admin: barra de selecionados (mostrada por dsgovbr_admin_actions.js)
+// e densidade "Baixa" da tabela (dsgovbr_admin_density.js).
+$dsgovbr-table-lg-padding-y: 1rem;
+
+.selected-bar {
+  display: none;
+}
+
+.dsgovbr-table-lg > :not(caption) > * > * {
+  padding-top: $dsgovbr-table-lg-padding-y;
+  padding-bottom: $dsgovbr-table-lg-padding-y;
+}
+
+// Formulários do admin (admin/includes/fieldset.html): rótulos, erros do
+// Django (ul.errorlist) e campos com erro.
+$dsgovbr-label-gap: 0.5rem;
+
+.dsgovbr-field > label,
+.dsgovbr-field > legend {
+  display: inline-block;
+  margin-bottom: $dsgovbr-label-gap;
+}
+
+// Rótulo de campo com vários widgets (SplitDateTime, filter_horizontal):
+// o Django usa <legend>, que no Bootstrap tem tamanho de título.
+.dsgovbr-field > legend {
+  float: none;
+  width: auto;
+  font-size: var(--bs-body-font-size);
+}
+
+.errors {
+  .form-control,
+  .form-select {
+    border-color: var(--bs-form-invalid-border-color);
+  }
+}
+
+ul.errorlist {
   padding-left: 0;
+  margin-bottom: 0;
+  color: var(--bs-form-invalid-color);
+  list-style: none;
 }
 
-#avatar-menu .br-avatar-name {
-  font-weight: var(--font-weight-bold);
+// Inlines: o "Adicionar outro" e o "Remover" são criados pelo inlines.js do
+// Django; dsgovbr_forms.js dá a eles as classes de botão do Bootstrap.
+.inline-related .delete {
+  float: right;
 }
 
-#avatar-menu .br-avatar-role {
-  font-size: var(--font-size-scale-down-01);
+// Formulário vazio que o inlines.js clona para "Adicionar outro".
+.empty-form {
+  display: none;
 }
 
-#avatar-menu i.fa-external-link-alt {
-    float: right;
-    font-size: var(--font-size-scale-down-01);
-    margin-left: 4px;
-}
+// filter_horizontal / filter_vertical (SelectFilter2.js do Django).
+$dsgovbr-selector-column: 14rem;
+$dsgovbr-selector-height: 12rem;
+$dsgovbr-selector-gap: 0.5rem;
 
+.selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $dsgovbr-selector-gap * 2;
+  align-items: flex-start;
 
-#container {
-  min-height: calc(100vh - 180px);
-}
+  .selector-available,
+  .selector-chosen {
+    display: flex;
+    flex: 1 1 $dsgovbr-selector-column;
+    flex-direction: column;
+    gap: $dsgovbr-selector-gap;
+  }
 
-.header-search {
-  position: relative;
+  .selector-filter {
+    margin: 0;
+  }
 
-  .autocomplete-results {
+  select[multiple] {
+    min-height: $dsgovbr-selector-height;
+  }
+
+  .selector-chooser {
+    display: flex;
+    flex-direction: column;
+    gap: $dsgovbr-selector-gap;
+    align-self: center;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .list-footer-display {
     display: none;
-    position: absolute;
-    top: 100%;
-    left: var(--spacing-scale-0, 0);
-    right: var(--spacing-scale-0, 0);
-    z-index: var(--z-index-layer-4, 4000);
-    background: var(--background);
-    border: var(--border-width) var(--border-style) var(--border-color);
-    box-shadow: var(--surface-shadow-md);
-    max-height: var(--searchbox-autocomplete-max-height, 280px);
-    overflow-y: auto;
-
-    &.active {
-      display: block;
-    }
-
-    .br-item {
-      width: 100%;
-      text-align: left;
-      border: none;
-      background: transparent;
-      padding: var(--spacing-scale-2x) var(--spacing-scale-3x);
-      cursor: pointer;
-      color: var(--color);
-      font-size: var(--font-size-scale-default);
-
-      &:hover, &:focus {
-        background: var(--background-alternative);
-      }
-
-      &.empty-result {
-        cursor: default;
-        font-style: italic;
-        opacity: var(--disabled);
-
-        &:hover, &:focus {
-          background: transparent;
-        }
-      }
-    }
   }
 }

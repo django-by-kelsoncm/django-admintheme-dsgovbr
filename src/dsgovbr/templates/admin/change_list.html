@@ -20,7 +20,6 @@
           #changelist table thead th:first-child {width: inherit}
         </style>
     {% endif %}
-    {% if media %}{{ media }}{% endif %}
 {% endblock extrastyle %}
 
 {% block extrahead %}
@@ -71,7 +70,7 @@
                                         {% admin_actions %}
                                     {% endif %}
 
-                                    <div class="br-table" data-search="data-search" data-selection="data-selection" data-collapse="data-collapse" data-random="data-random">
+                                    <div class="dsgovbr-changelist">
                                         <!-- .table-header -->
                                             {% include "admin/change_list_header.html" %}
                                         <!-- /.table-header -->

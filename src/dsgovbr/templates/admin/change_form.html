@@ -50,7 +50,6 @@
                 {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
                 {% if save_on_top %}
                     {% block submit_buttons_top %}
-                        {{ request }}
                         {% submit_row %}
                     {% endblock submit_buttons_top %}
                 {% endif %}
@@ -58,16 +57,9 @@
                     {% submit_row %}
                 {% endblock submit_buttons_bottom %}
                 {% if errors %}
-                    <div class="br-message danger">
-                        <div class="icon">
-                            <i class="fas fa-times-circle fa-lg" aria-hidden="true"></i>
-                        </div>
-                        <div class="content" aria-label="{% blocktranslate count counter=errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}" role="alert">
-                            <span class="message-title">Erro.</span><span class="message-body"> {% blocktranslate count counter=errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}</span>
-                        </div>
-                        <div class="close">
-                            <a class="br-button circle small" type="button" aria-label="Fechar a messagem alterta"><i class="fas fa-times" aria-hidden="true"></i></a>
-                        </div>
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-times-circle me-2" aria-hidden="true"></i>
+                        <strong>Erro.</strong> {% blocktranslate count counter=errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
                     </div>
                     {{ adminform.form.non_field_errors }}
                 {% endif %}

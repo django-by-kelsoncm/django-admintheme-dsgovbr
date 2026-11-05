@@ -1,0 +1,30 @@
+{% load i18n %}
+{% comment %}
+  Menu do GOV.BR DS: offcanvas lateral com list group e pastas por Collapse.
+  DSGOVBR_HEADER["menu"]["localizacao"] = "fixo" (padrão) deixa o menu sempre
+  visível a partir de 1200px (.offcanvas-xl); "flutuante" só abre pelo botão.
+{% endcomment %}
+<div class="{% if dsgovbr.header.menu.localizacao == 'flutuante' %}offcanvas{% else %}offcanvas-xl dsgovbr-menu-fixo{% endif %} offcanvas-start dsgovbr-menu" tabindex="-1" id="main-navigation" aria-labelledby="main-navigation-title">
+  <div class="offcanvas-header">
+    <div class="d-flex align-items-center gap-2 me-auto">
+      {% if dsgovbr.header.logo.show %}<img src="{{ dsgovbr.header.logo.compact_url }}" height="32" alt="">{% endif %}
+      <span id="main-navigation-title">{{ dsgovbr.header.titulo.label }}</span>
+    </div>
+    <button type="button" class="btn btn-link rounded-circle" data-bs-dismiss="offcanvas" data-bs-target="#main-navigation" aria-label="Fechar o menu"><i class="fas fa-times" aria-hidden="true"></i></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column p-0">
+    <nav aria-label="Menu principal">
+      {% include 'admin/app_list.html' with app_list=available_apps show_changelinks=False %}
+    </nav>
+
+    {% if dsgovbr.header.menu.footer.links %}
+      <div class="mt-auto px-4 py-3 border-top">
+        {% for link in dsgovbr.header.menu.footer.links %}
+          <a class="d-block py-1 text-decoration-none" href="{{ link.url }}"{% if link.target %} target="{{ link.target }}" rel="noopener"{% endif %}>
+            {{ link.label }}<i class="{{ link.icon|default:'fas fa-external-link-square-alt' }} ms-1" aria-hidden="true"></i>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>

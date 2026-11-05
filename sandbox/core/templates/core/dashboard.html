@@ -6,17 +6,17 @@
 <div class="row">
   <!-- Cabeçalho do Dashboard -->
   <div class="col-sm-12 mb-4">
-    <div class="br-card">
+    <div class="card h-100">
       <div class="card-header">
         <div class="d-flex align-items-center">
-          <i class="fas fa-cubes fa-2x text-primary mr-3"></i>
+          <i class="fas fa-cubes fa-2x text-primary me-3"></i>
           <div>
             <h2 class="m-0">Módulos de Testes Funcionais</h2>
             <p class="m-0 text-muted">Acesse as áreas abaixo para validar o comportamento visual do tema DSGovBR.</p>
           </div>
         </div>
       </div>
-      <div class="card-content">
+      <div class="card-body">
         <p class="mt-3">
           Estes módulos cobrem diferentes aspectos e extensões do Django Admin, fluxos de permissão e componentes públicos. Utilize os atalhos abaixo para validar o layout.
         </p>
@@ -36,8 +36,8 @@
             <div class="card-body my-3">
               <p class="text-muted">{{ app.desc }}</p>
             </div>
-            <div class="card-footer text-right">
-              <a href="{{ app.url }}" class="br-button primary small">Acessar Módulo</a>
+            <div class="card-footer text-end">
+              <a href="{{ app.url }}" class="btn btn-primary btn-sm">Acessar Módulo</a>
             </div>
           </div>
         </div>
@@ -47,7 +47,7 @@
 
   <!-- Ações de Retorno -->
   <div class="col-sm-12 mt-4 text-center">
-    <a href="{% url 'core:home' %}" class="br-button secondary"><i class="fas fa-arrow-left mr-2"></i> Voltar para Instruções</a>
+    <a href="{% url 'core:home' %}" class="btn btn-outline-primary"><i class="fas fa-arrow-left me-2"></i> Voltar para Instruções</a>
   </div>
 </div>
 {% endblock %}
