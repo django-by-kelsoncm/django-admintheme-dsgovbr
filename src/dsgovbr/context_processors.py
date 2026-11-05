@@ -10,6 +10,18 @@ def _get_element_as_list(dictionary: dict, name: str) -> list:
     return setting if isinstance(setting, list) else []
 
 
+def _logout_url() -> str:
+    """URL de saída: a rota ``logout`` do projeto ou, na falta dela, a do admin."""
+    from django.urls import NoReverseMatch
+
+    for name in ("logout", "admin:logout"):
+        try:
+            return reverse(name)
+        except NoReverseMatch:
+            continue
+    return ""
+
+
 def layout_settings(request: HttpRequest) -> dict:
     project_company = getattr(settings, "PROJECT_COMPANY", "Minha empresa")
     project_title = getattr(settings, "PROJECT_TITLE", "Nome do projeto")
@@ -62,7 +74,7 @@ def layout_settings(request: HttpRequest) -> dict:
                         "items": [
                             {
                                 "label": "Sair",
-                                "url": reverse("logout"),
+                                "url": _logout_url(),
                                 "target": "_blank",
                                 "icon": "fas fa-sign-out-alt",
                             },
@@ -163,6 +175,8 @@ def layout_settings(request: HttpRequest) -> dict:
         "project_title": project_title,
         "project_subtitle": project_subtitle,
         "project_version": getattr(settings, "PROJECT_VERSION", "v1.0.0"),
+        # prefixo da página da versão (ex.: ".../releases/tag/"); vazio: a versão aparece sem link
+        "project_releases_url": getattr(settings, "PROJECT_RELEASES_URL", ""),
         "project_last_startup": getattr(
             settings, "PROJECT_LAST_STARTUP", str(timezone.now())
         ),

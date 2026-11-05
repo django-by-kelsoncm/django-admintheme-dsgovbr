@@ -16,6 +16,7 @@ classifiers = [
     "Environment :: Web Environment",
     "Framework :: Django",
     "Framework :: Django :: 6.0",
+    "Framework :: Django :: 6.1",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
@@ -30,7 +31,14 @@ classifiers = [
 keywords = ["django", "govbr", "design-system", "gov.br"]
 dependencies = [
     "django>=6.0",
+    # os templates usam {% compress %} com SCSS
+    "django-compressor>=4.6",
+    "django-libsass>=0.9",
 ]
+
+[project.optional-dependencies]
+# dsgovbr.admin.import_export.DSGovBrModelAdmin
+import-export = ["django-import-export>=4.4"]
 
 [project.urls]
 Homepage = "https://github.com/kelsoncm/django-dsgovbr"
@@ -43,7 +51,7 @@ package-dir = {"" = "src"}
 include-package-data = true
 
 [tool.setuptools.package-data]
-"*" = ["*.html", "*.css", "*.js", "*.png", "*.jpg", "*.gif", "*.svg", "*.ico"]
+"*" = ["*.html", "*.css", "*.scss", "*.js", "*.png", "*.jpg", "*.gif", "*.svg", "*.ico", "*.webmanifest", "*.txt"]
 
 [dependency-groups]
 dev = [

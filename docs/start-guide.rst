@@ -45,18 +45,37 @@ Via PyPI (Recomendado)
            'OPTIONS': {
                'context_processors': [
                    # ... outros context processors
-                   'dsgovbr.context_processors.dsgovbr',
+                   'dsgovbr.context_processors.layout_settings',
                ],
            },
        },
    ]
 
-3. Colete os Arquivos Estáticos
+3. Configure o compressor (SCSS)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Os templates compilam o SCSS do DS Gov.BR com o ``django-compressor``:
+
+.. code-block:: python
+
+   # settings.py
+
+   INSTALLED_APPS += ['compressor']
+   STATICFILES_FINDERS = [
+       'django.contrib.staticfiles.finders.FileSystemFinder',
+       'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+       'compressor.finders.CompressorFinder',
+   ]
+   COMPRESS_PRECOMPILERS = (('text/x-scss', 'django_libsass.SassCompiler'),)
+
+4. Colete os Arquivos Estáticos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
    python manage.py collectstatic
+   # em produção, com COMPRESS_OFFLINE = True
+   python manage.py compress
 
 📖 Uso
 ------
