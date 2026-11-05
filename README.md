@@ -86,6 +86,9 @@ GOV.BR DS (`core-init.js`) não é mais carregado.
   `container-lg` (`DSGOVBR_HEADER["width_style"]`: `sm`, `md`, `lg`, `xl`, `xxl` ou `fluid`).
 - **Menu**: offcanvas aberto pelo botão (`DSGOVBR_HEADER["menu"]["localizacao"] = "flutuante"`, padrão); com `"fixo"`
   fica aberto ao lado do conteúdo a partir de 1200px.
+- **Usuário no header**: Sign-in com avatar como o `avatar-dropdown` do GOV.BR DS (avatar, "Olá, **Nome**" e seta).
+  Itens de `DSGOVBR_HEADER["login"]["dropdown"]["items"]` com `"method": "post"` viram um formulário com CSRF; o
+  "Sair" padrão usa isso, porque o `LogoutView` do Django 5+ recusa GET.
 - **Título da página**: o bloco `title_actions` do `dsgovbr/base.html` põe ações à direita do título (na lista: busca,
   filtros, mais opções e "Adicionar").
 - **Cookiebar**: o bloco `cookie_consent` do `dsgovbr/base.html` vem vazio; sobrescreva-o com um

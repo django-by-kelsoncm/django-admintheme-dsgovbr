@@ -2,8 +2,6 @@
 // do GOV.BR DS, carregado antes deste arquivo). Só variáveis CSS do Bootstrap.
 
 $dsgovbr-menu-width: 18rem;
-$dsgovbr-avatar-size: 1.5rem;
-$dsgovbr-avatar-size-lg: 5rem;
 $dsgovbr-autocomplete-max-height: 280px;
 $dsgovbr-breakpoint-xl: 1200px;
 
@@ -26,18 +24,20 @@ $dsgovbr-breakpoint-xl: 1200px;
   }
 }
 
-// Avatar do usuário no Sign-in e no menu do usuário.
+// Avatar do usuário (dsgovbr/avatar.html); cores por .text-bg-primary.
+$dsgovbr-avatar-size: 2rem;
+$dsgovbr-avatar-size-lg: 5rem;
+$dsgovbr-signin-avatar-gap: 0.5rem;
+
 .dsgovbr-avatar {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: $dsgovbr-avatar-size;
   height: $dsgovbr-avatar-size;
   overflow: hidden;
   font-weight: bolder;
-  color: var(--bs-primary);
-  text-transform: uppercase;
-  background-color: var(--bs-primary-bg-subtle);
   border-radius: 50%;
 
   img {
@@ -50,6 +50,13 @@ $dsgovbr-breakpoint-xl: 1200px;
 .dsgovbr-avatar-lg {
   width: $dsgovbr-avatar-size-lg;
   height: $dsgovbr-avatar-size-lg;
+}
+
+// Sign-in com avatar (avatar-dropdown do GOV.BR DS): o avatar encosta na
+// borda esquerda da pílula.
+.dsgovbr-signin-avatar {
+  gap: $dsgovbr-signin-avatar-gap;
+  padding-left: $dsgovbr-signin-avatar-gap / 2;
 }
 
 // Sugestões da busca do header (dsgovbr/js/searchbox.js).

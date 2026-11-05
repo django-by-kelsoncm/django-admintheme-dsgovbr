@@ -66,21 +66,11 @@
               <a class="btn btn-light btn-sm ms-1" href="{% url 'admin:login' %}"><i class="fas fa-user" aria-hidden="true"></i><span>Entrar</span></a>
             {% else %}
               <div class="dropdown ms-1">
-                <button class="btn btn-light btn-sm{% if dsgovbr.header.login.dropdown.show %} dropdown-toggle{% endif %}" type="button" id="avatar-dropdown-trigger"{% if dsgovbr.header.login.dropdown.show %} data-bs-toggle="dropdown" aria-expanded="false"{% endif %}>
-                  <span class="dsgovbr-avatar" aria-hidden="true">
-                    {% if dsgovbr.header.login.type == 'fotografico' and user.avatar_url %}
-                      <img src="{{ user.avatar_url }}" alt="">
-                    {% elif dsgovbr.header.login.type == 'fotografico' or dsgovbr.header.login.type == 'iconico' %}
-                      <i class="fas fa-user"></i>
-                    {% else %}
-                      {{ user|user_letters }}
-                    {% endif %}
-                  </span>
+                {# Sign-in com avatar do GOV.BR DS (avatar-dropdown): avatar, "Olá, <nome>" e seta #}
+                <button class="btn btn-light dsgovbr-signin-avatar{% if dsgovbr.header.login.dropdown.show %} dropdown-toggle{% endif %}" type="button" id="avatar-dropdown-trigger"{% if dsgovbr.header.login.dropdown.show %} data-bs-toggle="dropdown" aria-expanded="false"{% endif %}>
+                  {% include 'dsgovbr/avatar.html' %}
                   {% if dsgovbr.header.login.name_to_show == 'first' or dsgovbr.header.login.name_to_show == 'last' %}
-                    <span class="d-none d-sm-inline" aria-hidden="true">
-                      {{ dsgovbr.header.login.saudacao|default_if_none:"" }}
-                      {% if dsgovbr.header.login.name_to_show == 'first' %}{{ user.first_name|first_word }}{% else %}{{ user.last_name|last_word }}{% endif %}
-                    </span>
+                    <span class="d-none d-sm-inline text-body fw-normal" aria-hidden="true">{{ dsgovbr.header.login.saudacao|default_if_none:"" }}<span class="fw-semibold">{% if dsgovbr.header.login.name_to_show == 'first' %}{{ user.first_name|first_word|default:user.get_username }}{% else %}{{ user.last_name|last_word|default:user.get_username }}{% endif %}</span></span>
                   {% endif %}
                   <span class="visually-hidden">{{ dsgovbr.header.login.saudacao|default_if_none:"" }}{{ user.get_full_name|default:user.get_username }}</span>
                 </button>
@@ -89,9 +79,7 @@
                     {% if dsgovbr.header.login.dropdown.show_large_avatar or dsgovbr.header.login.dropdown.show_full_name or dsgovbr.header.login.dropdown.show_role %}
                       <div class="px-3 py-2 text-center">
                         {% if dsgovbr.header.login.dropdown.show_large_avatar %}
-                          <span class="dsgovbr-avatar dsgovbr-avatar-lg fs-2 mb-2" aria-hidden="true">
-                            {% if user.avatar_url %}<img src="{{ user.avatar_url }}" alt="">{% else %}<i class="fas fa-user"></i>{% endif %}
-                          </span>
+                          <div class="mb-2">{% include 'dsgovbr/avatar.html' with grande=True %}</div>
                         {% endif %}
                         {% if dsgovbr.header.login.dropdown.show_full_name %}
                           <p class="fw-bold m-0">{{ user.get_full_name }}</p>
@@ -103,10 +91,20 @@
                       <hr class="dropdown-divider">
                     {% endif %}
                     {% for item in dsgovbr.header.login.dropdown.items %}
-                      <a class="dropdown-item" href="{{ item.url }}"{% if item.target %} target="{{ item.target }}" rel="noopener"{% endif %}>
-                        {% if item.icon %}<i class="{{ item.icon }} me-2" aria-hidden="true"></i>{% endif %}{{ item.label }}
-                        {% if item.external %}<i class="fas fa-external-link-alt ms-1" aria-hidden="true"></i>{% endif %}
-                      </a>
+                      {% if item.method == 'post' %}
+                        {# o LogoutView do Django 5+ só aceita POST #}
+                        <form method="post" action="{{ item.url }}">
+                          {% csrf_token %}
+                          <button class="dropdown-item" type="submit">
+                            {% if item.icon %}<i class="{{ item.icon }} me-2" aria-hidden="true"></i>{% endif %}{{ item.label }}
+                          </button>
+                        </form>
+                      {% else %}
+                        <a class="dropdown-item" href="{{ item.url }}"{% if item.target %} target="{{ item.target }}" rel="noopener"{% endif %}>
+                          {% if item.icon %}<i class="{{ item.icon }} me-2" aria-hidden="true"></i>{% endif %}{{ item.label }}
+                          {% if item.external %}<i class="fas fa-external-link-alt ms-1" aria-hidden="true"></i>{% endif %}
+                        </a>
+                      {% endif %}
                     {% endfor %}
                   </div>
                 {% endif %}

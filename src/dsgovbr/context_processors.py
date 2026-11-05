@@ -64,7 +64,7 @@ def layout_settings(request: HttpRequest) -> dict:
                     "show": True,
                     "type": "default",
                     "default_avatar_url": "",
-                    "saudacao": None,
+                    "saudacao": "Olá, ",
                     "name_to_show": "first",
                     "dropdown": {
                         "show": True,
@@ -75,7 +75,8 @@ def layout_settings(request: HttpRequest) -> dict:
                             {
                                 "label": "Sair",
                                 "url": _logout_url(),
-                                "target": "_blank",
+                                # LogoutView (Django 5+) só aceita POST
+                                "method": "post",
                                 "icon": "fas fa-sign-out-alt",
                             },
                         ],

@@ -146,3 +146,20 @@ def test_logout_url_com_rota_logout():
     from dsgovbr.context_processors import _logout_url
 
     assert _logout_url() == "/logout/"
+
+
+def test_sair_usa_post_na_mesma_aba(request_with_user):
+    # LogoutView (Django 5+) recusa GET com 405
+    itens = layout_settings(request_with_user)["dsgovbr"]["header"]["login"][
+        "dropdown"
+    ]["items"]
+    sair = next(item for item in itens if item["label"] == "Sair")
+    assert sair["method"] == "post"
+    assert "target" not in sair
+
+
+def test_saudacao_padrao(request_with_user):
+    assert (
+        layout_settings(request_with_user)["dsgovbr"]["header"]["login"]["saudacao"]
+        == "Olá, "
+    )

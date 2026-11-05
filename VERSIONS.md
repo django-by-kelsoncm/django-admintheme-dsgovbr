@@ -24,6 +24,9 @@
   `.form-control`, `.form-select` e `.form-check-input` aos campos do Django (também nos inlines e no
   `filter_horizontal`).
 - **Login e `registration/`**: cards, alertas e campos do Bootstrap; o `dsgovbr_login.scss` foi removido.
+- **Usuário no header**: Sign-in com avatar no formato do `avatar-dropdown` do GOV.BR DS (`dsgovbr/avatar.html`,
+  avatar de 32px com fundo `primary`, "Olá, **Nome**" e seta); o avatar grande do menu do usuário usa a mesma regra
+  (foto, ícone ou inicial). Padrão de `login.saudacao` passa de `None` para `"Olá, "`.
 - **Cookiebar**: o bloco `cookie_consent` vem vazio (antes era um `div.br-cookiebar` oculto e sem conteúdo).
 
 ### Correções no admin
@@ -32,6 +35,8 @@
   `change_list_dsgovbr_results.html` do tema.
 - **Mídia da lista**: os JS do `ModelAdmin` eram incluídos duas vezes no `change_list.html`.
 - **Formulário**: o `submit_buttons_top` imprimia o `{{ request }}` na página.
+- **Sair**: era um link GET (com `target="_blank"`) e o `LogoutView` do Django 5+ responde 405; agora é um formulário
+  POST com CSRF na mesma aba. Itens do menu do usuário aceitam `"method": "post"`.
 - **Paginação**: `page_item` monta o HTML com `format_html` (antes, `mark_safe` com f-string), sem `tabindex` por página
   e com `aria-current` na página atual.
 
