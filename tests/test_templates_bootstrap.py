@@ -22,6 +22,7 @@ UTILITARIO_BS4 = re.compile(
 
 # templates reescritos na migração; precisam compilar com as tags do tema
 REESCRITOS = [
+    "dsgovbr/avatar.html",
     "dsgovbr/base.html",
     "dsgovbr/header.html",
     "dsgovbr/menu.html",
@@ -29,6 +30,7 @@ REESCRITOS = [
     "admin/change_form.html",
     "admin/change_list.html",
     "admin/change_list_header.html",
+    "admin/change_list_tools.html",
     "admin/change_list_dsgovbr_results.html",
     "admin/change_list_object_tools.html",
     "admin/includes/fieldset.html",
@@ -198,6 +200,13 @@ def test_page_item_escapa_a_url() -> None:
     cl = _changelist(pagina_atual=1)
     cl.get_query_string = lambda params: '?q="><script>'
     assert "<script>" not in page_item(cl, 2)
+
+
+def test_sair_do_header_envia_post_com_csrf() -> None:
+    header = (TEMPLATES / "dsgovbr" / "header.html").read_text(encoding="utf-8")
+    assert "{% if item.method == 'post' %}" in header
+    assert '<form method="post" action="{{ item.url }}">' in header
+    assert "{% csrf_token %}" in header
 
 
 def test_lista_usa_o_template_de_resultados_do_tema() -> None:

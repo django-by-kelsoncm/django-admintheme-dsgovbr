@@ -56,7 +56,7 @@
     {% endblock menu %}
 
     <main class="flex-fill py-4" id="main">
-      <div class="{% block content_container_class %}container-fluid{% endblock %}">
+      <div class="{% block content_container_class %}container-{{ dsgovbr.header.width_style|default:'lg' }}{% endblock %}">
         <nav aria-label="{% translate 'Breadcrumbs' %}">
           <ol class="breadcrumb">
             {# o dsgovbr-bootstraped desenha a casa no primeiro nível #}
@@ -84,16 +84,19 @@
           {% block pretitle %}
           {% endblock pretitle %}
 
-          <h1 class="mb-4">
-            {% block content_title %}
-              {% if title %}
-                {{ title }}{% if subtitle %}:{% endif %}
-              {% endif %}
-            {% endblock content_title %}
-            {% block content_subtitle %}
-              {% if subtitle %}{{ subtitle }}{% endif %}
-            {% endblock %}
-          </h1>
+          <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4">
+            <h1 class="h3 m-0">
+              {% block content_title %}
+                {% if title %}
+                  {{ title }}{% if subtitle %}:{% endif %}
+                {% endif %}
+              {% endblock content_title %}
+              {% block content_subtitle %}
+                {% if subtitle %}{{ subtitle }}{% endif %}
+              {% endblock %}
+            </h1>
+            {% block title_actions %}{% endblock title_actions %}
+          </div>
 
           <div id="content" class="{% block coltype %}colM{% endblock %}">
             {% block content %}
@@ -111,7 +114,7 @@
   {% block footer %}
     {% if not is_popup %}
       <footer class="bg-body" data-bs-theme="dark" id="footer" tabindex="-1">
-        <div class="container-fluid">
+        <div class="container-{{ dsgovbr.header.width_style|default:'lg' }}">
           <p class="small fw-medium text-center py-3 m-0">
             {{ project_copyright }}.
             {% if project_releases_url %}<a href="{{ project_releases_url }}{{ project_version }}">v{{ project_version }}</a>{% else %}v{{ project_version }}{% endif %}.

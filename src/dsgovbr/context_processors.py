@@ -33,7 +33,7 @@ def layout_settings(request: HttpRequest) -> dict:
         "header": {
             **{
                 "type": "default",
-                "width_style": "fluid",
+                "width_style": "lg",  # Bootstrap: sm|md|lg|xl|xxl|fluid
                 "logo": {
                     "show": True,
                     "type": "compact",
@@ -64,7 +64,7 @@ def layout_settings(request: HttpRequest) -> dict:
                     "show": True,
                     "type": "default",
                     "default_avatar_url": "",
-                    "saudacao": None,
+                    "saudacao": "Olá, ",
                     "name_to_show": "first",
                     "dropdown": {
                         "show": True,
@@ -75,7 +75,8 @@ def layout_settings(request: HttpRequest) -> dict:
                             {
                                 "label": "Sair",
                                 "url": _logout_url(),
-                                "target": "_blank",
+                                # LogoutView (Django 5+) só aceita POST
+                                "method": "post",
                                 "icon": "fas fa-sign-out-alt",
                             },
                         ],
@@ -83,7 +84,7 @@ def layout_settings(request: HttpRequest) -> dict:
                 },
                 "menu": {
                     "show": True,
-                    "localizacao": "fixo",  # fixo|flutuante
+                    "localizacao": "flutuante",  # flutuante (offcanvas)|fixo (aberto a partir de 1200px)
                     "padding": {},
                     "header": {},
                     "footer": {},

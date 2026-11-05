@@ -1,8 +1,8 @@
 {% load i18n %}
 {% comment %}
   Menu do GOV.BR DS: offcanvas lateral com list group e pastas por Collapse.
-  DSGOVBR_HEADER["menu"]["localizacao"] = "fixo" (padrão) deixa o menu sempre
-  visível a partir de 1200px (.offcanvas-xl); "flutuante" só abre pelo botão.
+  DSGOVBR_HEADER["menu"]["localizacao"] = "flutuante" (padrão) abre só pelo
+  botão; "fixo" deixa o menu sempre visível a partir de 1200px (.offcanvas-xl).
 {% endcomment %}
 <div class="{% if dsgovbr.header.menu.localizacao == 'flutuante' %}offcanvas{% else %}offcanvas-xl dsgovbr-menu-fixo{% endif %} offcanvas-start dsgovbr-menu" tabindex="-1" id="main-navigation" aria-labelledby="main-navigation-title">
   <div class="offcanvas-header">

@@ -12,15 +12,21 @@
   classes do Bootstrap (`btn btn-primary`, `alert`, `card`, `form-control`…). Utilitários do Bootstrap 4 usados pelo
   GOV.BR DS (`mr-*`, `ml-*`, `text-right`, `sr-only`) viram os do Bootstrap 5 (`me-*`, `ms-*`, `text-end`,
   `visually-hidden`).
-- **Header, menu e rodapé**: header com a navbar; menu num offcanvas com list group e pastas por Collapse
-  (`menu.localizacao`: `fixo` deixa o menu aberto a partir de 1200px, `flutuante` só pelo botão); novo bloco `menu` no
-  `dsgovbr/base.html`; rodapé com `data-bs-theme="dark"`; skiplink com `.visually-hidden-focusable`.
-- **Lista do admin**: busca e filtros em Collapse, ações em dropdown, tabela `.table`, paginação `.pagination` e
-  densidade da tabela em `dsgovbr_admin_density.js` (substitui o `dsgovbr_admin_submit_line.js`, removido).
+- **Layout do exemplo "Painel administrativo" do dsgovbr-bootstraped**: header com a navbar; header, conteúdo e rodapé
+  em `container-lg` (padrão de `width_style` passa de `fluid` para `lg`); menu num offcanvas com list group e pastas por
+  Collapse (padrão de `menu.localizacao` passa de `fixo` para `flutuante`; `fixo` deixa o menu aberto a partir de
+  1200px); título em `h3` com o novo bloco `title_actions` à direita; novo bloco `menu` no `dsgovbr/base.html`; rodapé
+  com `data-bs-theme="dark"`; skiplink com `.visually-hidden-focusable`.
+- **Lista do admin**: "Adicionar", busca, filtros e mais opções na linha do título (`admin/change_list_tools.html`);
+  busca e filtros em Collapse, ações em dropdown, tabela `.table` com cabeçalho sem cor de link, paginação
+  `.pagination` e densidade da tabela em `dsgovbr_admin_density.js` (substitui o `dsgovbr_admin_submit_line.js`, removido).
 - **Formulários**: fieldset em grade, erros com `.invalid-feedback` e o novo `dsgovbr/js/dsgovbr_forms.js`, que aplica
   `.form-control`, `.form-select` e `.form-check-input` aos campos do Django (também nos inlines e no
   `filter_horizontal`).
 - **Login e `registration/`**: cards, alertas e campos do Bootstrap; o `dsgovbr_login.scss` foi removido.
+- **Usuário no header**: Sign-in com avatar no formato do `avatar-dropdown` do GOV.BR DS (`dsgovbr/avatar.html`,
+  avatar de 32px com fundo `primary`, "Olá, **Nome**" e seta); o avatar grande do menu do usuário usa a mesma regra
+  (foto, ícone ou inicial). Padrão de `login.saudacao` passa de `None` para `"Olá, "`.
 - **Cookiebar**: o bloco `cookie_consent` vem vazio (antes era um `div.br-cookiebar` oculto e sem conteúdo).
 
 ### Correções no admin
@@ -29,6 +35,8 @@
   `change_list_dsgovbr_results.html` do tema.
 - **Mídia da lista**: os JS do `ModelAdmin` eram incluídos duas vezes no `change_list.html`.
 - **Formulário**: o `submit_buttons_top` imprimia o `{{ request }}` na página.
+- **Sair**: era um link GET (com `target="_blank"`) e o `LogoutView` do Django 5+ responde 405; agora é um formulário
+  POST com CSRF na mesma aba. Itens do menu do usuário aceitam `"method": "post"`.
 - **Paginação**: `page_item` monta o HTML com `format_html` (antes, `mark_safe` com f-string), sem `tabindex` por página
   e com `aria-current` na página atual.
 
