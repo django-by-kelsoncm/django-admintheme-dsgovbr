@@ -2,13 +2,6 @@
 {% load i18n admin_urls %}
 {% load url from simple_history_compat %}
 
-{% block breadcrumbs %}
-    <a href="{% url "admin:app_list" app_label %}">{{app_label|capfirst|escape}}</a> &rsaquo;
-    <a href="{{changelist_url}}">{{opts.verbose_name_plural|capfirst}}</a> &rsaquo;
-    <a href="{{change_url}}">{{original|truncatewords:"18"}}</a> &rsaquo;
-    <a href="../">{% trans "History" %}</a> &rsaquo;
-    {% if revert_disabled %}{% blocktrans with original_opts.verbose_name as verbose_name %}View {{verbose_name}}{% endblocktrans %}{% else %}{% blocktrans with original_opts.verbose_name as verbose_name %}Revert {{verbose_name}}{% endblocktrans %}{% endif %}
-{% endblock breadcrumbs %}
 
 {% block submit_buttons_top %}
     {% include "simple_history/submit_line.html" %}

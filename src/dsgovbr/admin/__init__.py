@@ -376,3 +376,32 @@ class DSGovBrAdminSite(AdminSite):
         if app_label:
             return [app for app in menu_list if app["app_label"] == app_label]
         return menu_list
+
+    def get_cards_app_list(self, request, app_label=None):
+        """
+        Lista do Django (com as permissões do usuário) e os ícones de app e model,
+        para os cards da página inicial e da página do app.
+        """
+        from dsgovbr.icons import app_icon, model_icon
+
+        app_list = AdminSite.get_app_list(self, request, app_label)
+        for app in app_list:
+            app["icon"] = app_icon(app.get("app_label"))
+            for model in app.get("models", []):
+                model["icon"] = model_icon(model.get("model"), self)
+        return app_list
+
+    def index(self, request, extra_context=None):
+        # o get_app_list deste site é o menu (todos os apps); os cards usam as permissões reais
+        extra_context = {
+            "app_list": self.get_cards_app_list(request),
+            **(extra_context or {}),
+        }
+        return super().index(request, extra_context)
+
+    def app_index(self, request, app_label, extra_context=None):
+        extra_context = {
+            "app_list": self.get_cards_app_list(request, app_label),
+            **(extra_context or {}),
+        }
+        return super().app_index(request, app_label, extra_context)

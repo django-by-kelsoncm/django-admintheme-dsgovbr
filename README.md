@@ -118,6 +118,52 @@ GOV.BR DS (`core-init.js`) não é mais carregado.
 - **Usuário no header**: Sign-in com avatar como o `avatar-dropdown` do GOV.BR DS (avatar, "Olá, **Nome**" e seta).
   Itens de `DSGOVBR_HEADER["login"]["dropdown"]["items"]` com `"method": "post"` viram um formulário com CSRF; o
   "Sair" padrão usa isso, porque o `LogoutView` do Django 5+ recusa GET.
+- **Página inicial e página do app**: os models aparecem em cards (ícone, nome, "Ver lista" e "Adicionar"), agrupados
+  por app na página inicial, com as permissões do usuário.
+- **Ícones**: app pelo atributo `icon` do `AppConfig`; model pelo atributo `icon` do ModelAdmin (o `class Meta` do model
+  não aceita atributos novos). Sem eles: `fas fa-folder` e `fas fa-table`, configuráveis em
+  `DSGOVBR_DEFAULT_APP_ICON` e `DSGOVBR_DEFAULT_MODEL_ICON`. Valem para o menu e para os cards.
+
+  ```python
+  class EditorialConfig(AppConfig):
+      icon = "fas fa-newspaper"
+
+  @admin.register(Noticia)
+  class NoticiaAdmin(DSGovBrModelAdmin):
+      icon = "fas fa-newspaper"
+  ```
+
+- **Menu programático**: além dos apps do admin, crie um `menus.py` em qualquer app (descoberto no `ready`). Os
+  links podem apontar para fora do admin (nome de rota, caminho ou URL absoluta) e o menu aparece também nas páginas
+  fora do admin que estendem `dsgovbr/base.html` (context processor `available_apps`).
+
+  ```python
+  import dsgovbr.menus as menus
+
+  menus.register_folder("sistema", name="Sistema", icon="fas fa-desktop", order=0)
+  menus.register_item("sistema", "Início", "core:home", icon="fas fa-home")
+  # submenu em vários níveis: parent é o item pai, o nome dele ou o caminho de nomes
+  menus.register_item(
+      "sistema",
+      "Pendências",
+      "core:pendencias",
+      parent=["Utilitários", "Diagnóstico"],
+      badge=menus.MenuItemBadge(lambda request: contar(request), "danger"),
+      color="warning",
+      # basta qualquer uma
+      permission=["core.view_pendencia", "core.change_pendencia"],
+  )
+  menus.set_order(["sistema", "auth"])
+  ```
+
+  Parâmetros de `register_folder` e `register_item`: `icon`, `order`, `permission` (`str` ou lista: basta qualquer
+  uma), `check(request)`, `badge` (`MenuItemBadge(label, color)`, com `label` fixo ou `label(request)`) e `color`
+  (cor do Bootstrap aplicada ao ícone). Item sem ícone usa `DSGOVBR_DEFAULT_MENU_ICON` (padrão `fas fa-angle-right`).
+  Pasta ou submenu sem link e sem itens visíveis some. Também há `set_items_order(app_label, nomes)` e
+  `add_reorder_callback(funcao)`.
+
+- **Breadcrumb do admin**: montado pelo contexto (app > lista > objeto > página atual); a casa leva ao `admin:index`
+  (bloco `breadcrumb_home_url` do `dsgovbr/base.html`).
 - **Título da página**: o bloco `title_actions` do `dsgovbr/base.html` põe ações à direita do título (na lista: busca,
   filtros, mais opções e "Adicionar").
 - **Cookiebar**: o bloco `cookie_consent` do `dsgovbr/base.html` vem vazio; sobrescreva-o com um

@@ -5,3 +5,4 @@ class MediaLibraryConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "media_library"
     verbose_name = "Biblioteca de Mídias"
+    icon = "fas fa-photo-video"
