@@ -1,5 +1,23 @@
 # Histórico de Versões
 
+## 7.3.2
+
+### Widgets do admin sem o base.css do Django (issue #33)
+
+- **Variáveis do admin**: o `dsgovbr.scss` define as variáveis do `admin/css/base.css` (`--border-color`,
+  `--body-bg`, `--body-fg`, `--primary`, `--selected-row`, `--hairline-color`…) a partir das `--bs-*`, também no modo
+  escuro. O CSS dos widgets do Django e de pacotes de terceiros que as usam volta a ter borda e fundo.
+- **Autocomplete (Select2)**: os `autocomplete_fields` apareciam sem borda e com 280px de largura. O
+  `dsgovbr_forms.js` troca o tema `admin-autocomplete` pelo `dsgovbr`: largura total, caixa com `.form-select`
+  (simples) ou `.form-control` (múltiplo, opções escolhidas em badges), foco, dropdown e opção selecionada no padrão do
+  tema. `data-dsgovbr-ignore` mantém o tema do Django.
+- **Relacionamentos**: o `admin/widgets/related_widget_wrapper.html` tinha o `.related-widget-wrapper` comentado e sem
+  `data-popup`; os links de alterar/remover ficavam sem `href` e o "adicionar" não abria o popup. Voltou o wrapper,
+  com o link "ver" e os ícones alinhados ao campo.
+- **Calendário e relógio**: os campos de data/hora (o `widgets.css` do Django não é carregado) ganharam ícones, caixa
+  com fundo, borda e sombra e o dia/hora em destaque.
+- **Sandbox**: `autocomplete_fields` em Notícia (categoria e tags) e em Servidor (órgão).
+
 ## 7.3.1
 
 ### Segurança

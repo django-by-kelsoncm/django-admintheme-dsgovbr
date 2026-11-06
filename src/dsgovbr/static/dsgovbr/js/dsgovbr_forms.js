@@ -25,6 +25,8 @@
     var campos = (raiz || document).querySelectorAll('input, select, textarea');
     Array.prototype.forEach.call(campos, function (campo) {
       if (campo.closest('[data-dsgovbr-ignore]')) return;
+      // Campos internos do Select2: estilizados pelo tema "dsgovbr" (abaixo).
+      if (campo.closest('.select2-container')) return;
       for (var i = 0; i < JA_ESTILIZADO.length; i++) {
         if (campo.classList.contains(JA_ESTILIZADO[i])) return;
       }
@@ -33,6 +35,33 @@
   }
 
   window.dsgovbrBootstrapFields = aplicar;
+
+  // Select2 do admin (autocomplete_fields): troca o tema "admin-autocomplete",
+  // cujo CSS usa as variáveis do base.css do admin (não carregado pelo tema),
+  // pelo tema "dsgovbr" (dsgovbr.scss) e põe na caixa a classe do Bootstrap
+  // (.form-select ou .form-control). Precisa rodar antes de o autocomplete.js
+  // do Django iniciar o Select2, no ready do jQuery: este script fica no fim
+  // do <body>. Inclui o formulário vazio (__prefix__) que os inlines clonam.
+  function prepararAutocomplete(raiz) {
+    var campos = (raiz || document).querySelectorAll('select.admin-autocomplete');
+    Array.prototype.forEach.call(campos, function (campo) {
+      if (campo.closest('[data-dsgovbr-ignore]')) return;
+      if (campo.classList.contains('select2-hidden-accessible')) return;
+      campo.setAttribute('data-theme', 'dsgovbr');
+      campo.setAttribute('data-container-css-class', campo.multiple ? 'form-control' : 'form-select');
+    });
+  }
+
+  window.dsgovbrPrepararAutocomplete = prepararAutocomplete;
+  prepararAutocomplete(document);
+
+  // Busca do dropdown do Select2 (criada ao abrir, fora do formulário).
+  if (window.django && window.django.jQuery) {
+    window.django.jQuery(document).on('select2:open', function () {
+      document.querySelectorAll('.select2-container--dsgovbr .select2-search--dropdown .select2-search__field')
+        .forEach(function (busca) { busca.classList.add('form-control'); });
+    });
+  }
 
   // Elementos criados depois do DOMContentLoaded pelos JS do admin: links do
   // inlines.js ($(document).ready) e a caixa de seleção do SelectFilter2.js

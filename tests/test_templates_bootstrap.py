@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 from django import template
 from django.conf import settings
+from django.contrib import admin
 
 RAIZ = Path(__file__).resolve().parent.parent
 PACOTE = RAIZ / "src" / "dsgovbr"
@@ -47,6 +48,7 @@ REESCRITOS = [
     "admin/pagination.html",
     "admin/search_form.html",
     "admin/submit_line.html",
+    "admin/widgets/related_widget_wrapper.html",
     "registration/logged_out.html",
     "registration/password_reset_complete.html",
     "registration/password_reset_confirm.html",
@@ -378,3 +380,67 @@ def test_botao_do_menu_some_sem_menu_na_pagina() -> None:
         encoding="utf-8"
     )
     assert "body:not(:has(#main-navigation)) #navigation" in scss
+
+
+# Widgets do admin sem o base.css do Django (issue #33)
+ADMIN_CSS = Path(admin.__file__).resolve().parent / "static" / "admin" / "css"
+SCSS = PACOTE / "static" / "dsgovbr" / "scss" / "dsgovbr.scss"
+
+
+def _scss_compilado() -> str:
+    import sass
+
+    return sass.compile(filename=str(SCSS))
+
+
+def test_related_widget_wrapper_tem_o_wrapper_e_os_popups() -> None:
+    html = _render(
+        "admin/widgets/related_widget_wrapper.html",
+        {
+            "rendered_widget": '<select name="orgao"></select>',
+            "name": "orgao",
+            "model": "órgão",
+            "model_name": "orgao",
+            "url_params": "_to_field=id&_popup=1",
+            "view_related_url_params": "_to_field=id",
+            "change_related_template_url": "/admin/c/orgao/__fk__/change/",
+            "delete_related_template_url": "/admin/c/orgao/__fk__/delete/",
+            "add_related_url": "/admin/c/orgao/add/",
+            "can_change_related": True,
+            "can_add_related": True,
+            "can_delete_related": True,
+            "can_view_related": True,
+        },
+    )
+    assert '<div class="related-widget-wrapper" data-model-ref="orgao">' in html
+    assert html.count('data-popup="yes"') == 3
+    for link in ("change_id_orgao", "add_id_orgao", "delete_id_orgao", "view_id_orgao"):
+        assert f'id="{link}"' in html
+
+
+@pytest.mark.parametrize("arquivo", ["autocomplete.css", "widgets.css"])
+def test_variaveis_do_admin_usadas_nos_widgets_sao_definidas(arquivo: str) -> None:
+    usadas = set(
+        re.findall(r"var\((--[a-z0-9-]+)", (ADMIN_CSS / arquivo).read_text("utf-8"))
+    )
+    definidas = set(re.findall(r"(--[a-z0-9-]+)\s*:", _scss_compilado()))
+    assert usadas, arquivo
+    assert usadas <= definidas, sorted(usadas - definidas)
+
+
+def test_select2_do_admin_usa_o_tema_dsgovbr() -> None:
+    css = _scss_compilado()
+    assert ".select2-container.select2-container--dsgovbr.select2" in css
+    assert "width: 100% !important" in css
+    js = (PACOTE / "static" / "dsgovbr" / "js" / "dsgovbr_forms.js").read_text(
+        encoding="utf-8"
+    )
+    assert "'data-theme', 'dsgovbr'" in js
+    assert "select.admin-autocomplete" in js
+
+
+def test_scss_sem_cor_literal_fora_de_variavel() -> None:
+    for linha in SCSS.read_text(encoding="utf-8").splitlines():
+        codigo = linha.split("//")[0]
+        if re.search(r"#[0-9a-fA-F]{3,8}\b|rgba?\(", codigo):
+            assert codigo.lstrip().startswith("$"), linha
