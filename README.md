@@ -117,7 +117,8 @@ GOV.BR DS (`core-init.js`) não é mais carregado.
   relógio e os links de alterar/adicionar/remover/ver dos relacionamentos também têm estilo próprio.
 - **Modo escuro**: `data-bs-theme="dark"` no `<html>` (ou num contêiner). O `dsgovbr.scss` troca as cores fixas do
   modo claro do dsgovbr-bootstraped (header, breadcrumb, campos, botões vazados, menu, paginação…) pelas `--bs-*`. O
-  tema não traz seletor de modo; quem quiser um põe o atributo pelo próprio JS.
+  header traz um botão que alterna o modo (segue o sistema até o usuário escolher; a escolha fica no `localStorage`).
+  Para tirar: `DSGOVBR_HEADER = {"modo": {"show": False}}`; `label` e `icon` mudam o texto e o ícone.
 - **Layout**: segue o exemplo "Painel administrativo" do dsgovbr-bootstraped. Header, conteúdo e rodapé usam
   `container-lg` (`DSGOVBR_HEADER["width_style"]`: `sm`, `md`, `lg`, `xl`, `xxl` ou `fluid`).
 - **Menu**: offcanvas aberto pelo botão (`DSGOVBR_HEADER["menu"]["localizacao"] = "flutuante"`, padrão); com `"fixo"`

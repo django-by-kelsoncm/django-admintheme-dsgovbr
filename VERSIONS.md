@@ -1,6 +1,6 @@
 # Histórico de Versões
 
-## 7.4.1
+## 7.5.1
 
 ### Menu sem estado entre requisições (issue #38)
 
@@ -11,6 +11,19 @@
   que os `menus.py` registram.
 - `DSGovBrAdminSite.app_index` dá 404 quando o usuário não vê nenhum model do app (permissões reais), mesmo que um
   `menus.py` registre uma pasta com o mesmo `app_label`.
+
+## 7.5.0
+
+### Seletor de modo claro/escuro (issue #41)
+
+- **Botão no header** (ícone `fas fa-adjust`), ao lado das funcionalidades: alterna entre claro e escuro. Usa o JS
+  opcional do [dsgovbr-bootstraped](https://github.com/abrasileirado/dsgovbr-bootstraped) v0.11.0
+  (`vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-modo.js`), carregado no `<head>` para aplicar o modo antes da
+  primeira pintura.
+- Sem escolha salva, segue o modo do sistema (`prefers-color-scheme`); a escolha fica no `localStorage` do navegador.
+  **Atenção**: com o seletor ligado (padrão), quem usa o sistema no modo escuro passa a ver o admin escuro.
+- Configurável em `DSGOVBR_HEADER["modo"]`: `show` (padrão `True`), `label` e `icon`. Com `"show": False` o botão e o
+  script somem e nada muda em relação à 7.4.0.
 
 ## 7.4.0
 
