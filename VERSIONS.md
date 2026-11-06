@@ -1,5 +1,17 @@
 # Histórico de Versões
 
+## 7.5.2
+
+### Documentação com o tema dsgovbr-sphinx-theme (issue #43)
+
+- A documentação Sphinx troca o `sphinx_rtd_theme` pelo
+  [dsgovbr-sphinx-theme](https://github.com/abrasileirado/dsgovbr-sphinx-theme) (visual GOV.BR DS, modo escuro e
+  diretivas `br-*` para componentes do dsgovbr-bootstraped).
+- A referência da API passa a ser gerada pelo `sphinx.ext.apidoc` no próprio build, com o Django configurado no
+  `docs/conf.py`; antes o autodoc falhava ao importar os módulos e a referência saía vazia.
+- O workflow `docs.yml` compila com `-W` (aviso vira erro) e instala as dependências de `docs/requirements.txt`.
+- Índice com `toctree` (guia e API) e correções de reST em `publishing.rst` e `index.rst`.
+
 ## 7.5.0
 
 ### Seletor de modo claro/escuro (issue #41)
