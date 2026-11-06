@@ -416,16 +416,21 @@ class MenuRegistry:
 
         folders_dict: dict[str, dict] = {}
 
-        # 1. Processar a lista vinda do Django Admin
+        # 1. Processar a lista vinda do Django Admin.
+        # Não grava nada no registry (self._folders é global, compartilhado entre
+        # requisições e usuários): a pasta do admin é montada só para esta requisição.
         for app in admin_app_list:
             app_label = app.get("app_label")
-            # ícone do AppConfig só para pasta nova: pasta registrada no menus.py mantém o seu
-            novo = app_label not in self._folders
-            reg_folder = self.register_folder(
-                app_label,
-                name=app.get("name"),
-                icon=app_icon(app_label) if novo else None,
+            registrada = self._folders.get(app_label)
+            # pasta registrada no menus.py mantém ícone, ordem, badge e cor; senão, ícone do AppConfig
+            reg_folder = MenuFolder(
+                app_label=app_label,
+                name=app.get("name") or app_label.capitalize(),
+                icon=registrada._icon if registrada else app_icon(app_label),
                 app_url=app.get("app_url"),
+                order=registrada.order if registrada else None,
+                badge=registrada.badge if registrada else None,
+                color=registrada.color if registrada else None,
             )
 
             models_list = []

@@ -400,8 +400,12 @@ class DSGovBrAdminSite(AdminSite):
         return super().index(request, extra_context)
 
     def app_index(self, request, app_label, extra_context=None):
-        extra_context = {
-            "app_list": self.get_cards_app_list(request, app_label),
-            **(extra_context or {}),
-        }
+        from django.http import Http404
+
+        app_list = self.get_cards_app_list(request, app_label)
+        # o app_index do Django testa get_app_list (o menu, que pode ter pastas do
+        # menus.py); a página do app só existe para quem vê algum model dele
+        if not app_list:
+            raise Http404("The requested admin page does not exist.")
+        extra_context = {"app_list": app_list, **(extra_context or {})}
         return super().app_index(request, app_label, extra_context)

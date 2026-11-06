@@ -12,6 +12,18 @@
 - O workflow `docs.yml` compila com `-W` (aviso vira erro) e instala as dependências de `docs/requirements.txt`.
 - Índice com `toctree` (guia e API) e correções de reST em `publishing.rst` e `index.rst`.
 
+## 7.5.1
+
+### Menu sem estado entre requisições (issue #38)
+
+- **Segurança**: o `MenuRegistry.get_menu_list` gravava no registry global (`register_folder`) as pastas do admin que o
+  usuário atual via. Depois que um superusuário abria o admin, essas pastas voltavam no menu de qualquer usuário, e o
+  `app_index` de um app sem permissão passava a responder 200 em vez de 404. O resultado dependia de quem tinha acessado
+  antes, inclusive entre workers. Agora as pastas do admin são montadas só para a requisição; o registry guarda apenas o
+  que os `menus.py` registram.
+- `DSGovBrAdminSite.app_index` dá 404 quando o usuário não vê nenhum model do app (permissões reais), mesmo que um
+  `menus.py` registre uma pasta com o mesmo `app_label`.
+
 ## 7.5.0
 
 ### Seletor de modo claro/escuro (issue #41)
