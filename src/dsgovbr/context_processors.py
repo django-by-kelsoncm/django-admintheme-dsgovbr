@@ -63,6 +63,13 @@ def layout_settings(request: HttpRequest) -> dict:
                     "em_linha": False,
                     "items": [],
                 },
+                # seletor de modo claro/escuro (JS do dsgovbr-bootstraped): segue o
+                # sistema até o usuário escolher; a escolha fica no localStorage
+                "modo": {
+                    "show": True,
+                    "label": "Modo escuro",
+                    "icon": "fas fa-adjust",
+                },
                 "login": {
                     "show": True,
                     "type": "default",

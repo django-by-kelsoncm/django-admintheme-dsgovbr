@@ -81,6 +81,11 @@
             </div>
           {% endif %}
 
+          {% if dsgovbr.header.modo.show %}
+            {# seletor de modo claro/escuro: dsgovbr-bootstraped-modo.js (carregado no base.html) #}
+            <button class="btn btn-link btn-sm rounded-circle" type="button" data-dsgovbr-modo aria-pressed="false" aria-label="{{ dsgovbr.header.modo.label }}" title="{{ dsgovbr.header.modo.label }}"><i class="{{ dsgovbr.header.modo.icon|default:'fas fa-adjust' }}" aria-hidden="true"></i></button>
+          {% endif %}
+
           {% if dsgovbr.header.search.show %}
             <button class="btn btn-link rounded-circle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#main-searchbox" aria-expanded="false" aria-controls="main-searchbox" aria-label="Abrir busca"><i class="fas fa-search" aria-hidden="true"></i></button>
           {% endif %}

@@ -132,6 +132,7 @@ def test_base_carrega_bootstrap_e_nao_o_js_do_govbr_ds() -> None:
     [
         "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped.min.css",
         "vendors/dsgovbr-bootstraped/LICENSE",
+        "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-modo.js",
         "vendors/bootstrap/bootstrap.bundle.min.js",
         "vendors/bootstrap/bootstrap.bundle.min.js.map",
         "vendors/bootstrap/LICENSE",
@@ -499,3 +500,30 @@ def test_calendario_e_relogio_abrem_abaixo_do_link() -> None:
     assert "atalhos.openCalendar = function" in js
     assert "atalhos.openClock = function" in js
     assert "ancora.bottom + window.scrollY" in js
+
+
+def test_seletor_de_modo_no_header_e_script_no_head() -> None:
+    """Issue #41: botão de modo claro/escuro com o JS do dsgovbr-bootstraped."""
+    base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
+    head = base.split("</head>")[0]
+    script = "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-modo.js"
+    assert script in head
+    # síncrono e depois do CSS, para aplicar o modo antes da primeira pintura
+    assert head.index("dsgovbr-bootstraped.min.css") < head.index(script)
+    assert not re.search(r"<script[^>]*(defer|async)[^>]*bootstraped-modo", head)
+    assert "{% if dsgovbr.header.modo.show %}" in head
+
+    header = (TEMPLATES / "dsgovbr" / "header.html").read_text(encoding="utf-8")
+    assert "{% if dsgovbr.header.modo.show %}" in header
+    assert re.search(r'<button[^>]*data-dsgovbr-modo aria-pressed="false"', header)
+    assert 'aria-label="{{ dsgovbr.header.modo.label }}"' in header
+
+    js = (
+        PACOTE
+        / "static"
+        / "vendors"
+        / "dsgovbr-bootstraped"
+        / "dsgovbr-bootstraped-modo.js"
+    ).read_text(encoding="utf-8")
+    assert "[data-dsgovbr-modo]" in js
+    assert "dsgovbr-bootstraped:modo" in js
