@@ -632,3 +632,179 @@ ul.timelist {
   background-color: var(--bs-tertiary-bg);
   border-top: var(--bs-border-width) solid var(--bs-border-color);
 }
+
+// Modo escuro (data-bs-theme="dark" no <html> ou num contêiner). O
+// dsgovbr-bootstraped só troca as --bs-* globais; vários componentes
+// guardam cores fixas do modo claro (texto #333, azul #1351b4, fundo
+// #f8f8f8) e ficam ilegíveis no fundo escuro. Aqui eles voltam a usar as
+// variáveis do Bootstrap, que no escuro já têm os valores certos. Só vale
+// dentro de [data-bs-theme="dark"], então o modo claro não muda.
+// Fundo do item atual (menu, paginação): o vendor usa o azul #0c326f, que
+// quase some no fundo escuro (#071d41); no escuro vai o azul primário.
+$dsgovbr-dark-active-bg: var(--bs-primary);
+
+[data-bs-theme="dark"] {
+  // Header (.navbar): links, título e subtítulo.
+  .navbar {
+    --bs-navbar-color: var(--bs-link-color);
+    --bs-navbar-hover-color: var(--bs-link-hover-color);
+    --bs-navbar-active-color: var(--bs-emphasis-color);
+    --bs-navbar-disabled-color: var(--bs-tertiary-color);
+    --bs-navbar-brand-color: var(--bs-emphasis-color);
+    --bs-navbar-brand-hover-color: var(--bs-emphasis-color);
+  }
+
+  .navbar-text {
+    color: var(--bs-secondary-color);
+  }
+
+  // Busca do header: fundo cinza-claro fixo no vendor.
+  .navbar [role="search"] .form-control {
+    background-color: var(--bs-tertiary-bg);
+  }
+
+  .breadcrumb {
+    --bs-breadcrumb-item-active-color: var(--bs-body-color);
+    --bs-breadcrumb-divider-color: var(--bs-secondary-color);
+  }
+
+  // Campos: texto #333 fixo (também no foco e no seletor de arquivo).
+  .form-control,
+  .form-control:focus,
+  .form-select,
+  .form-select:focus,
+  .input-group-text,
+  .form-control::file-selector-button {
+    color: var(--bs-body-color);
+  }
+
+  .form-select:-moz-focusring {
+    text-shadow: 0 0 0 var(--bs-body-color);
+  }
+
+  .form-floating > :disabled ~ label,
+  .form-floating > .form-control:disabled ~ label {
+    color: var(--bs-tertiary-color);
+  }
+
+  // Botões vazados: o azul/cinza/preto do modo claro some no fundo escuro.
+  .btn-outline-primary {
+    --bs-btn-color: var(--bs-link-color);
+    --bs-btn-border-color: var(--bs-link-color);
+    --bs-btn-disabled-color: var(--bs-link-color);
+    --bs-btn-disabled-border-color: var(--bs-link-color);
+  }
+
+  .btn-outline-secondary {
+    --bs-btn-color: var(--bs-secondary-color);
+    --bs-btn-border-color: var(--bs-secondary-color);
+    --bs-btn-disabled-color: var(--bs-secondary-color);
+    --bs-btn-disabled-border-color: var(--bs-secondary-color);
+  }
+
+  .btn-outline-dark {
+    --bs-btn-color: var(--bs-emphasis-color);
+    --bs-btn-border-color: var(--bs-emphasis-color);
+    --bs-btn-hover-color: var(--bs-body-bg);
+    --bs-btn-hover-bg: var(--bs-emphasis-color);
+    --bs-btn-hover-border-color: var(--bs-emphasis-color);
+    --bs-btn-active-color: var(--bs-body-bg);
+    --bs-btn-active-bg: var(--bs-emphasis-color);
+    --bs-btn-active-border-color: var(--bs-emphasis-color);
+    --bs-btn-disabled-color: var(--bs-emphasis-color);
+    --bs-btn-disabled-border-color: var(--bs-emphasis-color);
+  }
+
+  .btn-link {
+    --bs-btn-disabled-color: var(--bs-tertiary-color);
+  }
+
+  .dropdown-menu {
+    --bs-dropdown-link-color: var(--bs-body-color);
+    --bs-dropdown-link-hover-color: var(--bs-body-color);
+    --bs-dropdown-header-color: var(--bs-secondary-color);
+    --bs-dropdown-divider-bg: var(--bs-border-color);
+  }
+
+  .pagination {
+    --bs-pagination-color: var(--bs-link-color);
+    --bs-pagination-hover-color: var(--bs-link-hover-color);
+    --bs-pagination-focus-color: var(--bs-link-hover-color);
+    --bs-pagination-active-bg: #{$dsgovbr-dark-active-bg};
+    --bs-pagination-active-border-color: #{$dsgovbr-dark-active-bg};
+    --bs-pagination-disabled-color: var(--bs-tertiary-color);
+  }
+
+  .list-group {
+    --bs-list-group-border-color: var(--bs-border-color);
+    --bs-list-group-action-color: var(--bs-body-color);
+    --bs-list-group-action-hover-color: var(--bs-body-color);
+  }
+
+  .list-group-item-action {
+    color: var(--bs-list-group-action-color);
+  }
+
+  // Menu lateral (offcanvas): itens, submenus abertos e item atual.
+  .offcanvas-start,
+  .offcanvas-end {
+    .list-group-item {
+      color: var(--bs-link-color);
+      border-color: var(--bs-border-color);
+
+      &.active {
+        color: var(--bs-white);
+        background-color: $dsgovbr-dark-active-bg;
+      }
+    }
+
+    .collapse > .list-group,
+    .collapsing > .list-group {
+      background-color: var(--bs-tertiary-bg);
+    }
+  }
+
+  .nav-tabs,
+  .nav-underline {
+    .nav-link {
+      color: var(--bs-body-color);
+
+      &.disabled,
+      &:disabled {
+        color: var(--bs-tertiary-color);
+      }
+
+      &.active {
+        color: var(--bs-link-color);
+        border-bottom-color: var(--bs-link-color);
+      }
+    }
+
+    .nav-item.show .nav-link {
+      color: var(--bs-link-color);
+      border-bottom-color: var(--bs-link-color);
+    }
+  }
+
+  .accordion {
+    --bs-accordion-border-color: var(--bs-border-color);
+    --bs-accordion-btn-color: var(--bs-link-color);
+  }
+
+  .toast {
+    --bs-toast-bg: var(--bs-body-bg);
+    --bs-toast-header-color: var(--bs-body-color);
+    --bs-toast-header-bg: var(--bs-tertiary-bg);
+    --bs-toast-header-border-color: var(--bs-border-color);
+  }
+
+  .progress,
+  .progress-stacked {
+    --bs-progress-bg: var(--bs-secondary-bg);
+  }
+
+  .spinner-border,
+  .spinner-grow {
+    color: var(--bs-link-color);
+  }
+}

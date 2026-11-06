@@ -1,5 +1,18 @@
 # Histórico de Versões
 
+## 7.4.0
+
+### Modo escuro (issue #37)
+
+- **`data-bs-theme="dark"`**: o dsgovbr-bootstraped só troca as `--bs-*` globais e vários componentes guardavam cores
+  fixas do modo claro (texto `#333`, azul `#1351b4`, fundo `#f8f8f8`), ilegíveis no fundo escuro. O `dsgovbr.scss`
+  faz esses componentes usarem as variáveis do Bootstrap dentro de `[data-bs-theme="dark"]`; o modo claro não muda.
+- **Corrigidos**: título, subtítulo, links e busca do header; item atual do breadcrumb; texto de `.form-control`,
+  `.form-select` (também nas opções do `filter_horizontal`) e `.input-group-text`; botões `btn-outline-primary`,
+  `btn-outline-secondary` e `btn-outline-dark` (Cancelar, botões do seletor); itens de dropdown, paginação,
+  list group, menu lateral (itens, submenus e item atual), abas, accordion, toast, progress e spinner.
+- O tema não traz seletor de modo: o projeto põe `data-bs-theme` no `<html>` (ou num contêiner).
+
 ## 7.3.3
 
 ### Select2 vazio em linha nova de inline (issue #35)
