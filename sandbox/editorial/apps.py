@@ -5,3 +5,4 @@ class EditorialConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "editorial"
     verbose_name = "Catálogo Editorial"
+    icon = "fas fa-newspaper"

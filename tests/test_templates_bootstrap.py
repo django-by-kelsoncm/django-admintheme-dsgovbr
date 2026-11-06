@@ -28,6 +28,10 @@ REESCRITOS = [
     "dsgovbr/menu.html",
     "dsgovbr/redes_sociais.html",
     "admin/app_list.html",
+    "admin/app_index.html",
+    "admin/base.html",
+    "admin/index.html",
+    "admin/includes/model_cards.html",
     "admin/change_form.html",
     "admin/change_list.html",
     "admin/change_list_header.html",
@@ -287,3 +291,55 @@ def test_lista_usa_o_template_de_resultados_do_tema() -> None:
         encoding="utf-8"
     )
     assert 'template_name="change_list_dsgovbr_results.html"' in fonte
+
+
+def _app(models: list[dict]) -> dict:
+    return {"app": {"models": models}, "request": SimpleNamespace(path="/admin/")}
+
+
+def test_cards_dos_models_com_icone_e_acoes() -> None:
+    html = _render(
+        "admin/includes/model_cards.html",
+        _app(
+            [
+                {
+                    "name": "Notícias",
+                    "object_name": "Noticia",
+                    "icon": "fas fa-newspaper",
+                    "admin_url": "/admin/editorial/noticia/",
+                    "add_url": "/admin/editorial/noticia/add/",
+                }
+            ]
+        ),
+    )
+    assert 'class="card h-100 model-noticia"' in html
+    assert 'class="fas fa-newspaper fs-4 text-primary"' in html
+    assert 'href="/admin/editorial/noticia/add/"' in html
+
+
+def test_card_sem_icone_usa_o_padrao_e_sem_add_nao_mostra_adicionar() -> None:
+    html = _render(
+        "admin/includes/model_cards.html",
+        _app(
+            [
+                {
+                    "name": "Tags",
+                    "object_name": "Tag",
+                    "admin_url": "/t/",
+                    "view_only": True,
+                }
+            ]
+        ),
+    )
+    assert 'class="fas fa-table fs-4 text-primary"' in html
+    assert "fa-plus" not in html
+
+
+def test_breadcrumb_do_admin_nao_usa_o_bloco_breadcrumbs_do_django() -> None:
+    for pasta in (TEMPLATES / "admin", TEMPLATES / "simple_history"):
+        for arquivo in pasta.rglob("*.html"):
+            assert "{% block breadcrumbs %}" not in arquivo.read_text(
+                encoding="utf-8"
+            ), arquivo
+    base = (TEMPLATES / "admin" / "base.html").read_text(encoding="utf-8")
+    assert "{% block breadcrumb_home_url %}{% url 'admin:index' %}" in base

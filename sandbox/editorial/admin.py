@@ -10,6 +10,7 @@ class ComentarioInline(admin.TabularInline):
 
 @admin.register(Categoria)
 class CategoriaAdmin(DSGovBrModelAdmin):
+    icon = "fas fa-tags"
     list_display = ("nome", "slug")
     prepopulated_fields = {"slug": ("nome",)}
 
@@ -21,6 +22,7 @@ class TagAdmin(DSGovBrModelAdmin):
 
 @admin.register(Noticia)
 class NoticiaAdmin(DSGovBrModelAdmin):
+    icon = "fas fa-newspaper"
     list_display = ("titulo", "categoria", "status", "criado_em")
     list_filter = ("status", "categoria", "criado_em")
     search_fields = ("titulo", "conteudo")

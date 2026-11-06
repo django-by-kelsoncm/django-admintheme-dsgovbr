@@ -1,5 +1,24 @@
 # Histórico de Versões
 
+## 7.2.0
+
+### Cards na página inicial e na página do app
+
+- **Página inicial do admin**: uma seção por app com os models em cards do GOV.BR DS (ícone, nome com link, "Ver
+  lista"/"Visualizar" e "Adicionar"). Antes só aparecia o texto de boas-vindas.
+- **Página do app**: os cards só do app (`admin/includes/model_cards.html`).
+- **Permissões**: o `DSGovBrAdminSite.index` e o `app_index` usam `get_cards_app_list`, a lista do Django com as
+  permissões do usuário; o menu continua com `get_app_list`.
+- **Ícones**: `AppConfig.icon` e `ModelAdmin.icon`, com padrões `fas fa-folder` e `fas fa-table`
+  (`DSGOVBR_DEFAULT_APP_ICON`, `DSGOVBR_DEFAULT_MODEL_ICON`), no menu e nos cards (`dsgovbr/icons.py`).
+
+### Correções de ícones e breadcrumb
+
+- O ícone do model nunca chegava ao menu (`getattr` num `dict` em `menus.py`); o padrão do model no menu passa de
+  `fas fa-angle-right` para `fas fa-table`.
+- Breadcrumb do admin: os templates sobrescreviam o bloco `breadcrumbs` do Django, que o tema não usa, e só aparecia o
+  título. Agora o `admin/base.html` monta app > lista > objeto > página atual, e a casa leva ao `admin:index`.
+
 ## 7.1.0
 
 ### Header, menu e rodapé parametrizáveis

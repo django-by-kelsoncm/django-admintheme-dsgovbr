@@ -3,6 +3,8 @@ import logging
 from django.urls import reverse, NoReverseMatch
 from django.utils.module_loading import autodiscover_modules
 
+from dsgovbr.icons import app_icon, model_icon
+
 
 class MenuItem:
     def __init__(self, name, url, icon=None, order=None, permission=None, check=None):
@@ -223,8 +225,13 @@ class MenuRegistry:
         # 1. Processar a lista vinda do Django Admin
         for app in admin_app_list:
             app_label = app.get("app_label")
+            # ícone do AppConfig só para pasta nova: pasta registrada no menus.py mantém o seu
+            novo = app_label not in self._folders
             reg_folder = self.register_folder(
-                app_label, name=app.get("name"), app_url=app.get("app_url")
+                app_label,
+                name=app.get("name"),
+                icon=app_icon(app_label) if novo else None,
+                app_url=app.get("app_url"),
             )
 
             models_list = []
@@ -233,7 +240,8 @@ class MenuRegistry:
                     {
                         "name": model.get("name"),
                         "admin_url": model.get("admin_url"),
-                        "icon": getattr(model, "icon", "fas fa-angle-right"),
+                        # model é um dict do Django: o ícone vem do ModelAdmin registrado
+                        "icon": model_icon(model.get("model")),
                     }
                 )
 

@@ -189,3 +189,115 @@ def test_full_admin_app_list_nao_recursa_com_site_dsgovbr(monkeypatch):
     monkeypatch.setattr(admin, "site", site)
     request = RequestFactory().get("/")
     assert menus.get_full_admin_app_list(request) == []
+
+
+def test_menu_usa_icone_do_modeladmin_e_do_appconfig(clean_registry, monkeypatch):
+    from types import SimpleNamespace
+
+    from django.contrib import admin
+    from django.contrib.auth.models import Group, User
+
+    from dsgovbr import icons
+
+    app_list = [
+        {
+            "app_label": "auth",
+            "name": "Auth",
+            "app_url": "/admin/auth/",
+            "models": [
+                {"name": "Grupos", "admin_url": "/g/", "model": Group},
+                {"name": "Usuários", "admin_url": "/u/", "model": User},
+            ],
+        }
+    ]
+    monkeypatch.setattr(menus, "get_full_admin_app_list", lambda request: app_list)
+    monkeypatch.setattr(
+        admin.site, "_registry", {Group: SimpleNamespace(icon="fas fa-users")}
+    )
+
+    request = RequestFactory().get("/")
+    request.user = SimpleNamespace(is_authenticated=True, has_perm=lambda p: True)
+    pasta = clean_registry.get_menu_list(request)[0]
+
+    assert pasta["icon"] == icons.DEFAULT_APP_ICON  # AuthConfig não define icon
+    assert [m["icon"] for m in pasta["models"]] == [
+        "fas fa-users",
+        icons.DEFAULT_MODEL_ICON,
+    ]
+
+
+def test_icones_padrao_configuraveis():
+    from types import SimpleNamespace
+
+    from django.test import override_settings
+
+    from dsgovbr import icons
+
+    site = SimpleNamespace(_registry={})
+    assert icons.app_icon("auth") == icons.DEFAULT_APP_ICON
+    assert icons.app_icon("nao_existe") == icons.DEFAULT_APP_ICON
+    assert icons.model_icon(object, site) == icons.DEFAULT_MODEL_ICON
+    with override_settings(
+        DSGOVBR_DEFAULT_APP_ICON="fas fa-box", DSGOVBR_DEFAULT_MODEL_ICON="fas fa-list"
+    ):
+        assert icons.app_icon("auth") == "fas fa-box"
+        assert icons.model_icon(None) == "fas fa-list"
+
+
+def test_icone_do_appconfig():
+    from django.apps import apps
+
+    from dsgovbr import icons
+
+    config = apps.get_app_config("admin")
+    config.icon = "fas fa-cogs"
+    try:
+        assert icons.app_icon("admin") == "fas fa-cogs"
+    finally:
+        del config.icon
+
+
+def test_cards_usam_permissoes_do_usuario_e_icones():
+    from types import SimpleNamespace
+
+    from django.contrib.admin import ModelAdmin
+    from django.contrib.auth.models import Group
+
+    from dsgovbr.admin import DSGovBrAdminSite
+
+    class GroupAdmin(ModelAdmin):
+        icon = "fas fa-users"
+
+    site = DSGovBrAdminSite(name="cards_teste")
+    site.register(Group, GroupAdmin)
+
+    def usuario(pode: bool):
+        return SimpleNamespace(
+            is_active=True,
+            is_staff=True,
+            has_module_perms=lambda app_label: pode,
+            has_perm=lambda perm, obj=None: pode,
+        )
+
+    from types import ModuleType
+
+    from django.test import override_settings
+    from django.urls import clear_url_caches, path
+
+    urls = ModuleType("cards_urls")
+    urls.urlpatterns = [path("admin/", site.urls)]
+
+    request = RequestFactory().get("/admin/")
+    with override_settings(ROOT_URLCONF=urls):
+        clear_url_caches()
+        try:
+            request.user = usuario(False)
+            assert site.get_cards_app_list(request) == []
+
+            request.user = usuario(True)
+            app = site.get_cards_app_list(request)[0]
+        finally:
+            clear_url_caches()
+    assert app["app_label"] == "auth"
+    assert app["models"][0]["icon"] == "fas fa-users"
+    assert app["models"][0]["add_url"] == "/admin/auth/group/add/"

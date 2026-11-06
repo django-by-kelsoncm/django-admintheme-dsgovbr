@@ -1,1 +1,31 @@
 {% extends "dsgovbr/base.html" %}
+{% load i18n admin_urls %}
+
+{% comment %}
+  Breadcrumb do admin montado pelo contexto do Django, sem depender do bloco
+  "breadcrumbs" de cada template: app > lista do model > objeto > página atual.
+  - página do app: app_label (sem opts)
+  - lista: opts + cl; formulário: opts + original/add
+  - exclusão e histórico: opts + object
+{% endcomment %}
+{# no admin a casa do breadcrumb leva à página inicial do admin #}
+{% block breadcrumb_home_url %}{% url 'admin:index' %}{% endblock breadcrumb_home_url %}
+
+{% block breadcrumb %}
+  {% if opts %}
+    <li class="breadcrumb-item"><a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a></li>
+    {% if cl %}
+      <li class="breadcrumb-item active" aria-current="page">{{ opts.verbose_name_plural|capfirst }}</li>
+    {% else %}
+      <li class="breadcrumb-item">{% if has_view_permission is not False %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}</li>
+      {% if object and object.pk %}
+        <li class="breadcrumb-item"><a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}">{{ object|truncatewords:"18" }}</a></li>
+      {% endif %}
+      <li class="breadcrumb-item active" aria-current="page">{% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% elif original %}{{ original|truncatewords:"18" }}{% else %}{{ title }}{% endif %}</li>
+    {% endif %}
+  {% elif app_label and app_list %}
+    <li class="breadcrumb-item active" aria-current="page">{{ app_list.0.name }}</li>
+  {% elif title %}
+    <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+  {% endif %}
+{% endblock breadcrumb %}

@@ -3,13 +3,6 @@
 
 {% block content_title %}{{ title }}{% endblock content_title %}
 
-{% block breadcrumbs %}
-    <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% translate 'Admin' %}</a></li>
-    <li class="breadcrumb-item"><a href="{% url opts|admin_urlname:'changelist' %}">{{ module_name }}</a></li>
-    <li class="breadcrumb-item"><a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}">
-        {{ object|truncatewords:"18" }}</a></li>
-    <li class="breadcrumb-item active">{% translate 'History' %}</li>
-{% endblock breadcrumbs %}
 
 {% block content %}
     <div id="content-main">

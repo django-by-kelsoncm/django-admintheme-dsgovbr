@@ -60,7 +60,7 @@
         <nav aria-label="{% translate 'Breadcrumbs' %}">
           <ol class="breadcrumb">
             {# o dsgovbr-bootstraped desenha a casa no primeiro nível #}
-            <li class="breadcrumb-item"><a href="/"><span class="visually-hidden">Página inicial</span></a></li>
+            <li class="breadcrumb-item"><a href="{% block breadcrumb_home_url %}/{% endblock breadcrumb_home_url %}"><span class="visually-hidden">Página inicial</span></a></li>
             {% block breadcrumb %}
               {% for bread in breadcrumb %}
                 <li class="breadcrumb-item"><a href="{{ bread.url }}">{{ bread.label }}</a></li>

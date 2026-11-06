@@ -118,6 +118,23 @@ GOV.BR DS (`core-init.js`) não é mais carregado.
 - **Usuário no header**: Sign-in com avatar como o `avatar-dropdown` do GOV.BR DS (avatar, "Olá, **Nome**" e seta).
   Itens de `DSGOVBR_HEADER["login"]["dropdown"]["items"]` com `"method": "post"` viram um formulário com CSRF; o
   "Sair" padrão usa isso, porque o `LogoutView` do Django 5+ recusa GET.
+- **Página inicial e página do app**: os models aparecem em cards (ícone, nome, "Ver lista" e "Adicionar"), agrupados
+  por app na página inicial, com as permissões do usuário.
+- **Ícones**: app pelo atributo `icon` do `AppConfig`; model pelo atributo `icon` do ModelAdmin (o `class Meta` do model
+  não aceita atributos novos). Sem eles: `fas fa-folder` e `fas fa-table`, configuráveis em
+  `DSGOVBR_DEFAULT_APP_ICON` e `DSGOVBR_DEFAULT_MODEL_ICON`. Valem para o menu e para os cards.
+
+  ```python
+  class EditorialConfig(AppConfig):
+      icon = "fas fa-newspaper"
+
+  @admin.register(Noticia)
+  class NoticiaAdmin(DSGovBrModelAdmin):
+      icon = "fas fa-newspaper"
+  ```
+
+- **Breadcrumb do admin**: montado pelo contexto (app > lista > objeto > página atual); a casa leva ao `admin:index`
+  (bloco `breadcrumb_home_url` do `dsgovbr/base.html`).
 - **Título da página**: o bloco `title_actions` do `dsgovbr/base.html` põe ações à direita do título (na lista: busca,
   filtros, mais opções e "Adicionar").
 - **Cookiebar**: o bloco `cookie_consent` do `dsgovbr/base.html` vem vazio; sobrescreva-o com um

@@ -5,3 +5,4 @@ class AtendimentoConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "atendimento"
     verbose_name = "Atendimento & Chamados"
+    icon = "fas fa-headset"
