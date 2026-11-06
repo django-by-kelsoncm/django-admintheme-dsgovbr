@@ -449,3 +449,53 @@ def test_scss_sem_cor_literal_fora_de_variavel() -> None:
         codigo = linha.split("//")[0]
         if re.search(r"#[0-9a-fA-F]{3,8}\b|rgba?\(", codigo):
             assert codigo.lstrip().startswith("$"), linha
+
+
+# Modo escuro (issue #37): componentes com cor fixa do modo claro no vendor.
+@pytest.mark.parametrize(
+    "seletor, propriedade",
+    [
+        (".navbar", "--bs-navbar-color"),
+        (".navbar", "--bs-navbar-brand-color"),
+        ('.navbar [role="search"] .form-control', "background-color"),
+        (".breadcrumb", "--bs-breadcrumb-item-active-color"),
+        (".form-control", "color"),
+        (".form-select", "color"),
+        (".btn-outline-primary", "--bs-btn-color"),
+        (".btn-outline-secondary", "--bs-btn-color"),
+        (".pagination", "--bs-pagination-color"),
+        (".list-group", "--bs-list-group-action-color"),
+        (".dropdown-menu", "--bs-dropdown-link-color"),
+    ],
+)
+def test_modo_escuro_troca_cores_fixas_por_variaveis(
+    seletor: str, propriedade: str
+) -> None:
+    css = _scss_compilado()
+    regras = re.findall(
+        r'\[data-bs-theme="dark"\] ' + re.escape(seletor) + r"[^{]*\{([^}]*)\}", css
+    )
+    valores = [
+        valor.strip()
+        for regra in regras
+        for nome, valor in re.findall(r"([-\w]+)\s*:\s*([^;]+)", regra)
+        if nome == propriedade
+    ]
+    assert valores, (seletor, propriedade)
+    assert all(valor.startswith("var(--bs-") for valor in valores), valores
+
+
+def test_modo_escuro_respeita_dropdown_com_tema_claro_proprio() -> None:
+    css = _scss_compilado()
+    assert '[data-bs-theme="dark"] .dropdown-menu:not([data-bs-theme="light"])' in css
+
+
+def test_calendario_e_relogio_abrem_abaixo_do_link() -> None:
+    css = _scss_compilado()
+    assert re.search(r"\.calendarbox,\s*\.clockbox \{[^}]*margin-top: 0\.25rem", css)
+    js = (PACOTE / "static" / "dsgovbr" / "js" / "dsgovbr_forms.js").read_text(
+        encoding="utf-8"
+    )
+    assert "atalhos.openCalendar = function" in js
+    assert "atalhos.openClock = function" in js
+    assert "ancora.bottom + window.scrollY" in js
