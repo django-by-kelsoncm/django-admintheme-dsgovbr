@@ -21,7 +21,19 @@
 
         <div class="d-flex align-items-center gap-1 ms-auto">
           {% if dsgovbr.header.links.show %}
-            <div class="dropdown">
+            {% if dsgovbr.header.links.em_linha %}
+              {# acesso rápido: links em linha a partir de 1200px, dropdown abaixo disso #}
+              <ul class="navbar-nav flex-row d-none d-xl-flex" aria-label="Acesso rápido">
+                {% for item in dsgovbr.header.links.items %}
+                  <li class="nav-item">
+                    <a class="nav-link px-2" href="{{ item.url }}"{% if item.target %} target="{{ item.target }}" rel="noopener"{% endif %}>
+                      {{ item.label }}{% if item.external %}<i class="fas fa-external-link-alt ms-1" aria-hidden="true"></i>{% endif %}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+            <div class="dropdown{% if dsgovbr.header.links.em_linha %} d-xl-none{% endif %}">
               <button class="btn btn-link btn-sm rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Abrir acesso rápido"><i class="fas fa-ellipsis-v" aria-hidden="true"></i></button>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li><h2 class="dropdown-header">Acesso rápido</h2></li>
@@ -40,7 +52,19 @@
             <div class="vr mx-1"></div>
           {% endif %}
           {% if dsgovbr.header.funcionalidades.show %}
-            <div class="dropdown">
+            {% if dsgovbr.header.funcionalidades.em_linha %}
+              {# funcionalidades: ícones em linha a partir de 1200px, dropdown abaixo disso #}
+              <div class="d-none d-xl-flex">
+                {% for item in dsgovbr.header.funcionalidades.items %}
+                  {% if item.url %}
+                    <a class="btn btn-link btn-sm rounded-circle" href="{{ item.url }}"{% if item.target %} target="{{ item.target }}" rel="noopener"{% endif %} aria-label="{{ item.label }}" title="{{ item.label }}"><i class="{{ item.icon|default:'fas fa-circle' }}" aria-hidden="true"></i></a>
+                  {% else %}
+                    <button class="btn btn-link btn-sm rounded-circle" type="button" aria-label="{{ item.label }}" title="{{ item.label }}"><i class="{{ item.icon|default:'fas fa-circle' }}" aria-hidden="true"></i></button>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+            <div class="dropdown{% if dsgovbr.header.funcionalidades.em_linha %} d-xl-none{% endif %}">
               <button class="btn btn-link btn-sm rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Abrir funcionalidades do sistema"><i class="fas fa-th" aria-hidden="true"></i></button>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li><h2 class="dropdown-header">Funcionalidades do sistema</h2></li>

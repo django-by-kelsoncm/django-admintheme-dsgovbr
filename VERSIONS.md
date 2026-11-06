@@ -1,5 +1,18 @@
 # Histórico de Versões
 
+## 7.1.0
+
+### Header, menu e rodapé parametrizáveis
+
+- **Header**: `DSGOVBR_HEADER["links"]["em_linha"]` e `DSGOVBR_HEADER["funcionalidades"]["em_linha"]` (padrão `False`)
+  mostram os links e os ícones na linha do header a partir de 1200px; abaixo disso continuam no dropdown.
+- **Rodapé do menu**: `DSGOVBR_HEADER["menu"]["footer"]` aceita `logos` (`[{src, alt}]`), `redes_sociais`
+  (`[{label, icon, url}]`) e `licenca`, além dos `links` que já existiam.
+- **Rodapé da página**: `DSGOVBR_FOOTER` aceita `logo` e `assinatura` (`{src, alt}`), `colunas`
+  (`[{titulo, links: [{label, url, target}]}]`), `redes_sociais` e `texto` (antes do copyright).
+- Novo template `dsgovbr/redes_sociais.html`. Tudo vem vazio por padrão: sem configuração, nada muda.
+- Sandbox configurado com todos os detalhes.
+
 ## 7.0.0
 
 ### Bootstrap 5 com o dsgovbr-bootstraped (quebra de compatibilidade)

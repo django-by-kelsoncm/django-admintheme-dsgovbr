@@ -61,10 +61,39 @@ Em produção com `whitenoise` (ou outro servidor de estáticos que só serve o 
 
 O item "Sair" do usuário usa a rota `logout` do projeto ou, se ela não existir, `admin:logout`.
 
-Links do rodapé do menu e da versão no rodapé da página (opcionais):
+Detalhes opcionais do header, do menu e do rodapé, como no exemplo "Painel administrativo" do dsgovbr-bootstraped
+(todos vazios por padrão; o exemplo completo está em `sandbox/config/settings.py`):
 
 ```python
-DSGOVBR_HEADER = {"menu": {"show": True, "footer": {"links": [{"label": "Ajuda", "url": "https://...", "target": "_blank"}]}}}
+REDES = [{"label": "YouTube", "icon": "fab fa-youtube", "url": "https://www.youtube.com/..."}]
+
+DSGOVBR_HEADER = {
+    # em_linha: links e ícones na linha do header a partir de 1200px (dropdown abaixo disso)
+    "links": {"show": True, "em_linha": True, "items": [{"label": "Documentação", "url": "/docs/"}]},
+    "funcionalidades": {
+        "show": True,
+        "em_linha": True,
+        "items": [{"label": "Suporte", "icon": "fas fa-headset", "url": "/suporte/"}],
+    },
+    # o dict "menu" substitui o padrão inteiro: repita "show" e "localizacao"
+    "menu": {
+        "show": True,
+        "localizacao": "flutuante",
+        "footer": {
+            "logos": [{"src": "/static/img/orgao.svg", "alt": "Logo do órgão"}],
+            "links": [{"label": "Ajuda", "url": "https://...", "target": "_blank"}],
+            "redes_sociais": REDES,
+            "licenca": "Conteúdo publicado sob a licença Creative Commons Atribuição 4.0.",
+        },
+    },
+}
+DSGOVBR_FOOTER = {
+    "logo": {"src": "/static/img/logo-negativo.svg", "alt": "Logo do sistema"},
+    "colunas": [{"titulo": "Ajuda", "links": [{"label": "Fale conosco", "url": "/contato/"}]}],
+    "redes_sociais": REDES,
+    "assinatura": {"src": "/static/img/orgao-negativo.svg", "alt": "Assinatura do órgão"},
+    "texto": "Texto antes do copyright.",
+}
 PROJECT_RELEASES_URL = "https://github.com/org/projeto/releases/tag/"  # + PROJECT_VERSION
 ```
 

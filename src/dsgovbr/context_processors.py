@@ -54,10 +54,14 @@ def layout_settings(request: HttpRequest) -> dict:
                 },
                 "links": {
                     "show": False,
+                    # True: links em linha a partir de 1200px (dropdown abaixo disso)
+                    "em_linha": False,
                     "items": [],
                 },
                 "funcionalidades": {
                     "show": False,
+                    # True: ícones em linha a partir de 1200px (dropdown abaixo disso)
+                    "em_linha": False,
                     "items": [],
                 },
                 "login": {
@@ -87,7 +91,14 @@ def layout_settings(request: HttpRequest) -> dict:
                     "localizacao": "flutuante",  # flutuante (offcanvas)|fixo (aberto a partir de 1200px)
                     "padding": {},
                     "header": {},
-                    "footer": {},
+                    # rodapé do menu: logos [{src, alt}], links [{label, url, icon, target}],
+                    # redes_sociais [{label, icon, url}] e licenca (texto)
+                    "footer": {
+                        "logos": [],
+                        "links": [],
+                        "redes_sociais": [],
+                        "licenca": "",
+                    },
                     "items": "",
                 },
                 "search": {
@@ -100,6 +111,15 @@ def layout_settings(request: HttpRequest) -> dict:
         "footer": {
             **{
                 "show": True,
+                # logo (versão negativa) e assinatura: {src, alt}
+                "logo": None,
+                # colunas: [{titulo, links: [{label, url, target}]}]
+                "colunas": [],
+                # redes_sociais: [{label, icon, url}]
+                "redes_sociais": [],
+                "assinatura": None,
+                # texto antes do copyright na última linha
+                "texto": "",
             },
             **getattr(settings, "DSGOVBR_FOOTER", {}),
         },
