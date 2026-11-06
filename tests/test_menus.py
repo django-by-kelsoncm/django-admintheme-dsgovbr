@@ -303,6 +303,54 @@ def test_cards_usam_permissoes_do_usuario_e_icones():
     assert app["models"][0]["add_url"] == "/admin/auth/group/add/"
 
 
+def _usuario(staff: bool, pode: bool):
+    from types import SimpleNamespace
+
+    return SimpleNamespace(
+        is_authenticated=True,
+        is_active=True,
+        is_staff=staff,
+        has_module_perms=lambda app_label: pode,
+        has_perm=lambda perm, obj=None: pode,
+    )
+
+
+def test_menu_do_admin_respeita_permissoes(monkeypatch):
+    from types import ModuleType
+
+    from django.contrib import admin
+    from django.contrib.admin import ModelAdmin
+    from django.contrib.auth.models import Group
+    from django.test import override_settings
+    from django.urls import clear_url_caches, path
+
+    from dsgovbr.admin import DSGovBrAdminSite
+
+    site = DSGovBrAdminSite(name="menu_perm")
+    site.register(Group, ModelAdmin)
+    monkeypatch.setattr(admin, "site", site)
+    urls = ModuleType("menu_perm_urls")
+    urls.urlpatterns = [path("admin/", site.urls)]
+
+    request = RequestFactory().get("/")
+    with override_settings(ROOT_URLCONF=urls):
+        clear_url_caches()
+        try:
+            request.user = _usuario(staff=True, pode=False)
+            assert menus.get_full_admin_app_list(request) == []
+
+            request.user = _usuario(staff=False, pode=True)  # não entra no admin
+            assert menus.get_full_admin_app_list(request) == []
+
+            request.user = _usuario(staff=True, pode=True)
+            labels = [
+                app["app_label"] for app in menus.get_full_admin_app_list(request)
+            ]
+        finally:
+            clear_url_caches()
+    assert labels == ["auth"]
+
+
 def _request(path="/", perms=(), autenticado=True):
     from types import SimpleNamespace
 

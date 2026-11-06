@@ -345,3 +345,36 @@ def test_breadcrumb_do_admin_nao_usa_o_bloco_breadcrumbs_do_django() -> None:
             ), arquivo
     base = (TEMPLATES / "admin" / "base.html").read_text(encoding="utf-8")
     assert "{% block breadcrumb_home_url %}{% url 'admin:index' %}" in base
+
+
+def test_nenhum_template_aponta_para_a_raiz_fixa() -> None:
+    for arquivo in TEMPLATES.rglob("*.html"):
+        assert 'href="/"' not in arquivo.read_text(encoding="utf-8"), arquivo
+
+
+def test_licenca_sem_url_nao_gera_link_vazio() -> None:
+    base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
+    assert '{% if project_license_url %}<a href="{{ project_license_url }}"' in base
+
+
+def _avatar(login: dict, user: object) -> str:
+    return _render(
+        "dsgovbr/avatar.html", {"dsgovbr": {"header": {"login": login}}, "user": user}
+    )
+
+
+def test_avatar_fotografico_usa_a_foto_padrao_configurada() -> None:
+    sem_foto = SimpleNamespace(avatar_url="", get_username=lambda: "ana")
+    html = _avatar(
+        {"type": "fotografico", "default_avatar_url": "/padrao.png"}, sem_foto
+    )
+    assert '<img src="/padrao.png" alt="">' in html
+    html = _avatar({"type": "fotografico", "default_avatar_url": ""}, sem_foto)
+    assert "fa-user" in html
+
+
+def test_botao_do_menu_some_sem_menu_na_pagina() -> None:
+    scss = (PACOTE / "static" / "dsgovbr" / "scss" / "dsgovbr.scss").read_text(
+        encoding="utf-8"
+    )
+    assert "body:not(:has(#main-navigation)) #navigation" in scss

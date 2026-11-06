@@ -163,7 +163,11 @@ GOV.BR DS (`core-init.js`) não é mais carregado.
   `add_reorder_callback(funcao)`.
 
 - **Breadcrumb do admin**: montado pelo contexto (app > lista > objeto > página atual); a casa leva ao `admin:index`
-  (bloco `breadcrumb_home_url` do `dsgovbr/base.html`).
+  (bloco `breadcrumb_home_url` do `dsgovbr/base.html`). Fora do admin, leva a `PROJECT_HOME_URL` ou ao prefixo do
+  script, o que funciona com `FORCE_SCRIPT_NAME`.
+- **Menu e permissões**: o menu mostra só os apps e models que o usuário pode ver no admin.
+- **Avatar**: com `DSGOVBR_HEADER["login"]["type"] = "fotografico"`, usa `user.avatar_url` ou, sem ela,
+  `DSGOVBR_HEADER["login"]["default_avatar_url"]`; sem nenhuma, o ícone de usuário.
 - **Título da página**: o bloco `title_actions` do `dsgovbr/base.html` põe ações à direita do título (na lista: busca,
   filtros, mais opções e "Adicionar").
 - **Cookiebar**: o bloco `cookie_consent` do `dsgovbr/base.html` vem vazio; sobrescreva-o com um

@@ -7,6 +7,9 @@
 <span class="dsgovbr-avatar{% if grande %} dsgovbr-avatar-lg fs-2{% endif %} text-bg-primary" aria-hidden="true">
   {% if dsgovbr.header.login.type == 'fotografico' and user.avatar_url %}
     <img src="{{ user.avatar_url }}" alt="">
+  {% elif dsgovbr.header.login.type == 'fotografico' and dsgovbr.header.login.default_avatar_url %}
+    {# foto padrão de DSGOVBR_HEADER["login"]["default_avatar_url"] para quem não tem foto #}
+    <img src="{{ dsgovbr.header.login.default_avatar_url }}" alt="">
   {% elif dsgovbr.header.login.type == 'fotografico' or dsgovbr.header.login.type == 'iconico' %}
     <i class="fas fa-user"></i>
   {% else %}
