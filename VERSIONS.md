@@ -1,5 +1,12 @@
 # Histórico de Versões
 
+## 7.5.3
+
+### Documentação: sem "Editar no GitHub" nas páginas da API (issue #45)
+
+- As páginas de `docs/api/`, geradas pelo `sphinx.ext.apidoc`, deixam de mostrar o botão "Editar no GitHub", que
+  levava a 404. Usa a opção `edit_on_github_exclude` do dsgovbr-sphinx-theme 0.1.1.
+
 ## 7.5.2
 
 ### Documentação com o tema dsgovbr-sphinx-theme (issue #43)
