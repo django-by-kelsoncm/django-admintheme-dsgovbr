@@ -11,7 +11,14 @@
   `.form-select` (também nas opções do `filter_horizontal`) e `.input-group-text`; botões `btn-outline-primary`,
   `btn-outline-secondary` e `btn-outline-dark` (Cancelar, botões do seletor); itens de dropdown, paginação,
   list group, menu lateral (itens, submenus e item atual), abas, accordion, toast, progress e spinner.
+- Menu com `data-bs-theme="light"` próprio (ações da barra de seleção da lista) mantém as cores do vendor.
 - O tema não traz seletor de modo: o projeto põe `data-bs-theme` no `<html>` (ou num contêiner).
+
+### Calendário e relógio abaixo do link
+
+- O `DateTimeShortcuts.js` do Django abre a caixa à direita do ícone e 75px (calendário) ou 30px (relógio) acima dele,
+  pensando no ícone ao lado do campo. No tema o ícone fica abaixo do campo e a caixa cobria o campo. O
+  `dsgovbr_forms.js` passa a abrir a caixa logo abaixo do link "Hoje"/"Agora", sem passar da borda direita da janela.
 
 ## 7.3.3
 

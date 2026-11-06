@@ -79,6 +79,45 @@
     });
   }
 
+  // Calendário e relógio (DateTimeShortcuts.js do Django): o Django abre a
+  // caixa à direita do ícone e sobe 75px (calendário) ou 30px (relógio),
+  // pensando no ícone ao lado do campo. No tema o ícone fica abaixo do campo
+  // e a caixa cobria o campo. Aqui ela abre logo abaixo do link, sem passar
+  // da borda direita da janela; o espaço vem do margin-top do dsgovbr.scss.
+  function posicionarAbaixo(caixa, link) {
+    if (!caixa || !link) return;
+    var ancora = link.getBoundingClientRect();
+    var largura = caixa.offsetWidth;
+    var maxEsquerda = document.documentElement.clientWidth - largura;
+    var esquerda = Math.max(0, Math.min(ancora.left, maxEsquerda));
+    caixa.style.left = esquerda + window.scrollX + 'px';
+    caixa.style.top = ancora.bottom + window.scrollY + 'px';
+  }
+
+  function calendarioAbaixoDoCampo() {
+    var atalhos = window.DateTimeShortcuts;
+    if (!atalhos || atalhos.dsgovbrPosicionado) return;
+    atalhos.dsgovbrPosicionado = true;
+    var abrirCalendario = atalhos.openCalendar;
+    var abrirRelogio = atalhos.openClock;
+    atalhos.openCalendar = function (num) {
+      abrirCalendario.apply(this, arguments);
+      posicionarAbaixo(
+        document.getElementById(atalhos.calendarDivName1 + num),
+        document.getElementById(atalhos.calendarLinkName + num)
+      );
+    };
+    atalhos.openClock = function (num) {
+      abrirRelogio.apply(this, arguments);
+      posicionarAbaixo(
+        document.getElementById(atalhos.clockDivName + num),
+        document.getElementById(atalhos.clockLinkName + num)
+      );
+    };
+  }
+
+  window.addEventListener('load', calendarioAbaixoDoCampo);
+
   window.addEventListener('load', botoesDoAdmin);
   // O jQuery 3 executa o ready de forma assíncrona: registrar aqui, depois do
   // inlines.js, garante rodar após ele criar o "Adicionar outro".

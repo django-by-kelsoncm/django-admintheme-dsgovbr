@@ -483,3 +483,19 @@ def test_modo_escuro_troca_cores_fixas_por_variaveis(
     ]
     assert valores, (seletor, propriedade)
     assert all(valor.startswith("var(--bs-") for valor in valores), valores
+
+
+def test_modo_escuro_respeita_dropdown_com_tema_claro_proprio() -> None:
+    css = _scss_compilado()
+    assert '[data-bs-theme="dark"] .dropdown-menu:not([data-bs-theme="light"])' in css
+
+
+def test_calendario_e_relogio_abrem_abaixo_do_link() -> None:
+    css = _scss_compilado()
+    assert re.search(r"\.calendarbox,\s*\.clockbox \{[^}]*margin-top: 0\.25rem", css)
+    js = (PACOTE / "static" / "dsgovbr" / "js" / "dsgovbr_forms.js").read_text(
+        encoding="utf-8"
+    )
+    assert "atalhos.openCalendar = function" in js
+    assert "atalhos.openClock = function" in js
+    assert "ancora.bottom + window.scrollY" in js

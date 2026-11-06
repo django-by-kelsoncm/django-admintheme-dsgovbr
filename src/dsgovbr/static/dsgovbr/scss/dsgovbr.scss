@@ -489,6 +489,9 @@ $dsgovbr-calendar-padding: 0.5rem;
 $dsgovbr-calendar-cell-padding: 0.25rem;
 $dsgovbr-datetime-icon-size: 16px;
 $dsgovbr-datetime-gap: 0.5rem;
+// Espaço entre o link "Hoje"/"Agora" e a caixa, aberta logo abaixo dele
+// pelo dsgovbr_forms.js.
+$dsgovbr-calendar-offset: 0.25rem;
 
 .datetimeshortcuts {
   margin-left: $dsgovbr-datetime-gap;
@@ -525,6 +528,7 @@ $dsgovbr-datetime-gap: 0.5rem;
 .clockbox {
   z-index: var(--bs-dropdown-zindex, 1000);
   width: $dsgovbr-calendar-width;
+  margin-top: $dsgovbr-calendar-offset;
   overflow: hidden;
   color: var(--bs-body-color);
   text-align: center;
@@ -719,7 +723,9 @@ $dsgovbr-dark-active-bg: var(--bs-primary);
     --bs-btn-disabled-color: var(--bs-tertiary-color);
   }
 
-  .dropdown-menu {
+  // Menu com data-bs-theme="light" próprio (barra de seleção da lista)
+  // fica com as cores do vendor.
+  .dropdown-menu:not([data-bs-theme="light"]) {
     --bs-dropdown-link-color: var(--bs-body-color);
     --bs-dropdown-link-hover-color: var(--bs-body-color);
     --bs-dropdown-header-color: var(--bs-secondary-color);
