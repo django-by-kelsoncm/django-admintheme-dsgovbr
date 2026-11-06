@@ -1,6 +1,6 @@
 # Histórico de Versões
 
-## 7.2.1
+## 7.3.2
 
 ### Widgets do admin sem o base.css do Django (issue #33)
 
@@ -18,17 +18,7 @@
   com fundo, borda e sombra e o dia/hora em destaque.
 - **Sandbox**: `autocomplete_fields` em Notícia (categoria e tags) e em Servidor (órgão).
 
-## 7.2.0
-
-### Cards na página inicial e na página do app
-
-- **Página inicial do admin**: uma seção por app com os models em cards do GOV.BR DS (ícone, nome com link, "Ver
-  lista"/"Visualizar" e "Adicionar"). Antes só aparecia o texto de boas-vindas.
-- **Página do app**: os cards só do app (`admin/includes/model_cards.html`).
-- **Permissões**: o `DSGovBrAdminSite.index` e o `app_index` usam `get_cards_app_list`, a lista do Django com as
-  permissões do usuário; o menu continua com `get_app_list`.
-- **Ícones**: `AppConfig.icon` e `ModelAdmin.icon`, com padrões `fas fa-folder` e `fas fa-table`
-  (`DSGOVBR_DEFAULT_APP_ICON`, `DSGOVBR_DEFAULT_MODEL_ICON`), no menu e nos cards (`dsgovbr/icons.py`).
+## 7.3.1
 
 ### Segurança
 
@@ -46,6 +36,36 @@
   chave `dsgovbr.user_avatar` (URL externa da freepik, não usada pelos templates) foi removida.
 - Rodapé: `PROJECT_LICENSE_URL` vazio mostra a licença sem link (antes gerava `<a href="">`).
 - Página que esvazia o bloco `menu` não mostra mais o botão do menu no header.
+
+## 7.3.0
+
+### Menu: submenus, badges, cor e permissões em lista
+
+- **Submenus em vários níveis**: `register_item(..., parent=...)` com o item pai, o nome dele ou o caminho de nomes
+  (`["Utilitários", "Diagnóstico"]`); ou `MenuItem.add_item`. No menu, cada submenu é um Collapse aninhado no list group
+  (`dsgovbr/menu_items.html`), já aberto quando a página atual está dentro dele.
+- **Badges**: `badge=MenuItemBadge(label, color)` em pastas e itens; `label` pode ser `label(request)` (contador).
+  Texto vazio ou `None` esconde o selo.
+- **Cor**: `color` (cor do Bootstrap: `danger`, `success`…) aplicada ao ícone.
+- **Permissões em lista**: `permission=["app.view_x", "app.change_x"]` basta qualquer uma (`menus.has_permission`).
+- **Ícone padrão do item**: `DSGOVBR_DEFAULT_MENU_ICON` (padrão `fas fa-angle-right`); a pasta sem ícone usa
+  `DSGOVBR_DEFAULT_APP_ICON`. O padrão é lido na renderização, então `override_settings` vale.
+- **Pastas e submenus vazios somem**: sem link e sem itens visíveis para o usuário.
+- **Pasta do admin com `permission`/`check`** no `menus.py` agora some para quem não passa na regra (antes só valia
+  para pastas fora do admin).
+- Sandbox: pasta "Extras" com o submenu "Laboratório > Diagnóstico", badges e cor.
+
+## 7.2.0
+
+### Cards na página inicial e na página do app
+
+- **Página inicial do admin**: uma seção por app com os models em cards do GOV.BR DS (ícone, nome com link, "Ver
+  lista"/"Visualizar" e "Adicionar"). Antes só aparecia o texto de boas-vindas.
+- **Página do app**: os cards só do app (`admin/includes/model_cards.html`).
+- **Permissões**: o `DSGovBrAdminSite.index` e o `app_index` usam `get_cards_app_list`, a lista do Django com as
+  permissões do usuário; o menu continua com `get_app_list`.
+- **Ícones**: `AppConfig.icon` e `ModelAdmin.icon`, com padrões `fas fa-folder` e `fas fa-table`
+  (`DSGOVBR_DEFAULT_APP_ICON`, `DSGOVBR_DEFAULT_MODEL_ICON`), no menu e nos cards (`dsgovbr/icons.py`).
 
 ### Correções de ícones e breadcrumb
 

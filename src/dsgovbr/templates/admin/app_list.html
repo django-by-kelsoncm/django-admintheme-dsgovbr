@@ -3,23 +3,11 @@
 {% if app_list %}
   <div class="list-group list-group-flush">
     {% for app in app_list %}
-      <button class="list-group-item list-group-item-action{% if app.app_url not in request.path|urlencode %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#menu-app-{{ app.app_label }}" aria-expanded="{% if app.app_url in request.path|urlencode %}true{% else %}false{% endif %}" aria-controls="menu-app-{{ app.app_label }}">
-        <i class="{{ app.icon|default:'fas fa-folder' }}" aria-hidden="true"></i>{{ app.name }}
+      <button class="list-group-item list-group-item-action{% if app.app_url not in request.path|urlencode and not app.open %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#menu-app-{{ app.app_label }}" aria-expanded="{% if app.app_url in request.path|urlencode or app.open %}true{% else %}false{% endif %}" aria-controls="menu-app-{{ app.app_label }}">
+        {% include 'dsgovbr/menu_item_label.html' with item=app icone_padrao='fas fa-folder' %}
       </button>
-      <div class="collapse{% if app.app_url in request.path|urlencode %} show{% endif %}" id="menu-app-{{ app.app_label }}">
-        <div class="list-group list-group-flush">
-          {% for model in app.models %}
-            {% if model.admin_url %}
-              <a class="list-group-item list-group-item-action{% if model.admin_url in request.path|urlencode %} active{% endif %}" href="{{ model.admin_url }}"{% if model.admin_url in request.path|urlencode %} aria-current="page"{% endif %}>
-                <i class="{{ model.icon|default:'fas fa-table' }}" aria-hidden="true"></i>{{ model.name }}
-              </a>
-            {% else %}
-              <span class="list-group-item disabled" aria-disabled="true">
-                <i class="{{ model.icon|default:'fas fa-table' }}" aria-hidden="true"></i>{{ model.name }}
-              </span>
-            {% endif %}
-          {% endfor %}
-        </div>
+      <div class="collapse{% if app.app_url in request.path|urlencode or app.open %} show{% endif %}" id="menu-app-{{ app.app_label }}">
+        {% include 'dsgovbr/menu_items.html' with items=app.models %}
       </div>
     {% endfor %}
   </div>

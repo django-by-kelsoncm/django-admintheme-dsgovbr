@@ -5,6 +5,8 @@
 - Model: atributo ``icon`` do ``ModelAdmin`` (o ``class Meta`` do model não aceita
   atributos desconhecidos); sem ele, ``settings.DSGOVBR_DEFAULT_MODEL_ICON``
   (padrão ``DEFAULT_MODEL_ICON``).
+- Item registrado no ``menus.py`` sem ícone: ``settings.DSGOVBR_DEFAULT_MENU_ICON``
+  (padrão ``DEFAULT_MENU_ICON``).
 """
 
 from typing import Any
@@ -14,6 +16,7 @@ from django.conf import settings
 
 DEFAULT_APP_ICON = "fas fa-folder"
 DEFAULT_MODEL_ICON = "fas fa-table"
+DEFAULT_MENU_ICON = "fas fa-angle-right"
 
 
 def default_app_icon() -> str:
@@ -22,6 +25,10 @@ def default_app_icon() -> str:
 
 def default_model_icon() -> str:
     return getattr(settings, "DSGOVBR_DEFAULT_MODEL_ICON", "") or DEFAULT_MODEL_ICON
+
+
+def default_menu_icon() -> str:
+    return getattr(settings, "DSGOVBR_DEFAULT_MENU_ICON", "") or DEFAULT_MENU_ICON
 
 
 def app_icon(app_label: str | None) -> str:

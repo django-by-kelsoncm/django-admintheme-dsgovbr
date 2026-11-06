@@ -24,6 +24,13 @@ $dsgovbr-breakpoint-xl: 1200px;
   }
 }
 
+// Submenus do menu (dsgovbr/menu_items.html): cada nível recua um pouco mais.
+$dsgovbr-menu-sub-indent: 1rem;
+
+.dsgovbr-menu-sub {
+  padding-left: $dsgovbr-menu-sub-indent;
+}
+
 // Avatar do usuário (dsgovbr/avatar.html); cores por .text-bg-primary.
 $dsgovbr-avatar-size: 2rem;
 $dsgovbr-avatar-size-lg: 5rem;
