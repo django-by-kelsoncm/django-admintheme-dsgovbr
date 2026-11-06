@@ -62,16 +62,14 @@ A forma recomendada é criar uma release no GitHub:
 
 #. Atualize a versão no arquivo ``pyproject.toml``
 #. Commit e push das mudanças
-#.
-   Crie uma tag de versão:
+#. Crie uma tag de versão:
 
    .. code-block:: bash
 
       git tag v0.1.0
       git push origin v0.1.0
 
-#.
-   Vá para GitHub → Releases → "Create a new release"
+#. Vá para GitHub → Releases → "Create a new release"
 
 #. Selecione a tag criada
 #. Preencha as informações da release

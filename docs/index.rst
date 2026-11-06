@@ -527,7 +527,7 @@ Setup para Desenvolvimento
 📝 Licença
 ----------
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo :doc:`LICENSE <LICENSE>` para detalhes.
+Este projeto está licenciado sob a `Licença MIT <https://opensource.org/licenses/MIT>`_.
 
 👥 Contribuindo
 ---------------
@@ -599,3 +599,17 @@ Abra uma `issue <https://github.com/kelsoncm/django-admintheme-dsgovbr/issues>`_
 ..
 
    Desenvolvido com ❤️ para o ecossistema Gov.BR
+
+.. toctree::
+   :hidden:
+   :caption: Guia
+
+   start-guide
+   publishing
+   contribute
+
+.. toctree::
+   :hidden:
+   :caption: Referência da API
+
+   api/modules
