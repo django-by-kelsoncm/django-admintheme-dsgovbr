@@ -1,5 +1,24 @@
 # Histórico de Versões
 
+## 7.3.1
+
+### Segurança
+
+- **Menu com as permissões do usuário**: `menus.get_full_admin_app_list` montava o menu com um usuário fictício
+  superusuário, e o `DSGovBrAdminSite.get_app_list`, o `available_apps` e o `admin_app_list` mostravam a todo usuário
+  staff os apps e models sem permissão. Agora usam as permissões reais; quem não entra no admin (inativo ou sem
+  `is_staff`) não vê os apps do admin no menu. Itens registrados no `menus.py` seguem com `permission`/`check`.
+
+### Configuração
+
+- `PROJECT_HOME_URL` (contexto `project_home_url`): início do site na casa do breadcrumb fora do admin, no "Voltar ao
+  Início" do logout e no `password_reset_done`. Sem ele, o prefixo do script (`FORCE_SCRIPT_NAME`/subcaminho), em vez
+  do `/` fixo.
+- `DSGOVBR_HEADER["login"]["default_avatar_url"]`: foto padrão do avatar `fotografico` para quem não tem foto. A
+  chave `dsgovbr.user_avatar` (URL externa da freepik, não usada pelos templates) foi removida.
+- Rodapé: `PROJECT_LICENSE_URL` vazio mostra a licença sem link (antes gerava `<a href="">`).
+- Página que esvazia o bloco `menu` não mostra mais o botão do menu no header.
+
 ## 7.3.0
 
 ### Menu: submenus, badges, cor e permissões em lista
@@ -29,23 +48,6 @@
   permissões do usuário; o menu continua com `get_app_list`.
 - **Ícones**: `AppConfig.icon` e `ModelAdmin.icon`, com padrões `fas fa-folder` e `fas fa-table`
   (`DSGOVBR_DEFAULT_APP_ICON`, `DSGOVBR_DEFAULT_MODEL_ICON`), no menu e nos cards (`dsgovbr/icons.py`).
-
-### Segurança
-
-- **Menu com as permissões do usuário**: `menus.get_full_admin_app_list` montava o menu com um usuário fictício
-  superusuário, e o `DSGovBrAdminSite.get_app_list`, o `available_apps` e o `admin_app_list` mostravam a todo usuário
-  staff os apps e models sem permissão. Agora usam as permissões reais; quem não entra no admin (inativo ou sem
-  `is_staff`) não vê os apps do admin no menu. Itens registrados no `menus.py` seguem com `permission`/`check`.
-
-### Configuração
-
-- `PROJECT_HOME_URL` (contexto `project_home_url`): início do site na casa do breadcrumb fora do admin, no "Voltar ao
-  Início" do logout e no `password_reset_done`. Sem ele, o prefixo do script (`FORCE_SCRIPT_NAME`/subcaminho), em vez
-  do `/` fixo.
-- `DSGOVBR_HEADER["login"]["default_avatar_url"]`: foto padrão do avatar `fotografico` para quem não tem foto. A
-  chave `dsgovbr.user_avatar` (URL externa da freepik, não usada pelos templates) foi removida.
-- Rodapé: `PROJECT_LICENSE_URL` vazio mostra a licença sem link (antes gerava `<a href="">`).
-- Página que esvazia o bloco `menu` não mostra mais o botão do menu no header.
 
 ### Correções de ícones e breadcrumb
 
