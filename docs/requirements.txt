@@ -1,3 +1,2 @@
 sphinx>=8.2,<10
-# Até a publicação no PyPI, instalado pela tag do GitHub.
-dsgovbr-sphinx-theme @ git+https://github.com/abrasileirado/dsgovbr-sphinx-theme@v0.1.0
+dsgovbr-sphinx-theme==0.1.0
