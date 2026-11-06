@@ -21,12 +21,23 @@ class ServidorInline(admin.StackedInline):
     show_change_link = True
 
 
+class ServicoDoOrgaoInline(admin.TabularInline):
+    """Lado reverso do Servico.orgaos_envolvidos: Select2 do admin em inline,
+    inclusive nas linhas criadas por "Adicionar outro"."""
+
+    model = Servico.orgaos_envolvidos.through
+    extra = 1
+    autocomplete_fields = ("servico",)
+    verbose_name = "Serviço do órgão"
+    verbose_name_plural = "Serviços do órgão"
+
+
 @admin.register(Orgao)
 class OrgaoAdmin(DSGovBrModelAdmin):
     list_display = ("sigla", "nome", "ativo", "data_criacao", "acoes_customizadas")
     list_filter = ("ativo", "data_criacao")
     search_fields = ("nome", "sigla", "descricao")
-    inlines = [ServidorInline]
+    inlines = [ServidorInline, ServicoDoOrgaoInline]
 
     # Ações Customizadas no topo da Lista (Object Tools)
     def get_object_tool_actions(self, request) -> list:
