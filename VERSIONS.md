@@ -1,5 +1,17 @@
 # Histórico de Versões
 
+## 7.3.4
+
+### Menu sem estado entre requisições (issue #38)
+
+- **Segurança**: o `MenuRegistry.get_menu_list` gravava no registry global (`register_folder`) as pastas do admin que o
+  usuário atual via. Depois que um superusuário abria o admin, essas pastas voltavam no menu de qualquer usuário, e o
+  `app_index` de um app sem permissão passava a responder 200 em vez de 404. O resultado dependia de quem tinha acessado
+  antes, inclusive entre workers. Agora as pastas do admin são montadas só para a requisição; o registry guarda apenas o
+  que os `menus.py` registram.
+- `DSGovBrAdminSite.app_index` dá 404 quando o usuário não vê nenhum model do app (permissões reais), mesmo que um
+  `menus.py` registre uma pasta com o mesmo `app_label`.
+
 ## 7.3.3
 
 ### Select2 vazio em linha nova de inline (issue #35)
