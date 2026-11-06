@@ -17,6 +17,10 @@
   {% compress css %}
   <link rel="stylesheet" type="text/x-scss" href="{% static 'dsgovbr/scss/dsgovbr.scss' %}" />
   {% endcompress %}
+  {% if dsgovbr.header.modo.show %}
+    {# síncrono, depois do CSS: aplica o modo claro/escuro antes da primeira pintura #}
+    <script src="{% static 'vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-modo.js' %}"></script>
+  {% endif %}
 
   {% include 'dsgovbr/favicon.html' %}
 

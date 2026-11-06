@@ -196,3 +196,14 @@ def test_project_home_url_respeita_subcaminho(request_with_user):
 
 def test_sem_avatar_externo_no_contexto(request_with_user):
     assert "user_avatar" not in layout_settings(request_with_user)["dsgovbr"]
+
+
+def test_seletor_de_modo_ligado_por_padrao(request_with_user):
+    modo = layout_settings(request_with_user)["dsgovbr"]["header"]["modo"]
+    assert modo == {"show": True, "label": "Modo escuro", "icon": "fas fa-adjust"}
+
+
+def test_seletor_de_modo_pode_ser_desligado(request_with_user):
+    with override_settings(DSGOVBR_HEADER={"modo": {"show": False}}):
+        modo = layout_settings(request_with_user)["dsgovbr"]["header"]["modo"]
+        assert modo["show"] is False
