@@ -69,4 +69,6 @@ html_theme_options = {
     "tagline": "Django e Django Admin com visual GOV.BR DS",
     "github_url": "https://github.com/django-by-kelsoncm/django-admintheme-dsgovbr",
     "navigation_links": "PyPI|https://pypi.org/project/django-dsgovbr/",
+    # docs/api/ é gerado pelo sphinx.ext.apidoc: não existe no repositório.
+    "edit_on_github_exclude": "api/*",
 }
