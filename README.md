@@ -111,6 +111,10 @@ GOV.BR DS (`core-init.js`) não é mais carregado.
   [catálogo do dsgovbr-bootstraped](https://abrasileirado.github.io/dsgovbr-bootstraped/componentes/).
 - **Formulários**: o `dsgovbr/js/dsgovbr_forms.js` aplica `.form-control`, `.form-select` e `.form-check-input` aos
   campos do Django, com qualquer `FORM_RENDERER`. Para ignorar um campo ou bloco, use `data-dsgovbr-ignore`.
+- **Widgets do admin**: o `admin/css/base.css` do Django não é carregado; o `dsgovbr.scss` define as variáveis dele
+  (`--border-color`, `--body-bg`, `--primary`…) a partir das `--bs-*`. Os `autocomplete_fields` (Select2) usam o tema
+  `dsgovbr`, com largura total e a aparência de `.form-select`/`.form-control` (badges no múltiplo); calendário,
+  relógio e os links de alterar/adicionar/remover/ver dos relacionamentos também têm estilo próprio.
 - **Layout**: segue o exemplo "Painel administrativo" do dsgovbr-bootstraped. Header, conteúdo e rodapé usam
   `container-lg` (`DSGOVBR_HEADER["width_style"]`: `sm`, `md`, `lg`, `xl`, `xxl` ou `fluid`).
 - **Menu**: offcanvas aberto pelo botão (`DSGOVBR_HEADER["menu"]["localizacao"] = "flutuante"`, padrão); com `"fixo"`

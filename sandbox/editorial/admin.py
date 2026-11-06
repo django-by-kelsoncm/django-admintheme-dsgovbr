@@ -12,12 +12,14 @@ class ComentarioInline(admin.TabularInline):
 class CategoriaAdmin(DSGovBrModelAdmin):
     icon = "fas fa-tags"
     list_display = ("nome", "slug")
+    search_fields = ("nome",)
     prepopulated_fields = {"slug": ("nome",)}
 
 
 @admin.register(Tag)
 class TagAdmin(DSGovBrModelAdmin):
     list_display = ("nome",)
+    search_fields = ("nome",)
 
 
 @admin.register(Noticia)
@@ -27,5 +29,6 @@ class NoticiaAdmin(DSGovBrModelAdmin):
     list_filter = ("status", "categoria", "criado_em")
     search_fields = ("titulo", "conteudo")
     prepopulated_fields = {"slug": ("titulo",)}
-    filter_horizontal = ("tags",)
+    # Select2 do admin: simples (categoria) e múltiplo (tags).
+    autocomplete_fields = ("categoria", "tags")
     inlines = [ComentarioInline]

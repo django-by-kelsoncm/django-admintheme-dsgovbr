@@ -124,6 +124,14 @@ Use os templates base do DSGovBR nos seus templates Django:
 Formulários Django
 ^^^^^^^^^^^^^^^^^^
 
+Os widgets do admin que dependem do ``admin/css/base.css`` do Django (não
+carregado pelo tema) funcionam com as variáveis dele definidas no
+``dsgovbr.scss`` a partir das ``--bs-*``. Os ``autocomplete_fields`` usam o
+Select2 com o tema ``dsgovbr``: largura total, aparência de ``.form-select``
+(simples) ou ``.form-control`` (múltiplo, com as opções em badges). Para
+manter o tema ``admin-autocomplete`` do Django num campo, use
+``data-dsgovbr-ignore``.
+
 Os campos dos formulários renderizados nas páginas do tema recebem as classes do
 Bootstrap (``.form-control``, ``.form-select``, ``.form-check-input``) pelo
 ``dsgovbr/js/dsgovbr_forms.js``, com qualquer ``FORM_RENDERER``. Para declarar

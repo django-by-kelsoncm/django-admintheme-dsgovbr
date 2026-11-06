@@ -73,6 +73,7 @@ class ServidorAdmin(DSGovBrModelAdmin):
     list_display = ("nome", "orgao", "cargo", "email", "data_admissao")
     list_filter = ("orgao", "cargo", "data_admissao")
     search_fields = ("nome", "cpf", "email", "cargo")
+    autocomplete_fields = ("orgao",)
     inlines = [DocumentoInline]
 
     # Ações no nível do Objeto individual (Instance Actions)
