@@ -26,6 +26,8 @@ REESCRITOS = [
     "dsgovbr/base.html",
     "dsgovbr/header.html",
     "dsgovbr/menu.html",
+    "dsgovbr/menu_items.html",
+    "dsgovbr/menu_item_label.html",
     "dsgovbr/redes_sociais.html",
     "admin/app_list.html",
     "admin/app_index.html",

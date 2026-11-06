@@ -1,0 +1,25 @@
+{% comment %}
+  Itens de uma pasta do menu (admin/app_list.html). Item com subitems vira um
+  Collapse aninhado no list group; o template se inclui para cada nível.
+  Variáveis: items (lista de dicts do dsgovbr.menus).
+{% endcomment %}
+<div class="list-group list-group-flush">
+  {% for model in items %}
+    {% if model.subitems %}
+      <button class="list-group-item list-group-item-action{% if not model.open %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#{{ model.menu_id }}" aria-expanded="{% if model.open %}true{% else %}false{% endif %}" aria-controls="{{ model.menu_id }}">
+        {% include 'dsgovbr/menu_item_label.html' with item=model %}
+      </button>
+      <div class="collapse dsgovbr-menu-sub{% if model.open %} show{% endif %}" id="{{ model.menu_id }}">
+        {% include 'dsgovbr/menu_items.html' with items=model.subitems %}
+      </div>
+    {% elif model.admin_url %}
+      <a class="list-group-item list-group-item-action{% if model.admin_url in request.path|urlencode %} active{% endif %}" href="{{ model.admin_url }}"{% if model.admin_url in request.path|urlencode %} aria-current="page"{% endif %}>
+        {% include 'dsgovbr/menu_item_label.html' with item=model %}
+      </a>
+    {% else %}
+      <span class="list-group-item disabled" aria-disabled="true">
+        {% include 'dsgovbr/menu_item_label.html' with item=model %}
+      </span>
+    {% endif %}
+  {% endfor %}
+</div>

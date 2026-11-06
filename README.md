@@ -133,6 +133,35 @@ GOV.BR DS (`core-init.js`) não é mais carregado.
       icon = "fas fa-newspaper"
   ```
 
+- **Menu programático**: além dos apps do admin, crie um `menus.py` em qualquer app (descoberto no `ready`). Os
+  links podem apontar para fora do admin (nome de rota, caminho ou URL absoluta) e o menu aparece também nas páginas
+  fora do admin que estendem `dsgovbr/base.html` (context processor `available_apps`).
+
+  ```python
+  import dsgovbr.menus as menus
+
+  menus.register_folder("sistema", name="Sistema", icon="fas fa-desktop", order=0)
+  menus.register_item("sistema", "Início", "core:home", icon="fas fa-home")
+  # submenu em vários níveis: parent é o item pai, o nome dele ou o caminho de nomes
+  menus.register_item(
+      "sistema",
+      "Pendências",
+      "core:pendencias",
+      parent=["Utilitários", "Diagnóstico"],
+      badge=menus.MenuItemBadge(lambda request: contar(request), "danger"),
+      color="warning",
+      # basta qualquer uma
+      permission=["core.view_pendencia", "core.change_pendencia"],
+  )
+  menus.set_order(["sistema", "auth"])
+  ```
+
+  Parâmetros de `register_folder` e `register_item`: `icon`, `order`, `permission` (`str` ou lista: basta qualquer
+  uma), `check(request)`, `badge` (`MenuItemBadge(label, color)`, com `label` fixo ou `label(request)`) e `color`
+  (cor do Bootstrap aplicada ao ícone). Item sem ícone usa `DSGOVBR_DEFAULT_MENU_ICON` (padrão `fas fa-angle-right`).
+  Pasta ou submenu sem link e sem itens visíveis some. Também há `set_items_order(app_label, nomes)` e
+  `add_reorder_callback(funcao)`.
+
 - **Breadcrumb do admin**: montado pelo contexto (app > lista > objeto > página atual); a casa leva ao `admin:index`
   (bloco `breadcrumb_home_url` do `dsgovbr/base.html`).
 - **Título da página**: o bloco `title_actions` do `dsgovbr/base.html` põe ações à direita do título (na lista: busca,

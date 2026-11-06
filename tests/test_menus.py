@@ -301,3 +301,147 @@ def test_cards_usam_permissoes_do_usuario_e_icones():
     assert app["app_label"] == "auth"
     assert app["models"][0]["icon"] == "fas fa-users"
     assert app["models"][0]["add_url"] == "/admin/auth/group/add/"
+
+
+def _request(path="/", perms=(), autenticado=True):
+    from types import SimpleNamespace
+
+    request = RequestFactory().get(path)
+    request.user = SimpleNamespace(
+        is_authenticated=autenticado, has_perm=lambda perm: perm in perms
+    )
+    return request
+
+
+@pytest.fixture
+def sem_admin(monkeypatch):
+    monkeypatch.setattr(menus, "get_full_admin_app_list", lambda request: [])
+
+
+def test_submenu_em_varios_niveis(clean_registry, sem_admin):
+    utilitarios = menus.register_item("sis", "Utilitários", None, order=1)
+    utilitarios.add_item("Saúde", "/saude/", icon="fas fa-medkit")
+    menus.register_item("sis", "Liveness", "/live/", parent=["Utilitários", "Sondas"])
+    menus.register_item("sis", "Readiness", "/ready/", parent="Sondas")
+
+    pasta = menus.get_menu_list(_request("/live/"))[0]
+    grupo = pasta["models"][0]
+    assert grupo["name"] == "Utilitários"
+    assert grupo["menu_id"] == "menu-sis-1"
+    assert [s["name"] for s in grupo["subitems"]] == ["Saúde", "Sondas"]
+    sondas = grupo["subitems"][1]
+    assert sondas["menu_id"] == "menu-sis-1-2"
+    assert [s["name"] for s in sondas["subitems"]] == ["Liveness", "Readiness"]
+    # página atual dentro do submenu: pasta e grupos abertos
+    assert sondas["open"] and grupo["open"] and pasta["open"]
+    assert not menus.get_menu_list(_request("/outra/"))[0]["open"]
+
+
+def test_submenu_vazio_e_pasta_vazia_somem(clean_registry, sem_admin):
+    menus.register_item("sis", "Público", "/pub/")
+    menus.register_item("sis", "Restrito", "/r/", permission="x.y", parent="Grupo")
+    menus.register_item("vazia", "Só admin", "/a/", permission="x.y", parent="G")
+    menus.register_folder("com_link", app_url="/com-link/")
+
+    menu = menus.get_menu_list(_request())
+    assert [p["app_label"] for p in menu] == ["com_link", "sis"]
+    assert [m["name"] for m in menu[1]["models"]] == ["Público"]
+
+    menu = menus.get_menu_list(_request(perms={"x.y"}))
+    assert [p["app_label"] for p in menu] == ["com_link", "sis", "vazia"]
+
+
+def test_permissao_em_lista_basta_qualquer_uma(clean_registry, sem_admin):
+    menus.register_item("app", "Item", "/i/", permission=["a.um", "a.dois"])
+    menus.register_folder("app", name="App")
+
+    assert menus.get_menu_list(_request(perms={"a.dois"}))
+    assert not menus.get_menu_list(_request(perms={"a.tres"}))
+    assert not menus.get_menu_list(_request(perms={"a.um"}, autenticado=False))
+    assert menus.has_permission(None, None)
+    assert not menus.has_permission(None, ("a.um",))
+
+
+def test_pasta_com_permissao_some(clean_registry, monkeypatch):
+    app_list = [{"app_label": "auth", "name": "Auth", "app_url": "/admin/auth/"}]
+    monkeypatch.setattr(menus, "get_full_admin_app_list", lambda request: app_list)
+    menus.register_folder("auth", permission=["auth.view_user"])
+
+    assert menus.get_menu_list(_request()) == []
+    assert menus.get_menu_list(_request(perms={"auth.view_user"}))
+
+
+def test_badge_e_cor(clean_registry, sem_admin):
+    menus.register_folder("app", name="App", badge="2", color="danger")
+    menus.register_item(
+        "app", "Fixo", "/f/", color="success", badge=menus.MenuItemBadge("novo")
+    )
+    menus.register_item(
+        "app",
+        "Contador",
+        "/c/",
+        badge=menus.MenuItemBadge(lambda request: request.path, "danger"),
+    )
+    menus.register_item("app", "Zero", "/z/", badge=menus.MenuItemBadge(lambda r: ""))
+
+    def quebra(request):
+        raise RuntimeError("falhou")
+
+    menus.register_item("app", "Quebrado", "/q/", badge=menus.MenuItemBadge(quebra))
+
+    pasta = menus.get_menu_list(_request("/agora/"))[0]
+    assert pasta["badge"] == {"label": "2", "color": "primary"}
+    assert pasta["color"] == "danger"
+    itens = {m["name"]: m for m in pasta["models"]}
+    assert itens["Fixo"]["badge"] == {"label": "novo", "color": "primary"}
+    assert itens["Fixo"]["color"] == "success"
+    assert itens["Contador"]["badge"] == {"label": "/agora/", "color": "danger"}
+    assert itens["Zero"]["badge"] is None
+    assert itens["Quebrado"]["badge"] is None
+
+
+def test_icone_padrao_do_item_por_settings(clean_registry):
+    from django.test import override_settings
+
+    from dsgovbr import icons
+
+    item = menus.register_item("app", "Item", "/i/")
+    pasta = clean_registry._folders["app"]
+    assert item.icon == icons.DEFAULT_MENU_ICON
+    assert pasta.icon == icons.DEFAULT_APP_ICON
+    with override_settings(
+        DSGOVBR_DEFAULT_MENU_ICON="far fa-circle", DSGOVBR_DEFAULT_APP_ICON="fas fa-box"
+    ):
+        assert item.icon == "far fa-circle"
+        assert pasta.icon == "fas fa-box"
+    item.icon = "fas fa-star"
+    assert item.to_dict()["icon"] == "fas fa-star"
+
+
+def test_template_renderiza_submenu_badge_e_cor(clean_registry, sem_admin):
+    from pathlib import Path
+
+    from django.template import Context, Engine
+
+    templates = Path(__file__).resolve().parent.parent / "src" / "dsgovbr" / "templates"
+    engine = Engine(
+        dirs=[str(templates)], libraries={"i18n": "django.templatetags.i18n"}
+    )
+
+    menus.register_item(
+        "app",
+        "Filho",
+        "/filho/",
+        color="warning",
+        badge=menus.MenuItemBadge("3", "danger"),
+        parent="Grupo",
+    )
+    request = _request("/filho/")
+    html = engine.get_template("admin/app_list.html").render(
+        Context({"app_list": menus.get_menu_list(request), "request": request})
+    )
+    assert 'data-bs-target="#menu-app-1"' in html
+    assert 'class="collapse dsgovbr-menu-sub show" id="menu-app-1"' in html
+    assert "text-warning" in html
+    assert 'class="badge rounded-pill text-bg-danger float-end">3</span>' in html
+    assert 'href="/filho/" aria-current="page"' in html
