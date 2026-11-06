@@ -493,3 +493,74 @@ def test_template_renderiza_submenu_badge_e_cor(clean_registry, sem_admin):
     assert "text-warning" in html
     assert 'class="badge rounded-pill text-bg-danger float-end">3</span>' in html
     assert 'href="/filho/" aria-current="page"' in html
+
+
+def test_menu_nao_guarda_pastas_entre_requisicoes(clean_registry, monkeypatch):
+    """Superusuário abre o admin; depois o usuário sem permissão não vê o app nem a página dele."""
+    from types import ModuleType
+
+    from django.contrib import admin
+    from django.contrib.admin import ModelAdmin
+    from django.contrib.auth.models import Group
+    from django.http import Http404
+    from django.test import override_settings
+    from django.urls import clear_url_caches, path
+
+    from dsgovbr.admin import DSGovBrAdminSite
+
+    site = DSGovBrAdminSite(name="menu_estado")
+    site.register(Group, ModelAdmin)
+    monkeypatch.setattr(admin, "site", site)
+    urls = ModuleType("menu_estado_urls")
+    urls.urlpatterns = [path("admin/", site.urls)]
+
+    with override_settings(ROOT_URLCONF=urls):
+        clear_url_caches()
+        try:
+            superusuario = RequestFactory().get("/admin/")
+            superusuario.user = _usuario(staff=True, pode=True)
+            assert [
+                p["app_label"] for p in clean_registry.get_menu_list(superusuario)
+            ] == ["auth"]
+            # nada do admin foi gravado no registry global
+            assert clean_registry._folders == {}
+
+            gestor = RequestFactory().get("/admin/auth/")
+            gestor.user = _usuario(staff=True, pode=False)
+            assert clean_registry.get_menu_list(gestor) == []
+            assert site.get_app_list(gestor, "auth") == []
+            with pytest.raises(Http404):
+                site.app_index(gestor, "auth")
+        finally:
+            clear_url_caches()
+
+
+def test_pasta_do_menus_py_mantem_icone_e_ordem_no_app_do_admin(
+    clean_registry, monkeypatch
+):
+    from types import SimpleNamespace
+
+    app_list = [
+        {
+            "app_label": "auth",
+            "name": "Autenticação",
+            "app_url": "/admin/auth/",
+            "models": [],
+        }
+    ]
+    monkeypatch.setattr(menus, "get_full_admin_app_list", lambda request: app_list)
+    menus.register_folder("auth", icon="fas fa-lock", order=5)
+    menus.register_item("auth", "Relatório", "/relatorio/")
+
+    request = RequestFactory().get("/")
+    request.user = SimpleNamespace(is_authenticated=True, has_perm=lambda p: True)
+    pasta = clean_registry.get_menu_list(request)[0]
+
+    assert (pasta["name"], pasta["icon"], pasta["order"]) == (
+        "Autenticação",
+        "fas fa-lock",
+        5,
+    )
+    assert [m["name"] for m in pasta["models"]] == ["Relatório"]
+    # o registry continua com o que o menus.py registrou
+    assert clean_registry._folders["auth"].app_url == "javascript:void(0);"
