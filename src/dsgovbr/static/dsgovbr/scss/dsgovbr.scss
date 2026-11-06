@@ -281,6 +281,8 @@ $dsgovbr-select2-results-max-height: 15rem;
 $dsgovbr-select2-search-padding: 0.5rem;
 $dsgovbr-input-padding-y: 0.5rem;
 $dsgovbr-input-padding-x: 1rem;
+// Altura de uma linha de texto (line-height dos campos do Bootstrap).
+$dsgovbr-input-line-height: 1.5em;
 
 .select2-container.select2-container--dsgovbr {
   // Caixa no formulário (o dropdown, anexado ao <body>, não tem .select2).
@@ -293,6 +295,8 @@ $dsgovbr-input-padding-x: 1rem;
     height: auto;
 
     .select2-selection__rendered {
+      // Vazio (linha nova de inline, sem placeholder) não pode colapsar.
+      min-height: $dsgovbr-input-line-height;
       padding: 0;
       color: inherit;
       line-height: inherit;

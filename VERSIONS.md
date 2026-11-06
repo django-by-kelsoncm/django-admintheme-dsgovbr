@@ -1,5 +1,15 @@
 # Histórico de Versões
 
+## 7.3.3
+
+### Select2 vazio em linha nova de inline (issue #35)
+
+- **Autocomplete simples vazio**: sem valor e sem placeholder (linha criada por "Adicionar outro" num inline), a caixa
+  do Select2 do tema `dsgovbr` encolhia para a altura do padding. Agora tem a altura de uma linha de texto, igual à dos
+  outros campos.
+- **Sandbox**: inline "Serviços do órgão" (`Servico.orgaos_envolvidos.through`) na página de Órgão, com
+  `autocomplete_fields = ("servico",)`, para validar o Select2 em inline.
+
 ## 7.3.2
 
 ### Widgets do admin sem o base.css do Django (issue #33)

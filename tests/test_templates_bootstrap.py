@@ -432,6 +432,11 @@ def test_select2_do_admin_usa_o_tema_dsgovbr() -> None:
     css = _scss_compilado()
     assert ".select2-container.select2-container--dsgovbr.select2" in css
     assert "width: 100% !important" in css
+    # Select2 simples vazio (linha nova de inline) não colapsa (issue #35)
+    assert re.search(
+        r"select2-selection--single \.select2-selection__rendered \{[^}]*min-height: 1\.5em",
+        css,
+    )
     js = (PACOTE / "static" / "dsgovbr" / "js" / "dsgovbr_forms.js").read_text(
         encoding="utf-8"
     )
