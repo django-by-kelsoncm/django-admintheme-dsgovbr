@@ -187,3 +187,8 @@ $dsgovbr-selector-gap: 0.5rem;
     text-decoration: underline;
   }
 }
+
+// Página que esvazia o bloco "menu" (sem #main-navigation): esconde o botão que abriria o menu.
+body:not(:has(#main-navigation)) #navigation {
+  display: none !important;
+}

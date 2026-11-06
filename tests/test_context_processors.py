@@ -179,3 +179,20 @@ def test_detalhes_de_header_menu_e_rodape_vem_vazios(request_with_user):
     assert footer["logo"] is None and footer["assinatura"] is None
     assert footer["colunas"] == [] and footer["redes_sociais"] == []
     assert footer["texto"] == ""
+
+
+def test_project_home_url_respeita_subcaminho(request_with_user):
+    from django.urls import get_script_prefix, set_script_prefix
+
+    anterior = get_script_prefix()
+    set_script_prefix("/registro/")
+    try:
+        assert layout_settings(request_with_user)["project_home_url"] == "/registro/"
+        with override_settings(PROJECT_HOME_URL="/inicio/"):
+            assert layout_settings(request_with_user)["project_home_url"] == "/inicio/"
+    finally:
+        set_script_prefix(anterior)
+
+
+def test_sem_avatar_externo_no_contexto(request_with_user):
+    assert "user_avatar" not in layout_settings(request_with_user)["dsgovbr"]

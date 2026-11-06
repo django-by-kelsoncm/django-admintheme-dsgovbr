@@ -10,7 +10,7 @@
         <p class="lead">Você saiu da sua conta com segurança.</p>
         <div class="mt-4">
           <a href="{% url 'login' %}" class="btn btn-primary me-2">Entrar Novamente</a>
-          <a href="/" class="btn btn-outline-primary">Voltar ao Início</a>
+          <a href="{{ project_home_url|default:'/' }}" class="btn btn-outline-primary">Voltar ao Início</a>
         </div>
       </div>
     </div>

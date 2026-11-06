@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.http import HttpRequest
 from django.contrib import admin
-from django.urls import reverse
+from django.urls import get_script_prefix, reverse
 from django.utils import timezone
 
 
@@ -29,7 +29,6 @@ def layout_settings(request: HttpRequest) -> dict:
     site_admin_atual = admin.site
 
     dsgovbr_dict = {
-        "user_avatar": "https://cdn-icons-png.freepik.com/512/6596/6596121.png",
         "header": {
             **{
                 "type": "default",
@@ -196,6 +195,9 @@ def layout_settings(request: HttpRequest) -> dict:
         "project_title": project_title,
         "project_subtitle": project_subtitle,
         "project_version": getattr(settings, "PROJECT_VERSION", "v1.0.0"),
+        # início do site: PROJECT_HOME_URL ou o prefixo do script (FORCE_SCRIPT_NAME/subcaminho)
+        "project_home_url": getattr(settings, "PROJECT_HOME_URL", "")
+        or get_script_prefix(),
         # prefixo da página da versão (ex.: ".../releases/tag/"); vazio: a versão aparece sem link
         "project_releases_url": getattr(settings, "PROJECT_RELEASES_URL", ""),
         "project_last_startup": getattr(

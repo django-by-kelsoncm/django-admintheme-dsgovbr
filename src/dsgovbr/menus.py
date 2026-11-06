@@ -110,41 +110,26 @@ logger = logging.getLogger(__name__)
 
 
 def get_full_admin_app_list(request):
+    """
+    Apps e models do admin que o usuário do ``request`` pode ver.
+
+    Antes o menu usava um usuário fictício superusuário e mostrava a todo usuário
+    staff os apps e models sem permissão. Agora valem as permissões reais: sem
+    acesso ao admin (``AdminSite.has_permission``), a lista vem vazia (os itens registrados no
+    ``menus.py`` continuam com ``permission``/``check`` próprios).
+    """
     from django.contrib import admin
     from django.contrib.admin import AdminSite
 
-    class DummyUser:
-        is_active = True
-        is_staff = True
-        is_superuser = True
-
-        def has_module_perms(self, app_label):
-            return True
-
-        def has_perm(self, perm, obj=None):
-            return True
-
-        def is_anonymous(self):
-            return False
-
-        def is_authenticated(self):
-            return True
-
-    class MockRequest:
-        def __init__(self, orig_req):
-            self.user = DummyUser()
-            self.META = getattr(orig_req, "META", {})
-            self.GET = getattr(orig_req, "GET", {})
-            self.POST = getattr(orig_req, "POST", {})
-            self.path = getattr(orig_req, "path", "")
-            self.path_info = getattr(orig_req, "path_info", "")
-            self.COOKIES = getattr(orig_req, "COOKIES", {})
-            self.session = getattr(orig_req, "session", None)
-
-    mock_req = MockRequest(request)
+    user = getattr(request, "user", None)
+    if user is None or not getattr(user, "is_authenticated", False):
+        return []
     try:
+        # quem não entra no admin (inativo ou sem is_staff) não vê os apps do admin
+        if not admin.site.has_permission(request):
+            return []
         # implementação base: o DSGovBrAdminSite.get_app_list monta o menu a partir daqui (evita recursão)
-        return AdminSite.get_app_list(admin.site, mock_req)
+        return AdminSite.get_app_list(admin.site, request)
     except Exception:
         logger.exception("Erro ao obter a lista de apps do admin")
         return []
@@ -216,8 +201,7 @@ class MenuRegistry:
         self._reorder_callbacks.append(callback)
 
     def get_menu_list(self, request):
-        # Obter a lista completa do django admin (sem filtrar por permissões do usuário atual)
-        # para que o menu seja exibido por padrão mesmo fora do admin
+        # apps e models do admin com as permissões do usuário atual
         admin_app_list = get_full_admin_app_list(request)
 
         folders_dict = {}

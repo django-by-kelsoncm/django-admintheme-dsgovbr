@@ -60,7 +60,7 @@
         <nav aria-label="{% translate 'Breadcrumbs' %}">
           <ol class="breadcrumb">
             {# o dsgovbr-bootstraped desenha a casa no primeiro nível #}
-            <li class="breadcrumb-item"><a href="{% block breadcrumb_home_url %}/{% endblock breadcrumb_home_url %}"><span class="visually-hidden">Página inicial</span></a></li>
+            <li class="breadcrumb-item"><a href="{% block breadcrumb_home_url %}{{ project_home_url|default:"/" }}{% endblock breadcrumb_home_url %}"><span class="visually-hidden">Página inicial</span></a></li>
             {% block breadcrumb %}
               {% for bread in breadcrumb %}
                 <li class="breadcrumb-item"><a href="{{ bread.url }}">{{ bread.label }}</a></li>
@@ -158,7 +158,7 @@
             {% if dsgovbr.footer.texto %}{{ dsgovbr.footer.texto }}{% endif %}
             {{ project_copyright }}.
             {% if project_releases_url %}<a href="{{ project_releases_url }}{{ project_version }}">v{{ project_version }}</a>{% else %}v{{ project_version }}{% endif %}.
-            <a href="{{ project_license_url }}" target="_blank" rel="noopener">{{ project_license }}.</a>
+            {% if project_license %}{% if project_license_url %}<a href="{{ project_license_url }}" target="_blank" rel="noopener">{{ project_license }}.</a>{% else %}{{ project_license }}.{% endif %}{% endif %}
             <!-- app_last_startup:{{ app_last_startup }} -->
           </p>
         </div>
