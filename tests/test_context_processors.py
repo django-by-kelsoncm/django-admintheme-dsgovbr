@@ -163,3 +163,19 @@ def test_saudacao_padrao(request_with_user):
         layout_settings(request_with_user)["dsgovbr"]["header"]["login"]["saudacao"]
         == "Olá, "
     )
+
+
+def test_detalhes_de_header_menu_e_rodape_vem_vazios(request_with_user):
+    dsgovbr = layout_settings(request_with_user)["dsgovbr"]
+    assert dsgovbr["header"]["links"]["em_linha"] is False
+    assert dsgovbr["header"]["funcionalidades"]["em_linha"] is False
+    assert dsgovbr["header"]["menu"]["footer"] == {
+        "logos": [],
+        "links": [],
+        "redes_sociais": [],
+        "licenca": "",
+    }
+    footer = dsgovbr["footer"]
+    assert footer["logo"] is None and footer["assinatura"] is None
+    assert footer["colunas"] == [] and footer["redes_sociais"] == []
+    assert footer["texto"] == ""

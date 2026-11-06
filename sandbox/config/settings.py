@@ -123,9 +123,24 @@ LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+SANDBOX_REDES_SOCIAIS = [
+    {
+        "label": "Facebook",
+        "icon": "fab fa-facebook-f",
+        "url": "https://www.facebook.com/",
+    },
+    {
+        "label": "Instagram",
+        "icon": "fab fa-instagram",
+        "url": "https://www.instagram.com/",
+    },
+    {"label": "YouTube", "icon": "fab fa-youtube", "url": "https://www.youtube.com/"},
+]
+
 DSGOVBR_HEADER = {
     "links": {
         "show": True,
+        "em_linha": True,
         "items": [
             {
                 "label": "Action 1",
@@ -142,6 +157,7 @@ DSGOVBR_HEADER = {
     },
     "funcionalidades": {
         "show": True,
+        "em_linha": True,
         "items": [
             {
                 "label": "Avisos",
@@ -164,6 +180,30 @@ DSGOVBR_HEADER = {
                 "url": "#id=1",
             },
         ],
+    },
+    "menu": {
+        "show": True,
+        "localizacao": "flutuante",
+        "footer": {
+            "logos": [
+                {"src": "/static/vendors/serpro/govbr.svg", "alt": "Logo do órgão"},
+                {"src": "/static/vendors/serpro/govbr.svg", "alt": "Logo do governo"},
+            ],
+            "links": [
+                {
+                    "label": "Portal do órgão",
+                    "url": "https://www.gov.br/pt-br",
+                    "target": "_blank",
+                },
+                {
+                    "label": "Ouvidoria",
+                    "url": "https://www.gov.br/ouvidorias",
+                    "target": "_blank",
+                },
+            ],
+            "redes_sociais": SANDBOX_REDES_SOCIAIS,
+            "licenca": "Conteúdo publicado sob a licença Creative Commons Atribuição 4.0.",
+        },
     },
     "search": {
         "ativo": True,
@@ -191,6 +231,39 @@ DSGOVBR_HEADER = {
     #         ],
     #     }
     # },
+}
+
+DSGOVBR_FOOTER = {
+    "logo": {"src": "/static/vendors/serpro/govbr.svg", "alt": "Logo do sistema"},
+    "colunas": [
+        {
+            "titulo": "Sistema",
+            "links": [
+                {"label": "Sobre", "url": "#sobre"},
+                {"label": "Termos de uso", "url": "#termos"},
+            ],
+        },
+        {
+            "titulo": "Ajuda",
+            "links": [
+                {"label": "Perguntas frequentes", "url": "#faq"},
+                {"label": "Fale conosco", "url": "#contato"},
+            ],
+        },
+        {
+            "titulo": "Privacidade",
+            "links": [
+                {"label": "Política de privacidade", "url": "#privacidade"},
+                {"label": "Cookies", "url": "#cookies"},
+            ],
+        },
+    ],
+    "redes_sociais": SANDBOX_REDES_SOCIAIS,
+    "assinatura": {
+        "src": "/static/vendors/serpro/govbr.svg",
+        "alt": "Assinatura do órgão",
+    },
+    "texto": "Sandbox do django-dsgovbr.",
 }
 
 DSGOVBR_LOGIN_ALTERNATIVE_METHODS = [

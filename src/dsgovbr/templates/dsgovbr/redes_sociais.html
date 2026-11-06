@@ -1,0 +1,8 @@
+{% comment %}
+  Botões das redes sociais. Recebe ``redes``: lista de {label, icon, url}.
+{% endcomment %}
+<div class="d-flex{% if gap %} gap-{{ gap }}{% endif %}">
+  {% for rede in redes %}
+    <a class="btn btn-link rounded-circle" href="{{ rede.url }}" target="_blank" rel="noopener" aria-label="{{ rede.label }}" title="{{ rede.label }}"><i class="{{ rede.icon|default:'fas fa-link' }}" aria-hidden="true"></i></a>
+  {% endfor %}
+</div>

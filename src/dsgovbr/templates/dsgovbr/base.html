@@ -114,8 +114,48 @@
   {% block footer %}
     {% if not is_popup %}
       <footer class="bg-body" data-bs-theme="dark" id="footer" tabindex="-1">
+        {% with rodape=dsgovbr.footer largura=dsgovbr.header.width_style|default:'lg' %}
+          {% if rodape.logo or rodape.colunas or rodape.redes_sociais or rodape.assinatura %}
+            <div class="container-{{ largura }} pt-5">
+              {% if rodape.logo %}
+                <img class="d-block mb-5" src="{{ rodape.logo.src }}" height="48" alt="{{ rodape.logo.alt }}">
+              {% endif %}
+              {% if rodape.colunas %}
+                <div class="row g-0 pb-5">
+                  {% for coluna in rodape.colunas %}
+                    <div class="col-6 col-md-3 col-lg-2">
+                      <h2>{{ coluna.titulo }}</h2>
+                      <nav class="nav flex-column" aria-label="{{ coluna.titulo }}">
+                        {% for link in coluna.links %}
+                          <a class="nav-link" href="{{ link.url }}"{% if link.target %} target="{{ link.target }}" rel="noopener"{% endif %}>{{ link.label }}</a>
+                        {% endfor %}
+                      </nav>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              {% if rodape.redes_sociais or rodape.assinatura %}
+                <div class="row align-items-end justify-content-between pb-5 d-none d-sm-flex">
+                  <div class="col">
+                    {% if rodape.redes_sociais %}
+                      <p class="fs-6 fw-bolder text-uppercase mb-4">Redes sociais</p>
+                      {% include 'dsgovbr/redes_sociais.html' with redes=rodape.redes_sociais gap=3 %}
+                    {% endif %}
+                  </div>
+                  {% if rodape.assinatura %}
+                    <div class="col text-end">
+                      <img src="{{ rodape.assinatura.src }}" height="46" alt="{{ rodape.assinatura.alt }}">
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+            <hr class="my-3">
+          {% endif %}
+        {% endwith %}
         <div class="container-{{ dsgovbr.header.width_style|default:'lg' }}">
           <p class="small fw-medium text-center py-3 m-0">
+            {% if dsgovbr.footer.texto %}{{ dsgovbr.footer.texto }}{% endif %}
             {{ project_copyright }}.
             {% if project_releases_url %}<a href="{{ project_releases_url }}{{ project_version }}">v{{ project_version }}</a>{% else %}v{{ project_version }}{% endif %}.
             <a href="{{ project_license_url }}" target="_blank" rel="noopener">{{ project_license }}.</a>

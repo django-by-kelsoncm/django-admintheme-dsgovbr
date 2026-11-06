@@ -17,14 +17,35 @@
       {% include 'admin/app_list.html' with app_list=available_apps show_changelinks=False %}
     </nav>
 
-    {% if dsgovbr.header.menu.footer.links %}
-      <div class="mt-auto px-4 py-3 border-top">
-        {% for link in dsgovbr.header.menu.footer.links %}
-          <a class="d-block py-1 text-decoration-none" href="{{ link.url }}"{% if link.target %} target="{{ link.target }}" rel="noopener"{% endif %}>
-            {{ link.label }}<i class="{{ link.icon|default:'fas fa-external-link-square-alt' }} ms-1" aria-hidden="true"></i>
-          </a>
-        {% endfor %}
-      </div>
-    {% endif %}
+    {% with rodape=dsgovbr.header.menu.footer %}
+      {% if rodape.logos or rodape.links or rodape.redes_sociais or rodape.licenca %}
+        {# rodapé do menu: logos, links externos, redes sociais e licença #}
+        <div class="mt-auto border-top">
+          {% if rodape.logos %}
+            <div class="d-flex flex-wrap gap-3 px-4 py-2 border-bottom">
+              {% for logo in rodape.logos %}<img src="{{ logo.src }}" height="33" alt="{{ logo.alt }}">{% endfor %}
+            </div>
+          {% endif %}
+          {% if rodape.links %}
+            <div class="px-4 py-3 border-bottom">
+              {% for link in rodape.links %}
+                <a class="d-block py-1 text-decoration-none" href="{{ link.url }}"{% if link.target %} target="{{ link.target }}" rel="noopener"{% endif %}>
+                  {{ link.label }}<i class="{{ link.icon|default:'fas fa-external-link-square-alt' }} ms-1" aria-hidden="true"></i>
+                </a>
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% if rodape.redes_sociais %}
+            <div class="px-4 py-2 border-bottom">
+              <p class="fw-semibold mb-1">Redes sociais</p>
+              {% include 'dsgovbr/redes_sociais.html' with redes=rodape.redes_sociais %}
+            </div>
+          {% endif %}
+          {% if rodape.licenca %}
+            <p class="small text-center p-3 m-0">{{ rodape.licenca }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endwith %}
   </div>
 </div>

@@ -26,6 +26,7 @@ REESCRITOS = [
     "dsgovbr/base.html",
     "dsgovbr/header.html",
     "dsgovbr/menu.html",
+    "dsgovbr/redes_sociais.html",
     "admin/app_list.html",
     "admin/change_form.html",
     "admin/change_list.html",
@@ -147,11 +148,10 @@ def test_versao_do_bootstrap_vendorizado() -> None:
     assert "Bootstrap  v5.3.8" in css
 
 
-@pytest.mark.parametrize("nome", REESCRITOS)
-def test_templates_reescritos_compilam(nome: str) -> None:
+def _engine():
     from django.template import Engine
 
-    engine = Engine(
+    return Engine(
         dirs=[str(TEMPLATES)],
         libraries={
             "admin_list": "django.contrib.admin.templatetags.admin_list",
@@ -164,7 +164,80 @@ def test_templates_reescritos_compilam(nome: str) -> None:
             "static": "django.templatetags.static",
         },
     )
-    engine.get_template(nome)
+
+
+@pytest.mark.parametrize("nome", REESCRITOS)
+def test_templates_reescritos_compilam(nome: str) -> None:
+    _engine().get_template(nome)
+
+
+REDES = [{"label": "YouTube", "icon": "fab fa-youtube", "url": "https://yt.example"}]
+
+
+def _render(nome: str, contexto: dict) -> str:
+    from django.template import Context
+
+    return _engine().get_template(nome).render(Context(contexto))
+
+
+def _dsgovbr_menu(footer: dict) -> dict:
+    return {
+        "dsgovbr": {
+            "header": {
+                "logo": {"show": False},
+                "titulo": {"label": "T"},
+                "menu": {"localizacao": "flutuante", "footer": footer},
+            }
+        },
+        "available_apps": [],
+    }
+
+
+def test_redes_sociais_renderiza_botoes_acessiveis() -> None:
+    html = _render("dsgovbr/redes_sociais.html", {"redes": REDES})
+    assert 'href="https://yt.example"' in html
+    assert 'aria-label="YouTube"' in html
+    assert 'class="fab fa-youtube"' in html
+
+
+def test_rodape_do_menu_vazio_nao_aparece() -> None:
+    html = _render(
+        "dsgovbr/menu.html",
+        _dsgovbr_menu({"logos": [], "links": [], "redes_sociais": [], "licenca": ""}),
+    )
+    assert "mt-auto" not in html
+
+
+def test_rodape_do_menu_com_logos_redes_e_licenca() -> None:
+    html = _render(
+        "dsgovbr/menu.html",
+        _dsgovbr_menu(
+            {
+                "logos": [{"src": "/l.svg", "alt": "Logo do órgão"}],
+                "redes_sociais": REDES,
+                "licenca": "Licença CC BY 4.0",
+            }
+        ),
+    )
+    assert '<img src="/l.svg" height="33" alt="Logo do órgão">' in html
+    assert 'aria-label="YouTube"' in html
+    assert "Licença CC BY 4.0" in html
+
+
+def test_header_e_rodape_tem_os_novos_parametros() -> None:
+    header = (TEMPLATES / "dsgovbr" / "header.html").read_text(encoding="utf-8")
+    assert header.count("d-none d-xl-flex") == 2
+    assert "dsgovbr.header.links.em_linha" in header
+    assert "dsgovbr.header.funcionalidades.em_linha" in header
+    base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
+    for chave in (
+        "rodape.logo",
+        "rodape.colunas",
+        "rodape.redes_sociais",
+        "rodape.assinatura",
+        "dsgovbr.footer.texto",
+    ):
+        assert chave in base
 
 
 def _changelist(pagina_atual: int) -> SimpleNamespace:
