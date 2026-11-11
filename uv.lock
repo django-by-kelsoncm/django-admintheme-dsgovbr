@@ -285,7 +285,7 @@ wheels = [
 
 [[package]]
 name = "django-dsgovbr"
-version = "7.5.1"
+version = "7.5.4"
 source = { editable = "." }
 dependencies = [
     { name = "django" },

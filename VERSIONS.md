@@ -1,5 +1,15 @@
 # Histórico de Versões
 
+## 7.5.4
+
+### Atualização para o dsgovbr-bootstraped v0.11.2 (issue #49)
+
+- O CSS (`dsgovbr-bootstraped.min.css`) e o JS do seletor de modo (`dsgovbr-bootstraped-modo.js`) vendorizados passam a
+  referenciar a release
+  [v0.11.2](https://github.com/abrasileirado/dsgovbr-bootstraped/releases/tag/v0.11.2) do dsgovbr-bootstraped.
+- Os arquivos da v0.11.2 são idênticos aos que já estavam no pacote (a release só muda os exemplos do painel); nenhum
+  asset em `static/vendors/` foi alterado. A documentação deixa de citar a v0.10.0.
+
 ## 7.5.3
 
 ### Documentação: sem "Editar no GitHub" nas páginas da API (issue #45)
