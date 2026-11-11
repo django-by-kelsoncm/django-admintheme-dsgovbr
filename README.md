@@ -103,8 +103,8 @@ Para o `DSGovBrModelAdmin` com importação/exportação, instale o extra: `pip 
 
 Desde a versão 7.0.0 os templates usam classes do [Bootstrap 5.3](https://getbootstrap.com/docs/5.3/) com o tema
 [dsgovbr-bootstraped](https://github.com/abrasileirado/dsgovbr-bootstraped), que dá ao Bootstrap a aparência do
-GOV.BR DS. O CSS do tema (v0.10.0) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`; o JS do
-GOV.BR DS (`core-init.js`) não é mais carregado.
+GOV.BR DS. O CSS e o JS do tema (v0.11.2) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`; o JS
+do GOV.BR DS (`core-init.js`) não é mais carregado.
 
 - **Nos seus templates**: use classes do Bootstrap (`btn btn-primary`, `alert alert-success`, `card`, `form-control`…)
   em vez de `br-*`. Exemplos de cada componente no
