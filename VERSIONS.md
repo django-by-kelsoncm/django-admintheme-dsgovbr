@@ -2,10 +2,13 @@
 
 ## 8.0.0
 
-### Web components do dsgovbr-bootstraped 0.18.0 (issue #51)
+### Web components do dsgovbr-bootstrapped 1.0.0 (issue #51)
 
-- **Vendor**: `dsgovbr-bootstraped` passa para a 0.18.0, com `dsgovbr-bootstraped-componentes.js` e
-  `dsgovbr-bootstraped-cookies.js`.
+- **Vendor**: a biblioteca foi renomeada de `dsgovbr-bootstraped` para `dsgovbr-bootstrapped` (npm
+  `@abrasileirado/dsgovbr-bootstrapped`, 1.0.0; o conteúdo é o da 0.18.0 com os nomes trocados). A pasta vira
+  `static/vendors/dsgovbr-bootstrapped/` e os arquivos `dsgovbr-bootstrapped.min.css`,
+  `dsgovbr-bootstrapped-modo.js`, `dsgovbr-bootstrapped-componentes.js` e `dsgovbr-bootstrapped-cookies.js`; quem
+  referenciava os caminhos antigos precisa atualizar. As entradas abaixo mantêm o nome da época.
 - **Header, breadcrumb, título e ações**: o `dsgovbr/base.html` usa o `<dsgovbr-header>`, que fica fixo no topo com o
   breadcrumb (`<dsgovbr-breadcrumb>`), o título da página e as ações (bloco `title_actions`). Blocos novos:
   `page_title` e `header_home_url`. Os blocos `content_title` e `content_subtitle` saíram (o título vai para o header

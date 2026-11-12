@@ -1,4 +1,4 @@
-// Ajustes do tema sobre o dsgovbr-bootstraped (Bootstrap 5 com a aparência
+// Ajustes do tema sobre o dsgovbr-bootstrapped (Bootstrap 5 com a aparência
 // do GOV.BR DS, carregado antes deste arquivo). Só variáveis CSS do Bootstrap.
 
 $dsgovbr-autocomplete-max-height: 280px;
@@ -109,7 +109,7 @@ $dsgovbr-selector-gap: 0.5rem;
   }
 }
 
-// Cabeçalho da tabela da lista: texto como no exemplo do dsgovbr-bootstraped;
+// Cabeçalho da tabela da lista: texto como no exemplo do dsgovbr-bootstrapped;
 // a ordenação continua no link, sem cor de link nem sublinhado.
 #result_list thead a {
   color: inherit;
@@ -194,7 +194,7 @@ body:not(:has(#main-navigation)) dsgovbr-header [data-bs-target="#main-navigatio
 // .form-select (simples) ou .form-control (múltiplo); o resto usa as
 // variáveis do Bootstrap. O prefixo .select2-container vence o select2.css,
 // carregado depois deste arquivo.
-// Cor de foco dos campos do GOV.BR DS: o dsgovbr-bootstraped a usa em
+// Cor de foco dos campos do GOV.BR DS: o dsgovbr-bootstrapped a usa em
 // .form-control:focus sem expor variável CSS. Repetida só no Select2
 // múltiplo, em que o foco fica no campo de busca interno.
 $dsgovbr-focus-color: #c2850c;
@@ -564,7 +564,7 @@ ul.timelist {
 }
 
 // Modo escuro (data-bs-theme="dark" no <html> ou num contêiner). O
-// dsgovbr-bootstraped só troca as --bs-* globais; vários componentes
+// dsgovbr-bootstrapped só troca as --bs-* globais; vários componentes
 // guardam cores fixas do modo claro (texto #333, azul #1351b4, fundo
 // #f8f8f8) e ficam ilegíveis no fundo escuro. Aqui eles voltam a usar as
 // variáveis do Bootstrap, que no escuro já têm os valores certos. Só vale

@@ -12,21 +12,21 @@
   <link rel="stylesheet" href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha512-0S+nbAYis87iX26mmj/+fWt1MmaKCv80H+Mbo+Ne7ES4I6rxswpfnC6PxmLiw33Ywj2ghbtTw0FkLbMWqh4F7Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <!-- Bootstrap 5 com a aparência do GOV.BR DS (dsgovbr-bootstraped) -->
-  <link rel="stylesheet" href="{% static 'vendors/dsgovbr-bootstraped/dsgovbr-bootstraped.min.css' %}" />
+  <!-- Bootstrap 5 com a aparência do GOV.BR DS (dsgovbr-bootstrapped) -->
+  <link rel="stylesheet" href="{% static 'vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped.min.css' %}" />
   {% compress css %}
   <link rel="stylesheet" type="text/x-scss" href="{% static 'dsgovbr/scss/dsgovbr.scss' %}" />
   {% endcompress %}
   {% if dsgovbr.header.modo.show %}
     {# síncrono, depois do CSS: aplica o modo claro/escuro antes da primeira pintura #}
-    <script src="{% static 'vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-modo.js' %}"></script>
+    <script src="{% static 'vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-modo.js' %}"></script>
   {% endif %}
   {% if dsgovbr.cookiebar.show %}
     {# síncrono: a API window.dsgovbrCookies fica pronta cedo para os scripts da página #}
-    <script src="{% static 'vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-cookies.js' %}"></script>
+    <script src="{% static 'vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-cookies.js' %}"></script>
   {% endif %}
   {# web components (header, menu, footer, tabela...): defer, para os filhos já existirem ao montar #}
-  <script src="{% static 'vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-componentes.js' %}" defer></script>
+  <script src="{% static 'vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-componentes.js' %}" defer></script>
 
   {% include 'dsgovbr/favicon.html' %}
 
@@ -57,7 +57,7 @@
   {% block header %}
     {% if not is_popup %}
       {% with cab=dsgovbr.header %}
-        {# header, breadcrumb, título e ações da página: web component do dsgovbr-bootstraped #}
+        {# header, breadcrumb, título e ações da página: web component do dsgovbr-bootstrapped #}
         <dsgovbr-header
           {% if cab.logo.show %}logo="{% if cab.logo.type == 'compact' %}{{ cab.logo.compact_url }}{% else %}{{ cab.logo.default_url }}{% endif %}" logo-alt="Página inicial"{% endif %}
           href="{% block header_home_url %}{% url 'admin:index' %}{% endblock header_home_url %}"

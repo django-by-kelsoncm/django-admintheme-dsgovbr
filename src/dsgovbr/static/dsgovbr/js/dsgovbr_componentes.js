@@ -1,12 +1,12 @@
-// Cola entre o Django e os web components do dsgovbr-bootstraped (0.18.0).
+// Cola entre o Django e os web components do dsgovbr-bootstrapped (1.0.0).
 // Cada bloco cobre algo que o componente ainda não faz sozinho e deve sair
 // daqui quando a lib trouxer o recurso (issues abertas em
-// abrasileirado/dsgovbr-bootstraped):
+// abrasileirado/dsgovbr-bootstrapped):
 //   - busca do header com ação, nome e autocomplete   (#76)
 //   - item de menu que envia por POST (o "Sair")      (#77)
 //   - <dsgovbr-tabela>: envio nativo das ações em lote (#78)
 //   - <dsgovbr-filtro>: escolha única                 (#79)
-// Carregue com defer, depois do dsgovbr-bootstraped-componentes.js.
+// Carregue com defer, depois do dsgovbr-bootstrapped-componentes.js.
 (function () {
   'use strict';
 

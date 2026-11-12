@@ -1,6 +1,6 @@
 /*!
- * dsgovbr-bootstraped — consentimento de cookies: <dsgovbr-cookiebar> e API (opcional)
- * Licensed under MIT (https://github.com/abrasileirado/dsgovbr-bootstraped/blob/main/LICENSE)
+ * dsgovbr-bootstrapped — consentimento de cookies: <dsgovbr-cookiebar> e API (opcional)
+ * Licensed under MIT (https://github.com/abrasileirado/dsgovbr-bootstrapped/blob/main/LICENSE)
  */
 // Barra de consentimento do GOV.BR DS: aviso no rodapé com "Gerenciar cookies",
 // "Rejeitar cookies" e "Aceitar cookies"; configurações por grupo (switches) num
@@ -8,7 +8,7 @@
 // escolha. Sem dependência além do CSS do tema e do bootstrap.bundle (só para
 // abrir o modal). Light DOM, como os demais web components do projeto.
 //
-//   <script src="dsgovbr-bootstraped-cookies.js"></script>   <!-- no <head>, para a API estar pronta cedo -->
+//   <script src="dsgovbr-bootstrapped-cookies.js"></script>   <!-- no <head>, para a API estar pronta cedo -->
 //
 //   <dsgovbr-cookiebar declaracao="/cookies">
 //     <dsgovbr-cookies-texto>Usamos cookies para melhorar sua experiência.</dsgovbr-cookies-texto>
@@ -36,7 +36,7 @@
 (function () {
   "use strict";
 
-  var CHAVE = "dsgovbr-bootstraped:cookies";
+  var CHAVE = "dsgovbr-bootstrapped:cookies";
   var VERSAO = 1;
   var NOME_VALIDO = /^[a-z][a-z0-9_-]*$/i;
   var raiz = document.documentElement;

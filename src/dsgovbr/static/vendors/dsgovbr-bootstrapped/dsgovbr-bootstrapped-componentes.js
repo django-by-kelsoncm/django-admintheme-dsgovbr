@@ -1,20 +1,20 @@
 /*!
- * dsgovbr-bootstraped — web components de header, menu, footer, breadcrumb, paginação, modal, campo e tabela (opcional)
- * Licensed under MIT (https://github.com/abrasileirado/dsgovbr-bootstraped/blob/main/LICENSE)
+ * dsgovbr-bootstrapped — web components de header, menu, footer, breadcrumb, paginação, modal, campo e tabela (opcional)
+ * Licensed under MIT (https://github.com/abrasileirado/dsgovbr-bootstrapped/blob/main/LICENSE)
  */
 // Custom elements em light DOM (sem Shadow DOM): geram as mesmas classes
 // Bootstrap das composições documentadas, então o CSS do tema vale sem ajuste e
 // o seu CSS também. Não dependem de nada além do CSS do tema; o JS do Bootstrap
 // (bootstrap.bundle) é quem abre o menu, os dropdowns e a busca (data-bs-*).
 //
-//   <script src="dsgovbr-bootstraped-componentes.js" defer></script>
+//   <script src="dsgovbr-bootstrapped-componentes.js" defer></script>
 //
 // Elementos: <dsgovbr-breadcrumb>, <dsgovbr-menu>, <dsgovbr-footer>,
 // <dsgovbr-header>, <dsgovbr-paginacao>, <dsgovbr-modal>, <dsgovbr-campo> e
 // <dsgovbr-tabela>. Cada um lê os filhos e atributos UMA vez, ao conectar, e
 // troca o conteúdo pelo HTML final (o conteúdo original é só a declaração).
 // Mudar um atributo depois remonta o componente. O modo claro/escuro continua
-// no JS à parte (dsgovbr-bootstraped-modo.js); o header só renderiza o botão.
+// no JS à parte (dsgovbr-bootstrapped-modo.js); o header só renderiza o botão.
 //
 // Filhos declarativos: o pai lê elementos-dado (<dsgovbr-item>, <dsgovbr-pasta>,
 // <dsgovbr-coluna>, <dsgovbr-rede>, <dsgovbr-logo>, <dsgovbr-aviso>...) e os troca
@@ -546,7 +546,7 @@
           return h("li", {}, h("a", { class: "dropdown-item", href: l.href }, [icone(l.icone, "me-2"), l.texto]));
         });
         if (cookies) {
-          // abre as configurações do <dsgovbr-cookiebar> (dsgovbr-bootstraped-cookies.js)
+          // abre as configurações do <dsgovbr-cookiebar> (dsgovbr-bootstrapped-cookies.js)
           var rotuloCookies = "Configurações de cookies";
           desktop.append(
             h("button", { class: botaoRedondo, type: "button", "data-dsgovbr-cookies-abrir": true, "aria-label": rotuloCookies, title: rotuloCookies }, icone("fas fa-cookie-bite"))

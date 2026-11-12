@@ -1,4 +1,4 @@
-"""Migração para o Bootstrap 5 com o dsgovbr-bootstraped (issue #24)."""
+"""Migração para o Bootstrap 5 com o dsgovbr-bootstrapped (issue #24)."""
 
 import re
 from pathlib import Path
@@ -110,7 +110,7 @@ def test_templates_sem_classes_do_govbr_ds(regra: re.Pattern) -> None:
 
 def test_base_carrega_bootstrap_e_nao_o_js_do_govbr_ds() -> None:
     base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
-    assert "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped.min.css" in base
+    assert "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped.min.css" in base
     assert "vendors/bootstrap/bootstrap.bundle.min.js" in base
     assert "dsgovbr/js/dsgovbr_forms.js" in base
     assert "core-init.js" not in base
@@ -122,11 +122,11 @@ def test_base_carrega_bootstrap_e_nao_o_js_do_govbr_ds() -> None:
 @pytest.mark.parametrize(
     "arquivo",
     [
-        "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped.min.css",
-        "vendors/dsgovbr-bootstraped/LICENSE",
-        "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-modo.js",
-        "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-componentes.js",
-        "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-cookies.js",
+        "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped.min.css",
+        "vendors/dsgovbr-bootstrapped/LICENSE",
+        "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-modo.js",
+        "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-componentes.js",
+        "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-cookies.js",
         "vendors/bootstrap/bootstrap.bundle.min.js",
         "vendors/bootstrap/bootstrap.bundle.min.js.map",
         "vendors/bootstrap/LICENSE",
@@ -144,8 +144,8 @@ def test_versao_do_bootstrap_vendorizado() -> None:
         PACOTE
         / "static"
         / "vendors"
-        / "dsgovbr-bootstraped"
-        / "dsgovbr-bootstraped.min.css"
+        / "dsgovbr-bootstrapped"
+        / "dsgovbr-bootstrapped.min.css"
     ).read_text(encoding="utf-8-sig")
     assert "Bootstrap v5.3.8" in js
     assert "Bootstrap  v5.3.8" in css
@@ -355,10 +355,12 @@ def test_cola_js_cobre_busca_filtros_e_acoes_em_lote() -> None:
 def test_base_carrega_web_components_e_cola_com_defer() -> None:
     base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
     head = base.split("</head>")[0]
-    assert re.search(r"<script[^>]*dsgovbr-bootstraped-componentes\.js[^>]*defer", head)
+    assert re.search(
+        r"<script[^>]*dsgovbr-bootstrapped-componentes\.js[^>]*defer", head
+    )
     # a API de cookies é síncrona; o cookiebar só com DSGOVBR_COOKIEBAR
     assert "{% if dsgovbr.cookiebar.show %}" in head
-    assert not re.search(r"<script[^>]*bootstraped-cookies[^>]*(defer|async)", head)
+    assert not re.search(r"<script[^>]*bootstrapped-cookies[^>]*(defer|async)", head)
     assert re.search(
         r"<script[^>]*dsgovbr_componentes\.js[^>]*defer", base
     ), "a cola roda depois da montagem dos componentes"
@@ -564,14 +566,14 @@ def test_calendario_e_relogio_abrem_abaixo_do_link() -> None:
 
 
 def test_seletor_de_modo_no_header_e_script_no_head() -> None:
-    """Issue #41: botão de modo claro/escuro com o JS do dsgovbr-bootstraped."""
+    """Issue #41: botão de modo claro/escuro com o JS do dsgovbr-bootstrapped."""
     base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
     head = base.split("</head>")[0]
-    script = "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-modo.js"
+    script = "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-modo.js"
     assert script in head
     # síncrono e depois do CSS, para aplicar o modo antes da primeira pintura
-    assert head.index("dsgovbr-bootstraped.min.css") < head.index(script)
-    assert not re.search(r"<script[^>]*(defer|async)[^>]*bootstraped-modo", head)
+    assert head.index("dsgovbr-bootstrapped.min.css") < head.index(script)
+    assert not re.search(r"<script[^>]*(defer|async)[^>]*bootstrapped-modo", head)
     assert "{% if dsgovbr.header.modo.show %}" in head
 
     # o botão é desenhado pelo <dsgovbr-header modo>
@@ -581,8 +583,8 @@ def test_seletor_de_modo_no_header_e_script_no_head() -> None:
         PACOTE
         / "static"
         / "vendors"
-        / "dsgovbr-bootstraped"
-        / "dsgovbr-bootstraped-modo.js"
+        / "dsgovbr-bootstrapped"
+        / "dsgovbr-bootstrapped-modo.js"
     ).read_text(encoding="utf-8")
     assert "[data-dsgovbr-modo]" in js
-    assert "dsgovbr-bootstraped:modo" in js
+    assert "dsgovbr-bootstrapped:modo" in js

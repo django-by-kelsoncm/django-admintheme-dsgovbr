@@ -61,9 +61,9 @@ Em produção com `whitenoise` (ou outro servidor de estáticos que só serve o 
 
 O item "Sair" do usuário usa a rota `logout` do projeto ou, se ela não existir, `admin:logout`.
 
-Detalhes opcionais do header, do menu e do rodapé, como no exemplo "Painel administrativo" do dsgovbr-bootstraped
+Detalhes opcionais do header, do menu e do rodapé, como no exemplo "Painel administrativo" do dsgovbr-bootstrapped
 (todos vazios por padrão; o exemplo completo está em `sandbox/config/settings.py`). Header, menu, rodapé e
-cookiebar são web components do dsgovbr-bootstraped (ver "Aparência" abaixo):
+cookiebar são web components do dsgovbr-bootstrapped (ver "Aparência" abaixo):
 
 ```python
 REDES = [{"label": "YouTube", "icon": "fab fa-youtube", "url": "https://www.youtube.com/..."}]
@@ -108,20 +108,20 @@ Para o `DSGovBrModelAdmin` com importação/exportação, instale o extra: `pip 
 ### 3. Aparência: Bootstrap 5 com o GOV.BR DS
 
 Desde a versão 7.0.0 os templates usam classes do [Bootstrap 5.3](https://getbootstrap.com/docs/5.3/) com o tema
-[dsgovbr-bootstraped](https://github.com/abrasileirado/dsgovbr-bootstraped), que dá ao Bootstrap a aparência do
-GOV.BR DS. O CSS e os JS do tema (v0.18.0) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`;
+[dsgovbr-bootstrapped](https://github.com/abrasileirado/dsgovbr-bootstrapped), que dá ao Bootstrap a aparência do
+GOV.BR DS. O CSS e os JS do tema (v1.0.0) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`;
 o JS do GOV.BR DS (`core-init.js`) não é mais carregado.
 
 Desde a 8.0.0 o header, o menu, o rodapé, o cookiebar e a lista do admin são **web components** do
-dsgovbr-bootstraped (`dsgovbr-bootstraped-componentes.js` e `-cookies.js`), em vez de markup próprio do tema.
+dsgovbr-bootstrapped (`dsgovbr-bootstrapped-componentes.js` e `-cookies.js`), em vez de markup próprio do tema.
 Um pouco de JS do tema (`dsgovbr/js/dsgovbr_componentes.js`) liga os componentes ao Django: busca do header,
 "Sair" por POST, filtros, busca e ações em lote da lista. O que o componente ainda não cobre está nas issues
-[#76 a #81](https://github.com/abrasileirado/dsgovbr-bootstraped/issues) da lib; a cola sai do tema quando elas
+[#76 a #81](https://github.com/abrasileirado/dsgovbr-bootstrapped/issues) da lib; a cola sai do tema quando elas
 forem entregues.
 
 - **Nos seus templates**: use classes do Bootstrap (`btn btn-primary`, `alert alert-success`, `card`, `form-control`…)
   em vez de `br-*`. Exemplos de cada componente no
-  [catálogo do dsgovbr-bootstraped](https://abrasileirado.github.io/dsgovbr-bootstraped/componentes/).
+  [catálogo do dsgovbr-bootstrapped](https://abrasileirado.github.io/dsgovbr-bootstrapped/componentes/).
 - **Formulários**: o `dsgovbr/js/dsgovbr_forms.js` aplica `.form-control`, `.form-select` e `.form-check-input` aos
   campos do Django, com qualquer `FORM_RENDERER`. Para ignorar um campo ou bloco, use `data-dsgovbr-ignore`.
 - **Widgets do admin**: o `admin/css/base.css` do Django não é carregado; o `dsgovbr.scss` define as variáveis dele
@@ -129,10 +129,10 @@ forem entregues.
   `dsgovbr`, com largura total e a aparência de `.form-select`/`.form-control` (badges no múltiplo); calendário,
   relógio e os links de alterar/adicionar/remover/ver dos relacionamentos também têm estilo próprio.
 - **Modo escuro**: `data-bs-theme="dark"` no `<html>` (ou num contêiner). O `dsgovbr.scss` troca as cores fixas do
-  modo claro do dsgovbr-bootstraped (header, breadcrumb, campos, botões vazados, menu, paginação…) pelas `--bs-*`. O
+  modo claro do dsgovbr-bootstrapped (header, breadcrumb, campos, botões vazados, menu, paginação…) pelas `--bs-*`. O
   header traz um botão que alterna o modo (segue o sistema até o usuário escolher; a escolha fica no `localStorage`).
   Para tirar: `DSGOVBR_HEADER = {"modo": {"show": False}}`; `label` e `icon` mudam o texto e o ícone.
-- **Layout**: segue o exemplo "Painel administrativo" do dsgovbr-bootstraped. O conteúdo usa `container-lg`
+- **Layout**: segue o exemplo "Painel administrativo" do dsgovbr-bootstrapped. O conteúdo usa `container-lg`
   (`DSGOVBR_HEADER["width_style"]`: `sm`, `md`, `lg`, `xl`, `xxl` ou `fluid`); o header e o rodapé (web components)
   usam sempre `container-lg`.
 - **Header** (`<dsgovbr-header>`): fica fixo no topo com o breadcrumb, o título da página e as ações (bloco
