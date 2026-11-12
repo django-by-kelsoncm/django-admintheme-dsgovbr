@@ -59,16 +59,16 @@
       {% with cab=dsgovbr.header %}
         {# header, breadcrumb, título e ações da página: web component do dsgovbr-bootstrapped #}
         <dsgovbr-header
-          {% if cab.logo.show %}logo="{% if cab.logo.type == 'compact' %}{{ cab.logo.compact_url }}{% else %}{{ cab.logo.default_url }}{% endif %}" logo-alt="Página inicial"{% endif %}
+          {% if cab.logo.show %}logo="{% if cab.logo.type == 'compact' %}{{ cab.logo.compact_url }}{% else %}{{ cab.logo.default_url }}{% endif %}" logo-alt="Página inicial"{% if cab.logo.link %} logo-href="{{ cab.logo.link }}"{% endif %}{% endif %}
           href="{% block header_home_url %}{% url 'admin:index' %}{% endblock header_home_url %}"
           {% if cab.assinatura.show %}assinatura="{{ cab.assinatura.label }}"{% endif %}
           titulo="{{ cab.titulo.label }}"
           {% if cab.subtitulo.show %}subtitulo="{{ cab.subtitulo.label }}"{% endif %}
           {% if cab.menu.show %}menu="main-navigation"{% endif %}
-          {% if cab.search.show %}busca data-busca-acao="{{ cab.search.url }}"{% if cab.search.autocomplete.show %} data-busca-autocomplete="{{ cab.search.autocomplete.url }}"{% endif %}{% endif %}
+          {% if cab.search.show %}busca busca-acao="{{ cab.search.url }}" busca-id="searchbox"{% if cab.search.autocomplete.show %} busca-autocomplete="{{ cab.search.autocomplete.url }}"{% endif %}{% endif %}
           {% if cab.modo.show %}modo{% endif %}
           {% if dsgovbr.cookiebar.show %}cookies{% endif %}
-          {% if cab.login.show and user.is_authenticated %}usuario="{{ user.get_full_name|default:user.get_username }}"{% endif %}
+          {% if cab.login.show and user.is_authenticated %}usuario="{{ user.get_full_name|default:user.get_username }}"{% if user.avatar_url %} usuario-avatar="{{ user.avatar_url }}"{% else %} usuario-inicial="{{ user.get_full_name|default:user.get_username|slice:':1' }}"{% endif %}{% if user.main_role %} usuario-papel="{{ user.main_role }}"{% endif %}{% elif cab.login.show %} entrar="{% url 'admin:login' %}"{% endif %}
           pagina="{% block page_title %}{% if title %}{{ title }}{% if subtitle %}: {{ subtitle }}{% endif %}{% endif %}{% endblock page_title %}">
 
           {% if cab.links.show %}
@@ -91,7 +91,8 @@
             {% if user.is_authenticated %}
               <dsgovbr-usuario-menu>
                 {% for item in cab.login.dropdown.items %}
-                  <dsgovbr-item href="{{ item.url }}">{{ item.label }}</dsgovbr-item>
+                  {# method "post" (ex.: o LogoutView do Django 5+): o item vira um form com o CSRF #}
+                  <dsgovbr-item href="{{ item.url }}"{% if item.method == 'post' %} metodo="post"{% endif %}>{% if item.method == 'post' %}<dsgovbr-campo-oculto nome="csrfmiddlewaretoken" valor="{{ csrf_token }}"></dsgovbr-campo-oculto>{% endif %}{{ item.label }}</dsgovbr-item>
                 {% endfor %}
               </dsgovbr-usuario-menu>
             {% endif %}
@@ -111,15 +112,6 @@
             {% block title_actions %}{% endblock title_actions %}
           </dsgovbr-acoes>
         </dsgovbr-header>
-
-        {# itens do menu do usuário que exigem POST (ex.: o LogoutView do Django 5+) viram formulários que a cola JS envia #}
-        {% if cab.login.show and user.is_authenticated %}
-          {% for item in cab.login.dropdown.items %}
-            {% if item.method == 'post' %}
-              <form method="post" action="{{ item.url }}" data-dsgovbr-link-post hidden>{% csrf_token %}</form>
-            {% endif %}
-          {% endfor %}
-        {% endif %}
       {% endwith %}
     {% endif %}
   {% endblock header %}
@@ -206,11 +198,6 @@
 
   <script src="{% static 'vendors/bootstrap/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'dsgovbr/js/dsgovbr_forms.js' %}"></script>
-  {# cola entre o Django e os web components; defer: roda depois da montagem deles #}
-  <script src="{% static 'dsgovbr/js/dsgovbr_componentes.js' %}" defer></script>
-  {% if dsgovbr.header.search.autocomplete.show %}
-    <script src="{% static 'dsgovbr/js/searchbox.js' %}" defer></script>
-  {% endif %}
   {% block extrabody %}{% endblock extrabody %}
 </body>
 

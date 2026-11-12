@@ -16,6 +16,9 @@
 // Mudar um atributo depois remonta o componente. O modo claro/escuro continua
 // no JS à parte (dsgovbr-bootstrapped-modo.js); o header só renderiza o botão.
 //
+// Item com POST: <dsgovbr-item href="/sair/" metodo="post"><dsgovbr-campo-oculto nome="csrfmiddlewaretoken" valor="…"></dsgovbr-campo-oculto>Sair</dsgovbr-item>
+// vira um <form method="post"> com o botão (vale onde o item é aceito: menu, rodapé, header, footer).
+//
 // Filhos declarativos: o pai lê elementos-dado (<dsgovbr-item>, <dsgovbr-pasta>,
 // <dsgovbr-coluna>, <dsgovbr-rede>, <dsgovbr-logo>, <dsgovbr-aviso>...) e os troca
 // pelo HTML final; eles não renderizam nada sozinhos (o CSS os oculta fora de um
@@ -78,9 +81,41 @@
       href: a.getAttribute("href") || "#",
       texto: texto(a),
       icone: a.getAttribute("icone"),
+      iconeCor: a.getAttribute("icone-cor") || "",
+      badge: a.getAttribute("badge") || "",
+      badgeCor: a.getAttribute("badge-cor") || "",
       atual: a.hasAttribute("atual"),
       externo: a.hasAttribute("externo"),
+      // metodo="post": o item vira um <form method="post"> com um botão (ex.: sair da sessão)
+      metodo: (a.getAttribute("metodo") || "").toLowerCase() === "post" ? "post" : "",
+      campos: lerCampos(a),
     };
+  }
+
+  // <dsgovbr-campo-oculto nome="csrfmiddlewaretoken" valor="…"> -> campos <input type="hidden">
+  // enviados junto (item com metodo="post", ações em lote da tabela...).
+  function lerCampos(raiz) {
+    return filhos(raiz, "dsgovbr-campo-oculto").map(function (c) {
+      return { nome: c.getAttribute("nome") || "", valor: c.getAttribute("valor") || "", para: c.getAttribute("para") || "" };
+    });
+  }
+
+  function camposOcultos(campos) {
+    return campos.filter(function (c) { return c.nome; }).map(function (c) {
+      return h("input", { type: "hidden", name: c.nome, value: c.valor });
+    });
+  }
+
+  // Item como link (<a href>) ou, com metodo="post", como <form method="post" action="href">
+  // com os campos ocultos e um <button type="submit"> que leva a mesma classe e o mesmo
+  // conteúdo. O form usa display: contents (ver o CSS do tema): não muda o layout do pai.
+  function itemEl(l, classe, conteudo, extra) {
+    if (l.metodo !== "post") {
+      return h("a", Object.assign({ class: classe, href: l.href }, extra), conteudo);
+    }
+    return h("form", { class: "dsgovbr-form-item", method: "post", action: l.href }, camposOcultos(l.campos).concat(
+      h("button", Object.assign({ class: classe, type: "submit" }, extra), conteudo)
+    ));
   }
 
   // Itens (<dsgovbr-item> ou <a>) filhos diretos de um elemento.
@@ -173,6 +208,8 @@
   // ---------------------------------------------------------------------- menu
   // O próprio elemento é o offcanvas (.offcanvas.offcanvas-start): o `id` dele é
   // o alvo do botão de abrir (<dsgovbr-header menu="id">).
+  // O <dsgovbr-item> aceita badge="3" badge-cor="danger" (pílula à direita) e icone-cor="warning"
+  // (.text-warning no ícone); o <dsgovbr-pasta> pode conter outras pastas, em vários níveis.
   //
   // <dsgovbr-menu id="menu-principal" titulo="Sistema" logo="logo.svg">
   //   <dsgovbr-item href="/" icone="fas fa-home">Início</dsgovbr-item>
@@ -192,21 +229,25 @@
     }
 
     ler() {
-      var itens = [];
-      Array.prototype.forEach.call(this.children, function (el) {
+      // item (link) ou pasta; a pasta pode ter itens e outras pastas (vários níveis)
+      function lerNo(el) {
         if (ehItem(el)) {
-          itens.push({ tipo: "link", link: lerLink(el) });
-        } else if (el.localName === "dsgovbr-pasta") {
-          itens.push({
+          return { tipo: "link", link: lerLink(el) };
+        }
+        if (el.localName === "dsgovbr-pasta") {
+          return {
             tipo: "pasta",
             id: el.id || null,
             rotulo: el.getAttribute("rotulo") || "",
             icone: el.getAttribute("icone"),
+            iconeCor: el.getAttribute("icone-cor") || "",
             aberta: el.hasAttribute("aberta"),
-            links: lerItens(el),
-          });
+            nos: Array.prototype.map.call(el.children, lerNo).filter(Boolean),
+          };
         }
-      });
+        return null;
+      }
+      var itens = Array.prototype.map.call(this.children, lerNo).filter(Boolean);
       var rodape = filhos(this, "dsgovbr-menu-rodape")[0];
       return {
         itens: itens,
@@ -229,12 +270,46 @@
       this.setAttribute("tabindex", "-1");
       this.setAttribute("aria-labelledby", idTitulo);
 
+      // cor do Bootstrap (primary, danger...): só letras e hífen, para virar .text-<cor> / .text-bg-<cor>
+      function cor(valor, padrao) {
+        return /^[a-z][a-z-]*$/.test(valor) ? valor : padrao;
+      }
+
+      function icones(classes, corDoIcone) {
+        return icone(classes, corDoIcone ? "text-" + cor(corDoIcone, "body") : "");
+      }
+
       function link(l) {
-        return h(
-          "a",
-          { class: "list-group-item list-group-item-action" + (l.atual ? " active" : ""), href: l.href, "aria-current": l.atual ? "page" : false },
-          [icone(l.icone), l.texto]
+        return itemEl(
+          l,
+          "list-group-item list-group-item-action" + (l.atual ? " active" : ""),
+          [
+            icones(l.icone, l.iconeCor),
+            l.texto,
+            l.badge ? h("span", { class: "badge rounded-pill float-end text-bg-" + cor(l.badgeCor, "primary") }, l.badge) : null,
+          ],
+          { "aria-current": l.atual ? "page" : false }
         );
+      }
+
+      // Pasta: botão + Collapse; as pastas filhas ficam dentro, recuadas (.dsgovbr-menu-sub).
+      function pasta(item, alvo, filha) {
+        var interior = h("div", { class: "list-group list-group-flush" });
+        item.nos.forEach(function (no, j) {
+          if (no.tipo === "link") {
+            interior.append(link(no.link));
+          } else {
+            interior.append.apply(interior, pasta(no, no.id || alvo + "-" + (j + 1), true));
+          }
+        });
+        return [
+          h(
+            "button",
+            { class: "list-group-item list-group-item-action", type: "button", "data-bs-toggle": "collapse", "data-bs-target": "#" + alvo, "aria-expanded": String(item.aberta), "aria-controls": alvo },
+            [icones(item.icone, item.iconeCor), item.rotulo]
+          ),
+          h("div", { class: "collapse" + (filha ? " dsgovbr-menu-sub" : "") + (item.aberta ? " show" : ""), id: alvo }, interior),
+        ];
       }
 
       var lista = h("div", { class: "list-group list-group-flush" });
@@ -243,15 +318,7 @@
           lista.append(link(item.link));
           return;
         }
-        var alvo = item.id || id + "-pasta-" + (i + 1);
-        lista.append(
-          h(
-            "button",
-            { class: "list-group-item list-group-item-action", type: "button", "data-bs-toggle": "collapse", "data-bs-target": "#" + alvo, "aria-expanded": String(item.aberta), "aria-controls": alvo },
-            [icone(item.icone), item.rotulo]
-          ),
-          h("div", { class: "collapse" + (item.aberta ? " show" : ""), id: alvo }, h("div", { class: "list-group list-group-flush" }, item.links.map(link)))
-        );
+        lista.append.apply(lista, pasta(item, item.id || id + "-pasta-" + (i + 1), false));
       });
 
       var cabecalho = h("div", { class: "offcanvas-header" }, [
@@ -272,7 +339,7 @@
         }
         if (rodape.links.length) {
           partes.push(h("div", { class: "px-5 py-3 border-bottom" }, rodape.links.map(function (l, i) {
-            return h("a", { class: "d-block text-decoration-none" + (i < rodape.links.length - 1 ? " mb-3" : ""), href: l.href },
+            return itemEl(l, "d-block text-decoration-none" + (i < rodape.links.length - 1 ? " mb-3" : ""),
               [l.texto, l.externo ? icone("fas fa-external-link-square-alt", "ms-1") : null]);
           })));
         }
@@ -338,7 +405,7 @@
                 h(
                   "nav",
                   { class: "nav flex-column", "aria-label": col.titulo },
-                  col.links.map(function (l) { return h("a", { class: "nav-link", href: l.href }, l.texto); })
+                  col.links.map(function (l) { return itemEl(l, "nav-link", l.texto); })
                 ),
               ]);
             })
@@ -379,6 +446,163 @@
     }
   }
 
+  // ------------------------------------------------- autocomplete da busca (header)
+  // <dsgovbr-header busca busca-autocomplete="/busca/sugestoes/">: a cada digitação (depois
+  // de 300 ms e com 2 ou mais caracteres) pede `url?<nome>=<termo>` e mostra as
+  // sugestões numa lista logo abaixo do campo. O endpoint devolve JSON: ["a", "b"] ou
+  // [{"label": "A", "value": "a"}]. Padrão ARIA combobox: o foco fica no campo e as
+  // setas movem a opção ativa (aria-activedescendant); Enter escolhe, Escape fecha.
+  // Só aceita endpoint da mesma origem. Devolve uma função que desfaz os ouvintes do document.
+  var CAMINHO_LOCAL = /^\/(?!\/)[\w\-./%?=&+~:@,;!*()]*$/;
+
+  function normalizarSugestoes(dados) {
+    if (!Array.isArray(dados)) {
+      return [];
+    }
+    return dados.slice(0, 20).map(function (item) {
+      if (item !== null && typeof item === "object") {
+        var rotulo = item.label !== undefined ? item.label : item.value;
+        return { rotulo: String(rotulo === undefined ? "" : rotulo), valor: String(item.value !== undefined ? item.value : rotulo) };
+      }
+      return { rotulo: String(item), valor: String(item) };
+    });
+  }
+
+  function ligarAutocomplete(form, campo, url, nomeParametro) {
+    if (!CAMINHO_LOCAL.test(url) || typeof window.fetch !== "function") {
+      return function () {};
+    }
+    var idLista = campo.id + "-sugestoes";
+    var lista = h("div", { class: "list-group dsgovbr-autocomplete shadow", id: idLista, role: "listbox", "aria-label": "Sugestões de busca", hidden: true });
+    form.classList.add("position-relative");
+    form.append(lista);
+    campo.setAttribute("role", "combobox");
+    campo.setAttribute("autocomplete", "off");
+    campo.setAttribute("aria-autocomplete", "list");
+    campo.setAttribute("aria-expanded", "false");
+    campo.setAttribute("aria-controls", idLista);
+
+    var opcoes = [];
+    var ativa = -1;
+    var timer = null;
+    var aborto = null;
+
+    function fechar() {
+      lista.hidden = true;
+      campo.setAttribute("aria-expanded", "false");
+      campo.removeAttribute("aria-activedescendant");
+      ativa = -1;
+    }
+
+    function marcar(indice) {
+      ativa = indice;
+      opcoes.forEach(function (o, i) {
+        o.classList.toggle("active", i === indice);
+        o.setAttribute("aria-selected", String(i === indice));
+      });
+      if (indice >= 0) {
+        campo.setAttribute("aria-activedescendant", opcoes[indice].id);
+        opcoes[indice].scrollIntoView({ block: "nearest" });
+      } else {
+        campo.removeAttribute("aria-activedescendant");
+      }
+    }
+
+    function escolher(valor) {
+      campo.value = valor;
+      fechar();
+      if (form.requestSubmit) {
+        form.requestSubmit();
+      } else {
+        form.submit();
+      }
+    }
+
+    function mostrar(itens) {
+      opcoes = [];
+      ativa = -1;
+      campo.removeAttribute("aria-activedescendant");
+      lista.replaceChildren();
+      if (!itens.length) {
+        lista.append(h("div", { class: "list-group-item text-body-secondary", role: "status" }, "Nenhum resultado encontrado"));
+      }
+      itens.forEach(function (item, i) {
+        var opcao = h("button", { type: "button", class: "list-group-item list-group-item-action", role: "option", id: idLista + "-" + i, tabindex: "-1", "aria-selected": "false" }, item.rotulo);
+        opcao.addEventListener("click", function () { escolher(item.valor); });
+        lista.append(opcao);
+        opcoes.push(opcao);
+      });
+      lista.hidden = false;
+      campo.setAttribute("aria-expanded", "true");
+    }
+
+    function buscar(termo) {
+      if (aborto) {
+        aborto.abort();
+      }
+      aborto = window.AbortController ? new window.AbortController() : null;
+      var destino = new URL(url, window.location.href);
+      destino.searchParams.set(nomeParametro, termo);
+      window.fetch(destino.pathname + destino.search, aborto ? { signal: aborto.signal, headers: { Accept: "application/json" } } : { headers: { Accept: "application/json" } })
+        .then(function (resposta) {
+          if (!resposta.ok) {
+            throw new Error("HTTP " + resposta.status);
+          }
+          return resposta.json();
+        })
+        .then(function (dados) { mostrar(normalizarSugestoes(dados)); })
+        .catch(function (erro) {
+          if (!erro || erro.name !== "AbortError") {
+            fechar();
+          }
+        });
+    }
+
+    campo.addEventListener("input", function () {
+      window.clearTimeout(timer);
+      var termo = campo.value.trim();
+      if (termo.length < 2) {
+        if (aborto) {
+          aborto.abort();
+        }
+        fechar();
+        return;
+      }
+      timer = window.setTimeout(function () { buscar(termo); }, 300);
+    });
+
+    campo.addEventListener("keydown", function (e) {
+      var aberta = !lista.hidden && opcoes.length > 0;
+      if (e.key === "ArrowDown" && aberta) {
+        e.preventDefault();
+        marcar((ativa + 1) % opcoes.length);
+      } else if (e.key === "ArrowUp" && aberta) {
+        e.preventDefault();
+        marcar(ativa <= 0 ? opcoes.length - 1 : ativa - 1);
+      } else if (e.key === "Enter" && aberta && ativa >= 0) {
+        e.preventDefault();
+        opcoes[ativa].click();
+      } else if (e.key === "Escape" && !lista.hidden) {
+        e.preventDefault();
+        fechar();
+      }
+    });
+
+    function fora(e) {
+      if (!form.contains(e.target)) {
+        fechar();
+      }
+    }
+    document.addEventListener("click", fora);
+    return function () {
+      window.clearTimeout(timer);
+      if (aborto) {
+        aborto.abort();
+      }
+      document.removeEventListener("click", fora);
+    };
+  }
+
   // -------------------------------------------------------------------- header
   // <dsgovbr-header logo="logo.svg" logo-alt="Página inicial" href="/"
   //                 assinatura="Ministério Exemplo"
@@ -394,6 +618,13 @@
   //   <dsgovbr-breadcrumb>…</dsgovbr-breadcrumb>
   //   <dsgovbr-acoes><button class="btn btn-primary">Adicionar</button></dsgovbr-acoes>
   // </dsgovbr-header>
+  // Logo: `logo-href` (link do logo; padrão `href`, que continua sendo o link do título).
+  // Usuário: `usuario-avatar` (URL da foto) ou `usuario-inicial` (1 ou 2 letras) no botão e
+  // `usuario-papel` (texto pequeno abaixo do nome completo, no topo do dropdown). Sem `usuario`,
+  // `entrar` (URL) e `entrar-rotulo` mostram o botão "Entrar".
+  // Busca: `busca-acao` (URL do formulário GET; sem ela o formulário não envia a lugar nenhum),
+  // `busca-nome` (name do campo; padrão q com `busca-acao`), `busca-valor` (valor inicial),
+  // `busca-id` (id do campo, para atalhos) e `busca-autocomplete` (URL de sugestões, ver acima).
   // O <header> traz logo, ações, título do sistema e busca. O breadcrumb, o título
   // da página e as ações ficam numa barra logo abaixo dele, fora do <header>, e
   // as duas grudam juntas no topo (.sticky-top); `estatico` desliga a fixação.
@@ -406,7 +637,8 @@
   // curtas não recolhem, para a mudança de altura não gerar vai-e-volta.
   class Header extends Base {
     static get observedAttributes() {
-      return ["logo", "logo-alt", "href", "assinatura", "titulo", "subtitulo", "menu", "busca", "modo", "cookies", "usuario", "pagina", "estatico"];
+      return ["logo", "logo-alt", "href", "assinatura", "titulo", "subtitulo", "menu", "busca", "busca-acao", "busca-nome", "busca-valor", "busca-id", "busca-autocomplete", "modo", "cookies", "usuario", "pagina", "estatico",
+        "logo-href", "usuario-avatar", "usuario-inicial", "usuario-papel", "entrar", "entrar-rotulo"];
     }
 
     connectedCallback() {
@@ -418,6 +650,14 @@
 
     disconnectedCallback() {
       this.pararRolagem();
+      this.pararBusca();
+    }
+
+    pararBusca() {
+      if (this._pararAutocomplete) {
+        this._pararAutocomplete();
+        this._pararAutocomplete = null;
+      }
     }
 
     ouvirRolagem() {
@@ -511,7 +751,7 @@
       }
 
       var cima = h("div", { class: "dsgovbr-header-topo d-flex align-items-center gap-3" }, [
-        logo ? h("a", { href: href }, h("img", { src: logo, height: "40", alt: this.attr("logo-alt", "") })) : null,
+        logo ? h("a", { href: this.attr("logo-href", href) }, h("img", { src: logo, height: "40", alt: this.attr("logo-alt", "") })) : null,
         assinatura ? h("div", { class: "vr d-none d-sm-block" }) : null,
         assinatura ? h("span", { class: "navbar-text p-0 fw-medium d-none d-sm-block" }, assinatura) : null,
       ]);
@@ -523,13 +763,13 @@
           h(
             "ul",
             { class: "navbar-nav flex-row d-none d-xl-flex", "aria-label": "Acesso rápido" },
-            m.acessoRapido.map(function (l) { return h("li", { class: "nav-item" }, h("a", { class: "nav-link px-2", href: l.href }, l.texto)); })
+            m.acessoRapido.map(function (l) { return h("li", { class: "nav-item" }, itemEl(l, "nav-link px-2", l.texto)); })
           ),
           dropdown(
             "Abrir acesso rápido",
             "fas fa-ellipsis-v",
             "Acesso rápido",
-            m.acessoRapido.map(function (l) { return h("li", {}, h("a", { class: "dropdown-item", href: l.href }, l.texto)); }),
+            m.acessoRapido.map(function (l) { return h("li", {}, itemEl(l, "dropdown-item", l.texto)); }),
             "d-xl-none"
           )
         );
@@ -540,10 +780,10 @@
           acoesTopo.append(h("div", { class: "vr mx-1" }));
         }
         var desktop = h("div", { class: "d-none d-xl-flex" }, m.funcionalidades.map(function (l) {
-          return h("a", { class: botaoRedondo, href: l.href, "aria-label": l.texto }, icone(l.icone));
+          return itemEl(l, botaoRedondo, icone(l.icone), { "aria-label": l.texto });
         }));
         var itensCelular = m.funcionalidades.map(function (l) {
-          return h("li", {}, h("a", { class: "dropdown-item", href: l.href }, [icone(l.icone, "me-2"), l.texto]));
+          return h("li", {}, itemEl(l, "dropdown-item", [icone(l.icone, "me-2"), l.texto]));
         });
         if (cookies) {
           // abre as configurações do <dsgovbr-cookiebar> (dsgovbr-bootstrapped-cookies.js)
@@ -578,27 +818,51 @@
       }
 
       if (usuario) {
+        // avatar: foto (usuario-avatar), inicial (usuario-inicial) ou o ícone de usuário; é decorativo
+        // (o nome já está no botão), por isso a imagem leva alt vazio
+        var fotoUsuario = this.attr("usuario-avatar", "");
+        var inicialUsuario = this.attr("usuario-inicial", "").slice(0, 2);
+        var avatar = fotoUsuario
+          ? h("span", { class: "dsgovbr-avatar text-bg-primary", "aria-hidden": "true" }, h("img", { src: fotoUsuario, alt: "" }))
+          : inicialUsuario
+            ? h("span", { class: "dsgovbr-avatar text-bg-primary", "aria-hidden": "true" }, inicialUsuario)
+            : icone("fas fa-user");
+        // com usuario-papel o dropdown abre com o nome completo e o papel (perfil, cargo)
+        var papel = this.attr("usuario-papel", "");
+        var identificacao = papel
+          ? [
+              h("li", {}, h("div", { class: "px-3 py-2 text-center" }, [h("p", { class: "fw-bold m-0" }, usuario), h("p", { class: "small m-0" }, papel)])),
+              h("li", {}, h("hr", { class: "dropdown-divider" })),
+            ]
+          : [];
         acoesTopo.append(
           h("div", { class: "dropdown ms-1" }, [
             h("button", { class: "btn btn-light btn-sm dropdown-toggle", type: "button", "data-bs-toggle": "dropdown", "aria-expanded": "false" }, [
-              icone("fas fa-user"),
+              avatar,
               h("span", { class: "d-none d-sm-inline" }, usuario),
               h("span", { class: "visually-hidden d-sm-none" }, usuario),
             ]),
             h(
               "ul",
               { class: "dropdown-menu dropdown-menu-end" },
-              m.usuario.map(function (l) {
-                return h("li", {}, l ? h("a", { class: "dropdown-item", href: l.href }, l.texto) : h("hr", { class: "dropdown-divider" }));
-              })
+              identificacao.concat(m.usuario.map(function (l) {
+                return h("li", {}, l ? itemEl(l, "dropdown-item", l.texto) : h("hr", { class: "dropdown-divider" }));
+              }))
             ),
           ])
+        );
+      } else if (this.hasAttribute("entrar")) {
+        // sem usuário autenticado: botão que leva à tela de login
+        acoesTopo.append(
+          h("a", { class: "btn btn-light btn-sm ms-1", href: this.getAttribute("entrar") || "#" }, [icone("fas fa-user"), h("span", {}, this.attr("entrar-rotulo", "Entrar"))])
         );
       }
       cima.append(acoesTopo);
 
       var linhas = [cima];
       var barraPagina = null; // breadcrumb, título e ações: fora do <header>
+      var formBusca = null;
+      var campoBusca = null;
 
       if (menu || titulo || subtitulo || busca) {
         var meio = h("div", { class: "d-flex flex-wrap align-items-start gap-3 mt-2" });
@@ -618,13 +882,17 @@
           ])
         );
         if (busca) {
-          meio.append(
-            h("form", { class: "collapse d-lg-block col-12 col-lg-5 col-xl-4", id: idBusca, role: "search" }, [
-              h("label", { class: "visually-hidden", for: idBusca + "-campo" }, "Texto da pesquisa"),
-              h("input", { class: "form-control", id: idBusca + "-campo", type: "search", placeholder: "O que você procura?" }),
-              h("button", { class: botaoRedondo, type: "submit", "aria-label": "Pesquisar" }, icone("fas fa-search")),
-            ])
-          );
+          var comAcao = this.hasAttribute("busca-acao");
+          var idCampo = this.attr("busca-id", idBusca + "-campo");
+          var nomeBusca = this.attr("busca-nome", comAcao ? "q" : "");
+          var valorBusca = this.attr("busca-valor", "");
+          campoBusca = h("input", { class: "form-control", id: idCampo, type: "search", name: nomeBusca || false, value: valorBusca || false, placeholder: "O que você procura?" });
+          formBusca = h("form", { class: "collapse d-lg-block col-12 col-lg-5 col-xl-4", id: idBusca, role: "search", method: comAcao ? "get" : false, action: comAcao ? this.getAttribute("busca-acao") : false }, [
+            h("label", { class: "visually-hidden", for: idCampo }, "Texto da pesquisa"),
+            campoBusca,
+            h("button", { class: botaoRedondo, type: "submit", "aria-label": "Pesquisar" }, icone("fas fa-search")),
+          ]);
+          meio.append(formBusca);
         }
         linhas.push(meio);
       }
@@ -650,6 +918,10 @@
           barraPagina,
         ])
       );
+      this.pararBusca();
+      if (formBusca && this.hasAttribute("busca-autocomplete")) {
+        this._pararAutocomplete = ligarAutocomplete(formBusca, campoBusca, this.getAttribute("busca-autocomplete"), this.attr("busca-nome", "q") || "q");
+      }
       this.ouvirRolagem();
     }
   }
@@ -1249,13 +1521,19 @@
   //   dsgovbr:tabela-acao                           detail { acao, valores }
   //   dsgovbr:tabela-densidade                      detail { densidade }
   //   dsgovbr:pagina                                (do <dsgovbr-paginacao>, ver acima)
+  // Ação em lote nativa (aplicações renderizadas no servidor): lote-metodo="post", lote-acao-url,
+  // lote-campo e selecao-nome; campos extras (CSRF...) por <dsgovbr-campo-oculto nome valor>
+  // (para="lote", padrão, "consulta" ou "ambos"). O evento dsgovbr:tabela-acao é cancelável.
+  // Filtros: <dsgovbr-filtro unico> aceita uma opção só (como rádio); valor-consulta trata o valor
+  // da opção como pedaço de query string ("a=1&b=2"), expandido em campos ao enviar.
   // Não aninhe o componente dentro de outro <form> (ele tem o próprio).
   var DENSIDADES = [["alta", "Alta"], ["media", "Média"], ["baixa", "Baixa"]];
 
   class Tabela extends Base {
     static get observedAttributes() {
       return ["titulo", "busca", "busca-nome", "busca-valor", "busca-placeholder", "acao", "ferramentas", "selecionavel", "selecao-nome",
-        "total", "total-paginas", "pagina", "por-pagina", "opcoes-por-pagina", "paginacao-href", "vazio", "carregando"];
+        "total", "total-paginas", "pagina", "por-pagina", "opcoes-por-pagina", "paginacao-href", "vazio", "carregando",
+        "lote-acao-url", "lote-metodo", "lote-campo"];
     }
 
     ler() {
@@ -1266,6 +1544,8 @@
           return {
             nome: f.getAttribute("nome") || "",
             rotulo: f.getAttribute("rotulo") || f.getAttribute("nome") || "",
+            unico: f.hasAttribute("unico"),
+            consulta: f.hasAttribute("valor-consulta"),
             opcoes: filhos(f, "dsgovbr-opcao").map(function (o) {
               return { valor: o.getAttribute("valor") !== null ? o.getAttribute("valor") : texto(o), texto: texto(o), selecionada: o.hasAttribute("selecionada") };
             }),
@@ -1275,6 +1555,7 @@
           return { acao: a.getAttribute("acao") || "", icone: a.getAttribute("icone"), texto: texto(a) };
         }),
         acoes: nosDe(this, "dsgovbr-acoes"),
+        campos: lerCampos(this),
       };
     }
 
@@ -1299,7 +1580,8 @@
       var termo = form && form.elements[this.attr("busca-nome", "q")] ? form.elements[this.attr("busca-nome", "q")].value : "";
       var filtros = {};
       Array.prototype.forEach.call(this.querySelectorAll("input[data-tabela-filtro]:checked"), function (c) {
-        (filtros[c.name] = filtros[c.name] || []).push(c.value);
+        var nome = c.getAttribute("data-filtro-nome") || c.name;
+        (filtros[nome] = filtros[nome] || []).push(c.value);
       });
       return { termo: termo, filtros: filtros };
     }
@@ -1361,6 +1643,26 @@
       if (avisar) {
         this.avisar("selecao", { quantidade: marcadas.length, valores: marcadas });
       }
+    }
+
+    // Envio nativo da ação em lote (lote-metodo="post" ou "get"): um <form> escondido leva
+    // a ação (lote-campo, padrão "acao"), os valores marcados (selecao-nome) e os
+    // <dsgovbr-campo-oculto> do componente (sem `para` ou com para="lote"/"ambos"), para
+    // lote-acao-url (padrão: a página atual, com a query string). Sem lote-metodo só há o evento.
+    enviarLote(acao, valores) {
+      var metodo = this.attr("lote-metodo", "").toLowerCase();
+      if ((metodo !== "post" && metodo !== "get") || !valores.length) {
+        return;
+      }
+      var nomeSelecao = this.attr("selecao-nome", "selecionados");
+      var campos = [h("input", { type: "hidden", name: this.attr("lote-campo", "acao"), value: acao })]
+        .concat(valores.map(function (v) { return h("input", { type: "hidden", name: nomeSelecao, value: v }); }))
+        .concat(camposOcultos(this._modelo.campos.filter(function (c) { return c.para === "" || c.para === "lote" || c.para === "ambos"; })));
+      var url = this.attr("lote-acao-url", "");
+      var form = h("form", { method: metodo, action: url || false, hidden: true }, campos);
+      document.body.append(form);
+      form.submit();
+      window.setTimeout(function () { form.remove(); }, 0);
     }
 
     aplicarDensidade() {
@@ -1451,11 +1753,14 @@
             var marcados = anterior ? anterior.filtros[f.nome] || [] : null;
             return h("div", { class: "dropdown" }, [
               h("button", { type: "button", class: "btn btn-outline-primary btn-sm rounded-pill dropdown-toggle", "data-bs-toggle": "dropdown", "data-bs-auto-close": "outside", "aria-expanded": "false" }, f.rotulo),
-              h("div", { class: "dropdown-menu p-2" }, f.opcoes.map(function (o, j) {
+              h("div", { class: "dropdown-menu p-2", role: "group", "aria-label": f.rotulo }, f.opcoes.map(function (o, j) {
                 var idCampo = idMenu + "-" + j;
                 return h("div", { class: "form-check mx-2 my-1" }, [
-                  h("input", { class: "form-check-input", type: "checkbox", id: idCampo, name: f.nome, value: o.valor,
-                    checked: marcados ? marcados.indexOf(o.valor) !== -1 : o.selecionada, "data-tabela-filtro": true, "data-rotulo-filtro": f.rotulo, "data-rotulo-opcao": o.texto }),
+                  // valor-consulta: o valor da opção é um pedaço de query string ("a=1&b=2") expandido em
+                  // vários campos ao enviar; sem name o checkbox em si não é enviado
+                  h("input", { class: "form-check-input", type: "checkbox", id: idCampo, name: f.consulta ? false : f.nome, value: o.valor,
+                    checked: marcados ? marcados.indexOf(o.valor) !== -1 : o.selecionada, "data-tabela-filtro": true, "data-filtro-nome": f.nome,
+                    "data-tabela-unico": f.unico, "data-tabela-consulta-valor": f.consulta, "data-rotulo-filtro": f.rotulo, "data-rotulo-opcao": o.texto }),
                   h("label", { class: "form-check-label", for: idCampo }, o.texto),
                 ]);
               })),
@@ -1473,7 +1778,9 @@
               ]),
             ]))));
         }
-        paineis = h("form", { method: "get", action: this.attr("acao", "") || false, role: "search", "aria-label": "Busca e filtros da listagem", "data-tabela-consulta": true }, corpoPaineis);
+        // campos ocultos para="consulta"/"ambos" (ordenação atual...) seguem na busca e nos filtros
+        var camposConsulta = camposOcultos(m.campos.filter(function (c) { return c.para === "consulta" || c.para === "ambos"; }));
+        paineis = h("form", { method: "get", action: this.attr("acao", "") || false, role: "search", "aria-label": "Busca e filtros da listagem", "data-tabela-consulta": true }, [corpoPaineis].concat(camposConsulta));
       }
 
       // ---- barra de itens selecionados (azul) com as ações em lote
@@ -1559,6 +1866,14 @@
         } else if (alvo.matches("input[data-tabela-linha]")) {
           self.atualizarSelecao(true);
         } else if (alvo.matches("input[data-tabela-filtro]")) {
+          if (alvo.checked && alvo.hasAttribute("data-tabela-unico")) {
+            // filtro único: marcar uma opção desmarca as outras do mesmo filtro
+            Array.prototype.forEach.call(self.querySelectorAll("input[data-tabela-filtro]"), function (outro) {
+              if (outro !== alvo && outro.getAttribute("data-filtro-nome") === alvo.getAttribute("data-filtro-nome")) {
+                outro.checked = false;
+              }
+            });
+          }
           self.atualizarChips();
         } else if (alvo.matches("input[data-tabela-densidade]")) {
           self._quieto = true;
@@ -1572,7 +1887,12 @@
       this.addEventListener("click", function (e) {
         var lote = e.target.closest ? e.target.closest("[data-tabela-acao]") : null;
         if (lote) {
-          self.avisar("acao", { acao: lote.getAttribute("data-tabela-acao"), valores: self.valoresSelecionados });
+          var acaoLote = lote.getAttribute("data-tabela-acao");
+          var valoresLote = self.valoresSelecionados;
+          var evento = self.avisar("acao", { acao: acaoLote, valores: valoresLote }, true);
+          if (!evento.defaultPrevented) {
+            self.enviarLote(acaoLote, valoresLote);
+          }
           return;
         }
         if (e.target.closest && e.target.closest("[data-tabela-limpar]")) {
@@ -1590,6 +1910,14 @@
         if (!e.target.matches || !e.target.matches("form[data-tabela-consulta]")) {
           return;
         }
+        // valor-consulta: expande cada opção marcada em campos ocultos antes do envio nativo
+        var formConsulta = e.target;
+        Array.prototype.forEach.call(formConsulta.querySelectorAll("input[data-tabela-expandido]"), function (campo) { campo.remove(); });
+        Array.prototype.forEach.call(self.querySelectorAll("input[data-tabela-consulta-valor]:checked"), function (opcao) {
+          new URLSearchParams(opcao.value).forEach(function (valor, nome) {
+            formConsulta.append(h("input", { type: "hidden", name: nome, value: valor, "data-tabela-expandido": true }));
+          });
+        });
         var origem = e.submitter && e.submitter.getAttribute("data-acao") ? e.submitter.getAttribute("data-acao") : "busca";
         var evento = self.avisar(origem, self.consulta(), true);
         if (evento.defaultPrevented || !self.hasAttribute("acao")) {
@@ -1605,7 +1933,7 @@
   [
     "dsgovbr-item", "dsgovbr-pasta", "dsgovbr-menu-rodape", "dsgovbr-coluna", "dsgovbr-rede", "dsgovbr-logo", "dsgovbr-aviso",
     "dsgovbr-acesso-rapido", "dsgovbr-funcionalidades", "dsgovbr-usuario-menu", "dsgovbr-divisor", "dsgovbr-acoes",
-    "dsgovbr-ajuda", "dsgovbr-erro", "dsgovbr-sucesso", "dsgovbr-opcao", "dsgovbr-filtro", "dsgovbr-lote-acao",
+    "dsgovbr-ajuda", "dsgovbr-erro", "dsgovbr-sucesso", "dsgovbr-opcao", "dsgovbr-filtro", "dsgovbr-lote-acao", "dsgovbr-campo-oculto",
   ].forEach(function (nome) {
     if (!window.customElements.get(nome)) {
       window.customElements.define(nome, class extends HTMLElement {});

@@ -247,16 +247,33 @@ def test_header_e_rodape_sao_web_components() -> None:
 
 def test_sair_do_header_envia_post_com_csrf() -> None:
     base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
-    assert "{% if item.method == 'post' %}" in base
+    assert "{% if item.method == 'post' %} metodo=\"post\"{% endif %}" in base
     assert (
-        '<form method="post" action="{{ item.url }}" data-dsgovbr-link-post hidden>'
+        '<dsgovbr-campo-oculto nome="csrfmiddlewaretoken" valor="{{ csrf_token }}">'
         in base
     )
-    assert "{% csrf_token %}" in base
-    js = (PACOTE / "static" / "dsgovbr" / "js" / "dsgovbr_componentes.js").read_text(
-        encoding="utf-8"
-    )
-    assert "form[data-dsgovbr-link-post]" in js
+
+
+def test_header_usa_busca_avatar_entrar_e_logo_do_componente() -> None:
+    base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
+    for trecho in (
+        'busca busca-acao="{{ cab.search.url }}" busca-id="searchbox"',
+        'busca-autocomplete="{{ cab.search.autocomplete.url }}"',
+        'logo-href="{{ cab.logo.link }}"',
+        'usuario-avatar="{{ user.avatar_url }}"',
+        "usuario-inicial=",
+        'usuario-papel="{{ user.main_role }}"',
+        "entrar=\"{% url 'admin:login' %}\"",
+    ):
+        assert trecho in base, trecho
+
+
+def test_a_cola_js_e_o_searchbox_foram_removidos() -> None:
+    js = PACOTE / "static" / "dsgovbr" / "js"
+    assert not (js / "dsgovbr_componentes.js").exists()
+    assert not (js / "searchbox.js").exists()
+    base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
+    assert "dsgovbr_componentes.js" not in base and "searchbox.js" not in base
 
 
 def _changelist(**atributos) -> SimpleNamespace:
@@ -266,6 +283,7 @@ def _changelist(**atributos) -> SimpleNamespace:
         "can_show_all": True,
         "show_all": False,
         "multi_page": True,
+        "params": {},
     }
     return SimpleNamespace(**{**padrao, **atributos})
 
@@ -302,8 +320,15 @@ def test_filtros_do_changelist_viram_opcoes_com_os_parametros_da_opcao() -> None
                 "display": "Este mês",
             }
 
-    resultado = dsgovbr_filtros(_changelist(filter_specs=[Spec()]))
+    resultado = dsgovbr_filtros(
+        _changelist(
+            filter_specs=[Spec()],
+            params={"q": "x", "o": "-1.2", "criado__gte": "2026-11-01"},
+        )
+    )
     assert resultado["parametros"] == ["criado__gte", "criado__lt"]
+    # ordenação segue; busca e filtros saem (o componente os reenvia)
+    assert resultado["preservados"] == [{"nome": "o", "valor": "-1.2"}]
     (filtro,) = resultado["filtros"]
     assert filtro["nome"] == "filtro-1" and filtro["rotulo"] == "Data de criação"
     # "Todas" não entra; da opção só os parâmetros do filtro (sem q nem o)
@@ -327,32 +352,21 @@ def test_lista_usa_dsgovbr_tabela_com_post_e_selecao_do_django() -> None:
         "<dsgovbr-filtro",
         "<dsgovbr-opcao",
         "<dsgovbr-lote-acao",
-        'name="action"',
-        'name="index"',
+        'lote-metodo="post" lote-campo="action"',
+        "unico valor-consulta",
+        'nome="csrfmiddlewaretoken"',
+        'nome="index"',
+        'para="consulta"',
     ):
         assert trecho in html, trecho
+    assert "data-dsgovbr-changelist" not in html
     resultados = (TEMPLATES / "admin" / "change_list_dsgovbr_results.html").read_text(
         encoding="utf-8"
     )
     assert '<tr data-valor="{{ result.pk }}">' in resultados
 
 
-def test_cola_js_cobre_busca_filtros_e_acoes_em_lote() -> None:
-    js = (PACOTE / "static" / "dsgovbr" / "js" / "dsgovbr_componentes.js").read_text(
-        encoding="utf-8"
-    )
-    for trecho in (
-        "data-busca-acao",
-        "dsgovbr:tabela-acao",
-        "form[data-tabela-consulta]",
-        "data-filtro-parametros",
-        "CAMINHO_LOCAL.test(acao)",
-        "CAMINHO_LOCAL.test(sugestoes)",
-    ):
-        assert trecho in js, trecho
-
-
-def test_base_carrega_web_components_e_cola_com_defer() -> None:
+def test_base_carrega_web_components_com_defer() -> None:
     base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
     head = base.split("</head>")[0]
     assert re.search(
@@ -361,9 +375,6 @@ def test_base_carrega_web_components_e_cola_com_defer() -> None:
     # a API de cookies é síncrona; o cookiebar só com DSGOVBR_COOKIEBAR
     assert "{% if dsgovbr.cookiebar.show %}" in head
     assert not re.search(r"<script[^>]*bootstrapped-cookies[^>]*(defer|async)", head)
-    assert re.search(
-        r"<script[^>]*dsgovbr_componentes\.js[^>]*defer", base
-    ), "a cola roda depois da montagem dos componentes"
     assert "<dsgovbr-cookiebar" in base
 
 

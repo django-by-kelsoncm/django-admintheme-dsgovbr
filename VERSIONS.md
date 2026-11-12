@@ -1,5 +1,22 @@
 # Histórico de Versões
 
+## 8.1.0
+
+### dsgovbr-bootstrapped 3.7.1 e fim da cola em JS (issue #53)
+
+- **Vendor**: `dsgovbr-bootstrapped` 3.7.1, que entregou as issues abrasileirado/dsgovbr-bootstrapped#76 a #81.
+- **Removido o JS do tema** que ligava os componentes ao Django: `dsgovbr/js/dsgovbr_componentes.js` e
+  `dsgovbr/js/searchbox.js`, e o SCSS `.dsgovbr-autocomplete` (agora é da lib). Quem incluía esses arquivos em
+  templates próprios precisa tirá-los.
+- **Header**: busca com `busca-acao`, `busca-id` e `busca-autocomplete`; "Sair" por `metodo="post"` com
+  `<dsgovbr-campo-oculto>` (CSRF); `logo-href` (o logo volta a levar a `DSGOVBR_HEADER["logo"]["link"]`);
+  avatar (`user.avatar_url`) ou inicial, papel (`user.main_role`) e botão "Entrar" sem usuário autenticado.
+- **Menu**: subitens do `menus.py` viram pastas aninhadas (não mais "Pai › Filho"), com `badge`/`badge-cor` e
+  `icone-cor` (a cor do ícone volta).
+- **Lista do admin**: ações em lote nativas (`lote-metodo="post"`), filtros com `unico` e `valor-consulta`, e a
+  ordenação atual (e demais parâmetros) segue na busca e nos filtros por `<dsgovbr-campo-oculto para="consulta">`.
+  A tag `dsgovbr_filtros` devolve também `preservados`.
+
 ## 8.0.0
 
 ### Web components do dsgovbr-bootstrapped 1.0.0 (issue #51)
