@@ -169,7 +169,7 @@ DSGOVBR_HEADER = {
             },
             {
                 "label": "Ajustes",
-                "icon": "fas fa-adjust",
+                "icon": "fas fa-cog",
                 "url": "#id=3",
             },
             {

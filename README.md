@@ -130,7 +130,8 @@ Desde a 8.1.0 o tema não tem mais JS para ligar os componentes ao Django: a bus
 - **Modo escuro**: `data-bs-theme="dark"` no `<html>` (ou num contêiner). O `dsgovbr.scss` troca as cores fixas do
   modo claro do dsgovbr-bootstrapped (header, breadcrumb, campos, botões vazados, menu, paginação…) pelas `--bs-*`. O
   header traz um botão que alterna o modo (segue o sistema até o usuário escolher; a escolha fica no `localStorage`).
-  Para tirar: `DSGOVBR_HEADER = {"modo": {"show": False}}`; `label` e `icon` mudam o texto e o ícone.
+  Para tirar: `DSGOVBR_HEADER = {"modo": {"show": False}}`. O rótulo e o ícone do botão são fixos no
+  `<dsgovbr-header>` (ícone `fas fa-adjust`): evite o mesmo ícone em `funcionalidades`.
 - **Layout**: segue o exemplo "Painel administrativo" do dsgovbr-bootstrapped. O conteúdo usa `container-lg`
   (`DSGOVBR_HEADER["width_style"]`: `sm`, `md`, `lg`, `xl`, `xxl` ou `fluid`); o header e o rodapé (web components)
   usam sempre `container-lg`.
