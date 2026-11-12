@@ -94,6 +94,12 @@ Visual do DS Gov.BR
 
 O design é divido em 3 partes principais: Header, Content e Footer (opcional).
 
+.. note::
+
+   As figuras desta seção (Header e Menu) são os diagramas da **especificação do GOV.BR DS**, com a numeração dos
+   elementos das tabelas; não são capturas do tema. O tema usa os web components do dsgovbr-bootstrapped, que
+   implementam a variante **padrão** do Header (não há a compacta) e o Menu **flutuante** (não há o menu fixo).
+
 Header
 ~~~~~~
 
@@ -172,6 +178,8 @@ Header Padrão
 
 Header Compacto
 """""""""""""""
+
+Especificação do GOV.BR DS; o ``<dsgovbr-header>`` não tem a variante compacta.
 
 
 .. image:: ./images/header-compacto.png
@@ -281,6 +289,8 @@ fixo) e é constituído por:
    :alt: header-menu-flutuante.png
 
 
+
+Especificação do GOV.BR DS para o menu fixo (o ``<dsgovbr-menu>`` é sempre flutuante):
 
 .. image:: ./images/header-menu-fixo.png
    :target: ./images/header-menu-fixo.png

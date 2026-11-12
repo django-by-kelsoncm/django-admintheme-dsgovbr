@@ -1,5 +1,14 @@
 # Histórico de Versões
 
+## 8.1.1
+
+### Documentação: figuras do Header e do Menu (issue #55)
+
+- Deixa explícito em `docs/index.rst` que as figuras do Header e do Menu são os diagramas da especificação do
+  GOV.BR DS (não capturas do tema) e que o tema implementa só o Header padrão e o Menu flutuante.
+
+Sem mudanças no código do pacote.
+
 ## 8.1.0
 
 ### dsgovbr-bootstrapped 3.7.1 e fim da cola em JS (issue #53)
