@@ -28,27 +28,15 @@
   // ---- header: busca do site (action, name, id e autocomplete) ----------------
   // O <dsgovbr-header busca> gera o formulário sem action, sem name no campo e
   // sem id fixo; os dados vêm de data-busca-acao e data-busca-autocomplete.
-  // Só aceita URL da própria origem (http/https), devolvida como caminho +
-  // query: um data-* adulterado não leva a busca para outro site nem a um
-  // "javascript:". Devolve null se a URL não servir.
-  function urlDaOrigem(valor) {
-    if (!valor) return null;
-    try {
-      var url = new URL(valor, window.location.href);
-      if (url.origin !== window.location.origin || (url.protocol !== 'http:' && url.protocol !== 'https:')) {
-        return null;
-      }
-      return url.pathname + url.search;
-    } catch (erro) {
-      return null;
-    }
-  }
+  // Só aceita caminho local ("/busca/?x=1"): sem esquema, sem host e sem "//". Um
+  // data-* adulterado não leva a busca para outro site nem a um "javascript:".
+  var CAMINHO_LOCAL = /^\/(?!\/)[\w\-./%?=&+~:@,;!*()]*$/;
 
   function configurarBusca(header) {
-    var acao = urlDaOrigem(header.getAttribute('data-busca-acao'));
+    var acao = header.getAttribute('data-busca-acao');
     var form = header.querySelector('form[role="search"]');
     var campo = form && form.querySelector('input[type="search"]');
-    if (acao === null || !campo) return;
+    if (!CAMINHO_LOCAL.test(acao) || !campo) return;
 
     form.setAttribute('action', acao);
     form.setAttribute('method', 'get');
@@ -58,8 +46,8 @@
     var rotulo = form.querySelector('label');
     if (rotulo) rotulo.setAttribute('for', 'searchbox');
 
-    var sugestoes = urlDaOrigem(header.getAttribute('data-busca-autocomplete'));
-    if (sugestoes) {
+    var sugestoes = header.getAttribute('data-busca-autocomplete');
+    if (CAMINHO_LOCAL.test(sugestoes)) {
       campo.setAttribute('data-autocomplete-url', sugestoes);
       campo.setAttribute('aria-controls', 'searchbox-autocomplete-results');
       var lista = document.createElement('div');
