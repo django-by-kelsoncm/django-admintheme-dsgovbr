@@ -54,7 +54,7 @@ Via PyPI (Recomendado)
 3. Configure o compressor (SCSS)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A aparência vem do `dsgovbr-bootstraped <https://github.com/abrasileirado/dsgovbr-bootstraped>`_
+A aparência vem do `dsgovbr-bootstrapped <https://github.com/abrasileirado/dsgovbr-bootstrapped>`_
 (Bootstrap 5 com a cara do GOV.BR DS), já incluído no pacote. Os templates
 compilam só o SCSS próprio do tema com o ``django-compressor``:
 

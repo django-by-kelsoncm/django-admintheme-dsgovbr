@@ -140,7 +140,6 @@ SANDBOX_REDES_SOCIAIS = [
 DSGOVBR_HEADER = {
     "links": {
         "show": True,
-        "em_linha": True,
         "items": [
             {
                 "label": "Action 1",
@@ -157,7 +156,6 @@ DSGOVBR_HEADER = {
     },
     "funcionalidades": {
         "show": True,
-        "em_linha": True,
         "items": [
             {
                 "label": "Avisos",
@@ -183,7 +181,6 @@ DSGOVBR_HEADER = {
     },
     "menu": {
         "show": True,
-        "localizacao": "flutuante",
         "footer": {
             "logos": [
                 {"src": "/static/vendors/serpro/govbr.svg", "alt": "Logo do órgão"},
@@ -213,24 +210,24 @@ DSGOVBR_HEADER = {
             "view_name": "site_index_autocomplete",
         },
     },
-    # "login": {
-    #     "show": True,
-    #     "type": "fotografico",
-    #     "default_avatar_url": "",
-    #     "name_to_show": "first",
-    #     "dropdown": {
-    #         "show": True,
-    #         "items": [
-    #             {
-    #                 "label": "Sair",
-    #                 "url": "#id=2",
-    #                 "target": "_blank",
-    #                 "icon": "fas fa-sign-out-alt",
-    #                 "external": True,
-    #             },
-    #         ],
-    #     }
-    # },
+}
+
+# consentimento de cookies (<dsgovbr-cookiebar>)
+DSGOVBR_COOKIEBAR = {
+    "show": True,
+    "declaracao": "#cookies",
+    "grupos": [
+        {
+            "nome": "desempenho",
+            "rotulo": "Desempenho",
+            "descricao": "Medem o uso do sistema para melhorá-lo.",
+        },
+        {
+            "nome": "funcionais",
+            "rotulo": "Funcionais",
+            "descricao": "Lembram suas preferências, como o modo escuro.",
+        },
+    ],
 }
 
 DSGOVBR_FOOTER = {

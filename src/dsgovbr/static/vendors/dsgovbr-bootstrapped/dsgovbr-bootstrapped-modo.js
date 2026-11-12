@@ -1,14 +1,14 @@
 /*!
- * dsgovbr-bootstraped — seletor de modo claro/escuro (opcional)
- * Licensed under MIT (https://github.com/abrasileirado/dsgovbr-bootstraped/blob/main/LICENSE)
+ * dsgovbr-bootstrapped — seletor de modo claro/escuro (opcional)
+ * Licensed under MIT (https://github.com/abrasileirado/dsgovbr-bootstrapped/blob/main/LICENSE)
  */
 // Aplica o modo claro ou escuro pelo `data-bs-theme` do <html>, que o Bootstrap
-// 5.3 e o dsgovbr-bootstraped já sabem pintar. Não depende de nada.
+// 5.3 e o dsgovbr-bootstrapped já sabem pintar. Não depende de nada.
 //
 // Carregue de forma síncrona no <head>, depois do CSS: assim o modo é aplicado
 // antes da primeira pintura, sem "piscar" o claro.
 //
-//   <script src="dsgovbr-bootstraped-modo.js"></script>
+//   <script src="dsgovbr-bootstrapped-modo.js"></script>
 //   <button type="button" data-dsgovbr-modo aria-label="Modo escuro">…</button>
 //
 // Preferência: escolha salva no localStorage > `prefers-color-scheme` do sistema.
@@ -21,7 +21,7 @@
 (function () {
   "use strict";
 
-  var CHAVE = "dsgovbr-bootstraped:modo";
+  var CHAVE = "dsgovbr-bootstrapped:modo";
   var MODOS = ["light", "dark"];
   var SELETOR = "[data-dsgovbr-modo]";
   var raiz = document.documentElement;

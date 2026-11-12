@@ -14,29 +14,26 @@
     {% endif %}
 
     {{ media.css }}
-
-    {% if not actions_on_top and not actions_on_bottom %}
-        <style>
-          #changelist table thead th:first-child {width: inherit}
-        </style>
-    {% endif %}
 {% endblock extrastyle %}
 
 {% block extrahead %}
     {{ block.super }}
 
     {{ media.js }}
-
-    <script src="{% static 'admin/js/filters.js' %}" defer></script>
 {% endblock extrahead %}
 
 {% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock bodyclass %}
 
 {% block coltype %}{% endblock coltype %}
 
+{# ações da página: ficam na barra do <dsgovbr-header> #}
 {% block title_actions %}
   <div class="d-flex flex-wrap align-items-center gap-2">
-    {% include "admin/change_list_tools.html" %}
+    {% block object-tools %}
+      {% block object-tools-items %}
+        {% change_list_object_tools %}
+      {% endblock object-tools-items %}
+    {% endblock object-tools %}
     {% if has_add_permission %}
         {% url cl.opts|admin_urlname:'add' as add_url %}
         <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink btn btn-primary">
@@ -47,61 +44,76 @@
 {% endblock title_actions %}
 
 {% block content %}
+    <div id="content-main">
+        {% block date_hierarchy %}
+            {% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}
+        {% endblock date_hierarchy %}
 
-    <!-- #changelist -->
+        {% if cl.formset and cl.formset.errors %}
+            <p class="errornote">
+                {% blocktranslate count counter=cl.formset.total_error_count %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+            </p>
+            {{ cl.formset.non_form_errors }}
+        {% endif %}
+
         <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
-            <!-- .changelist-form-container -->
-                <div class="changelist-form-container">
-                    {% block date_hierarchy %}
-                        {% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}
-                    {% endblock date_hierarchy %}
-                </div>
-            <!-- /.changelist-form-container -->
-        </div>
-    <!-- /#changelist -->
+            {% dsgovbr_filtros cl as filtros %}
+            {# POST: as ações em lote e a edição na lista (list_editable) enviam este formulário #}
+            <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>{% csrf_token %}
+                {% if cl.formset %}{{ cl.formset.management_form }}{% endif %}
+                {% if action_form and cl.show_admin_actions %}
+                    {# a cola JS (dsgovbr_componentes.js) preenche o action da <dsgovbr-lote-acao> clicada e envia #}
+                    <input type="hidden" name="action" value="">
+                    <input type="hidden" name="index" value="0">
+                    <input type="hidden" name="select_across" value="0">
+                {% endif %}
 
-    <!-- #content-main -->
-        <div id="content-main">
-            {% if cl.formset and cl.formset.errors %}
-                <p class="errornote">
-                    {% blocktranslate count counter=cl.formset.total_error_count %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
-                </p>
-                {{ cl.formset.non_form_errors }}
-            {% endif %}
+                {% block result_content %}
+                    {# Tabela do GOV.BR DS (web component): busca, filtros, densidade, selecionados, ações em lote e paginação #}
+                    <dsgovbr-tabela
+                        data-dsgovbr-changelist
+                        data-filtro-parametros="{{ filtros.parametros|join:',' }}"
+                        data-busca-parametro="{{ filtros.busca }}"
+                        {% if cl.search_fields %}busca busca-nome="{{ filtros.busca }}" busca-valor="{{ cl.query }}" busca-placeholder="{{ cl.search_help_text|default:'Buscar nesta listagem' }}"{% endif %}
+                        acao=""
+                        ferramentas
+                        {% if action_form and cl.show_admin_actions %}selecionavel selecao-nome="_selected_action"{% endif %}
+                        total="{{ cl.result_count }}"
+                        por-pagina="{% if cl.show_all %}{{ cl.result_count|default:1 }}{% else %}{{ cl.list_per_page }}{% endif %}"
+                        pagina="{{ cl.page_num }}"
+                        paginacao-href="{% dsgovbr_pagina_href cl %}"
+                        vazio="{% translate 'Não há resultados para esta consulta.' %}">
 
-            <!-- #changelist-->
-                <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+                        {% dsgovbr_result_list cl %}
 
-                    <!-- .changelist-form-container -->
-                        <div class="changelist-form-container">
+                        {% for filtro in filtros.filtros %}
+                            {# unico: uma opção por filtro (o Django usa um valor só); a cola JS garante isso na 0.18.0 #}
+                            <dsgovbr-filtro nome="{{ filtro.nome }}" rotulo="{{ filtro.rotulo }}" unico>
+                                {% for opcao in filtro.opcoes %}
+                                    <dsgovbr-opcao valor="{{ opcao.valor }}"{% if opcao.selecionada %} selecionada{% endif %}>{{ opcao.texto }}</dsgovbr-opcao>
+                                {% endfor %}
+                            </dsgovbr-filtro>
+                        {% endfor %}
 
-                            <form id="changelist-form" method="get"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>
-                                {% comment %} {% csrf_token %} {% endcomment %}
-                                {% block result_content %}
-                                    {% if action_form and actions_on_top and cl.show_admin_actions %}
-                                        {% admin_actions %}
-                                    {% endif %}
+                        {% if action_form and cl.show_admin_actions %}
+                            {% for valor, rotulo in action_form.fields.action.choices %}
+                                {% if valor %}<dsgovbr-lote-acao acao="{{ valor }}">{{ rotulo }}</dsgovbr-lote-acao>{% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </dsgovbr-tabela>
 
-                                    <div class="dsgovbr-changelist">
-                                        <!-- .table-header -->
-                                            {% include "admin/change_list_header.html" %}
-                                        <!-- /.table-header -->
-
-                                        <!-- .result_list -->
-                                            {% dsgovbr_result_list cl %}
-                                        <!-- /.result_list -->
-
-                                        <!-- .table-footer -->
-                                            {% include "admin/change_list_footer.html" %}
-                                        <!-- /.table-footer -->
-                                    </div>
-                                {% endblock result_content %}
-                            </form>
+                    {% if cl.formset %}
+                        <div class="mt-3">
+                            <button type="submit" name="_save" class="btn btn-primary">{% translate "Save" %}</button>
                         </div>
-                    <!-- /.changelist-form-container -->
-                </div>
-            <!-- /#changelist-->
-            </div>
-    <!-- /#content-main -->
+                    {% endif %}
+                {% endblock result_content %}
+            </form>
 
+            {% dsgovbr_mostrar_todos_href cl as mostrar_todos %}
+            {% if mostrar_todos %}
+                <a href="{{ mostrar_todos }}" class="showall btn btn-link btn-sm mt-2">{% translate 'Show all' %}</a>
+            {% endif %}
+        </div>
+    </div>
 {% endblock content %}

@@ -1,5 +1,6 @@
-from django.utils.translation import gettext as _
 import datetime
+from urllib.parse import parse_qsl, urlencode
+
 
 import django
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
@@ -9,42 +10,17 @@ from django.contrib.admin.utils import (
     label_for_field,
     lookup_field,
 )
-from django.contrib.admin.views.main import ORDER_VAR
+from django.contrib.admin.views.main import ALL_VAR, ORDER_VAR, PAGE_VAR, SEARCH_VAR
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.template import Library
-from django.template.loader import get_template
 from django.urls import NoReverseMatch
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.contrib.admin.templatetags.base import InclusionAdminNode
 
 register = Library()
-
-
-# Filter para permitir spec|choices:cl no template
-@register.filter
-def choices(spec, cl):
-    """
-    Permite chamar spec.choices(cl) no template via filter.
-    Uso: {% for choice in spec|choices:cl %}
-    """
-    choices_list = list(spec.choices(cl))
-    return choices_list
-
-
-# Filtro para retornar apenas o primeiro par name/value da query string
-@register.filter
-def first_query_param(query_string):
-    """Retorna o primeiro par name/value da query string."""
-    if not query_string:
-        return {}
-    for pair in query_string.lstrip("?").split("&"):
-        if "=" in pair:
-            k, v = pair.split("=", 1)
-            return {"name": k, "value": v}
-    return {}
 
 
 def _coerce_field_name(field_name, field_index):
@@ -73,17 +49,8 @@ def result_headers(cl):
             field_name = _coerce_field_name(field_name, i)
             # Potentially not sortable
 
-            # if the field is the action checkbox: no sorting and special class
+            # a coluna de seleção (action_checkbox) é do <dsgovbr-tabela>
             if field_name == "action_checkbox":
-                aria_label = _("Select all objects on this page for an action")
-                yield {
-                    "text": mark_safe(
-                        f'<input type="checkbox" id="action-toggle" '
-                        f'aria-label="{aria_label}">'
-                    ),
-                    "class_attrib": mark_safe(' class="action-checkbox-column"'),
-                    "sortable": False,
-                }
                 continue
 
             admin_order_field = getattr(attr, "admin_order_field", None)
@@ -170,6 +137,9 @@ def items_for_result(cl, result, form):
     first = True
     pk = cl.lookup_opts.pk.attname
     for field_index, field_name in enumerate(cl.list_display):
+        if field_name == "action_checkbox":
+            # a coluna de seleção é do <dsgovbr-tabela>
+            continue
         empty_value_display = cl.model_admin.get_empty_value_display()
         row_classes = ["field-%s" % _coerce_field_name(field_name, field_index)]
         link_to_changelist = link_in_col(first, field_name, cl)
@@ -184,8 +154,6 @@ def items_for_result(cl, result, form):
             if isinstance(value, str) and value.strip() == "":
                 value = ""
             if f is None or f.auto_created:
-                if field_name == "action_checkbox":
-                    row_classes = ["action-checkbox"]
                 boolean = getattr(attr, "boolean", False)
                 # Set boolean for attr that is a property, if defined.
                 if isinstance(attr, property) and hasattr(attr, "fget"):
@@ -275,18 +243,19 @@ class ResultList(list):
     backwards compatibility with existing admin templates.
     """
 
-    def __init__(self, form, *items):
+    def __init__(self, form, *items, pk=None):
         self.form = form
+        self.pk = pk  # valor do data-valor da linha (a seleção do <dsgovbr-tabela>)
         super().__init__(*items)
 
 
 def results(cl):
     if cl.formset:
         for res, form in zip(cl.result_list, cl.formset.forms):
-            yield ResultList(form, items_for_result(cl, res, form))
+            yield ResultList(form, items_for_result(cl, res, form), pk=str(res.pk))
     else:
         for res in cl.result_list:
-            yield ResultList(None, items_for_result(cl, res, None))
+            yield ResultList(None, items_for_result(cl, res, None), pk=str(res.pk))
 
 
 def result_hidden_fields(cl):
@@ -329,12 +298,62 @@ def result_list_tag(parser, token):
 
 
 @register.simple_tag
-def dsgovbr_admin_list_filter(cl, spec):
-    tpl = get_template(spec.template)
-    return tpl.render(
-        {
-            "title": spec.title,
-            "choices": list(spec.choices(cl)),
-            "spec": spec,
-        }
-    )
+def dsgovbr_pagina_href(cl) -> str:
+    """Modelo de URL das páginas para o ``paginacao-href`` (``{pagina}`` vira o número).
+
+    Mantém a busca, os filtros e a ordenação atuais, como o ``get_query_string`` do
+    ChangeList.
+    """
+    marcador = "DSGOVBRPAGINA"
+    return cl.get_query_string({PAGE_VAR: marcador}).replace(marcador, "{pagina}")
+
+
+@register.simple_tag
+def dsgovbr_filtros(cl) -> dict:
+    """Filtros do ChangeList no formato do ``<dsgovbr-filtro>``.
+
+    Retorna ``{"filtros": [...], "parametros": [...], "busca": "q"}`` (``busca`` é o nome do parâmetro da busca). Cada filtro tem ``nome``
+    (único na página), ``rotulo`` e ``opcoes``. O ``valor`` de cada opção são os
+    parâmetros de query da própria opção (``urlencode``), pois uma opção do Django
+    pode ter vários (intervalo de data: ``__gte`` e ``__lt``). A opção "Todos" não
+    entra: sem opção marcada o filtro sai da URL. ``parametros`` lista todos os
+    parâmetros de filtro, para a cola JS tirá-los da URL antes de aplicar a escolha.
+    """
+    filtros = []
+    parametros: list[str] = []
+    for indice, spec in enumerate(cl.filter_specs, start=1):
+        esperados = list(spec.expected_parameters() or [])
+        parametros.extend(p for p in esperados if p not in parametros)
+        opcoes = []
+        for choice in spec.choices(cl):
+            consulta = parse_qsl(
+                (choice.get("query_string") or "").lstrip("?"),
+                keep_blank_values=True,
+            )
+            proprios = [(k, v) for k, v in consulta if k in esperados]
+            if not proprios:
+                continue
+            opcoes.append(
+                {
+                    "valor": urlencode(proprios),
+                    "texto": str(choice["display"]),
+                    "selecionada": bool(choice.get("selected")),
+                }
+            )
+        if opcoes:
+            filtros.append(
+                {
+                    "nome": f"filtro-{indice}",
+                    "rotulo": str(spec.title).capitalize(),
+                    "opcoes": opcoes,
+                }
+            )
+    return {"filtros": filtros, "parametros": parametros, "busca": SEARCH_VAR}
+
+
+@register.simple_tag
+def dsgovbr_mostrar_todos_href(cl) -> str:
+    """URL do "Mostrar todos" (vazia quando não há o que mostrar), como o ``pagination`` do Django."""
+    if cl.can_show_all and not cl.show_all and cl.multi_page:
+        return cl.get_query_string({ALL_VAR: ""})
+    return ""

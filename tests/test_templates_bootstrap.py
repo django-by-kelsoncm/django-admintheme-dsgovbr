@@ -1,4 +1,4 @@
-"""Migração para o Bootstrap 5 com o dsgovbr-bootstraped (issue #24)."""
+"""Migração para o Bootstrap 5 com o dsgovbr-bootstrapped (issue #24)."""
 
 import re
 from pathlib import Path
@@ -23,13 +23,9 @@ UTILITARIO_BS4 = re.compile(
 
 # templates reescritos na migração; precisam compilar com as tags do tema
 REESCRITOS = [
-    "dsgovbr/avatar.html",
     "dsgovbr/base.html",
-    "dsgovbr/header.html",
     "dsgovbr/menu.html",
     "dsgovbr/menu_items.html",
-    "dsgovbr/menu_item_label.html",
-    "dsgovbr/redes_sociais.html",
     "admin/app_list.html",
     "admin/app_index.html",
     "admin/base.html",
@@ -37,16 +33,12 @@ REESCRITOS = [
     "admin/includes/model_cards.html",
     "admin/change_form.html",
     "admin/change_list.html",
-    "admin/change_list_header.html",
-    "admin/change_list_tools.html",
     "admin/change_list_dsgovbr_results.html",
     "admin/change_list_object_tools.html",
     "admin/includes/fieldset.html",
     "admin/edit_inline/stacked.html",
     "admin/edit_inline/tabular.html",
     "admin/login.html",
-    "admin/pagination.html",
-    "admin/search_form.html",
     "admin/submit_line.html",
     "admin/widgets/related_widget_wrapper.html",
     "registration/logged_out.html",
@@ -118,7 +110,7 @@ def test_templates_sem_classes_do_govbr_ds(regra: re.Pattern) -> None:
 
 def test_base_carrega_bootstrap_e_nao_o_js_do_govbr_ds() -> None:
     base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
-    assert "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped.min.css" in base
+    assert "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped.min.css" in base
     assert "vendors/bootstrap/bootstrap.bundle.min.js" in base
     assert "dsgovbr/js/dsgovbr_forms.js" in base
     assert "core-init.js" not in base
@@ -130,9 +122,11 @@ def test_base_carrega_bootstrap_e_nao_o_js_do_govbr_ds() -> None:
 @pytest.mark.parametrize(
     "arquivo",
     [
-        "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped.min.css",
-        "vendors/dsgovbr-bootstraped/LICENSE",
-        "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-modo.js",
+        "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped.min.css",
+        "vendors/dsgovbr-bootstrapped/LICENSE",
+        "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-modo.js",
+        "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-componentes.js",
+        "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-cookies.js",
         "vendors/bootstrap/bootstrap.bundle.min.js",
         "vendors/bootstrap/bootstrap.bundle.min.js.map",
         "vendors/bootstrap/LICENSE",
@@ -150,8 +144,8 @@ def test_versao_do_bootstrap_vendorizado() -> None:
         PACOTE
         / "static"
         / "vendors"
-        / "dsgovbr-bootstraped"
-        / "dsgovbr-bootstraped.min.css"
+        / "dsgovbr-bootstrapped"
+        / "dsgovbr-bootstrapped.min.css"
     ).read_text(encoding="utf-8-sig")
     assert "Bootstrap v5.3.8" in js
     assert "Bootstrap  v5.3.8" in css
@@ -202,19 +196,12 @@ def _dsgovbr_menu(footer: dict) -> dict:
     }
 
 
-def test_redes_sociais_renderiza_botoes_acessiveis() -> None:
-    html = _render("dsgovbr/redes_sociais.html", {"redes": REDES})
-    assert 'href="https://yt.example"' in html
-    assert 'aria-label="YouTube"' in html
-    assert 'class="fab fa-youtube"' in html
-
-
 def test_rodape_do_menu_vazio_nao_aparece() -> None:
     html = _render(
         "dsgovbr/menu.html",
         _dsgovbr_menu({"logos": [], "links": [], "redes_sociais": [], "licenca": ""}),
     )
-    assert "mt-auto" not in html
+    assert "dsgovbr-menu-rodape" not in html
 
 
 def test_rodape_do_menu_com_logos_redes_e_licenca() -> None:
@@ -228,67 +215,156 @@ def test_rodape_do_menu_com_logos_redes_e_licenca() -> None:
             }
         ),
     )
-    assert '<img src="/l.svg" height="33" alt="Logo do órgão">' in html
-    assert 'aria-label="YouTube"' in html
-    assert "Licença CC BY 4.0" in html
+    assert '<dsgovbr-logo src="/l.svg" alt="Logo do órgão"></dsgovbr-logo>' in html
+    assert (
+        '<dsgovbr-rede href="https://yt.example" icone="fab fa-youtube">YouTube' in html
+    )
+    assert "<dsgovbr-aviso>Licença CC BY 4.0</dsgovbr-aviso>" in html
 
 
-def test_header_e_rodape_tem_os_novos_parametros() -> None:
-    header = (TEMPLATES / "dsgovbr" / "header.html").read_text(encoding="utf-8")
-    assert header.count("d-none d-xl-flex") == 2
-    assert "dsgovbr.header.links.em_linha" in header
-    assert "dsgovbr.header.funcionalidades.em_linha" in header
+def test_header_e_rodape_sao_web_components() -> None:
     base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
-    for chave in (
+    for trecho in (
+        "<dsgovbr-header",
+        "<dsgovbr-breadcrumb>",
+        "<dsgovbr-acoes>",
+        "{% block title_actions %}",
+        "{% block breadcrumb %}",
+        "<dsgovbr-usuario-menu>",
+        "<dsgovbr-acesso-rapido>",
+        "<dsgovbr-funcionalidades>",
+        "<dsgovbr-footer",
+        "<dsgovbr-coluna",
+        "<dsgovbr-rede ",
         "rodape.logo",
         "rodape.colunas",
         "rodape.redes_sociais",
         "rodape.assinatura",
-        "dsgovbr.footer.texto",
+        "rodape.texto",
     ):
-        assert chave in base
-
-
-def _changelist(pagina_atual: int) -> SimpleNamespace:
-    from django.core.paginator import Paginator
-
-    return SimpleNamespace(
-        paginator=SimpleNamespace(ELLIPSIS=Paginator.ELLIPSIS),
-        page_num=pagina_atual,
-        get_query_string=lambda params: "?"
-        + "&".join(f"{k}={v}" for k, v in params.items()),
-    )
-
-
-def test_page_item_gera_paginacao_do_bootstrap() -> None:
-    from dsgovbr.templatetags.dsgovbr import page_item
-
-    cl = _changelist(pagina_atual=2)
-    assert (
-        page_item(cl, 3)
-        == '<li class="page-item"><a class="page-link" href="?p=3">3</a></li>'
-    )
-    assert page_item(cl, 2) == (
-        '<li class="page-item active" aria-current="page"><span class="page-link">2</span></li>'
-    )
-    assert page_item(cl, cl.paginator.ELLIPSIS) == (
-        '<li class="page-item disabled"><span class="page-link">…</span></li>'
-    )
-
-
-def test_page_item_escapa_a_url() -> None:
-    from dsgovbr.templatetags.dsgovbr import page_item
-
-    cl = _changelist(pagina_atual=1)
-    cl.get_query_string = lambda params: '?q="><script>'
-    assert "<script>" not in page_item(cl, 2)
+        assert trecho in base, trecho
 
 
 def test_sair_do_header_envia_post_com_csrf() -> None:
-    header = (TEMPLATES / "dsgovbr" / "header.html").read_text(encoding="utf-8")
-    assert "{% if item.method == 'post' %}" in header
-    assert '<form method="post" action="{{ item.url }}">' in header
-    assert "{% csrf_token %}" in header
+    base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
+    assert "{% if item.method == 'post' %}" in base
+    assert (
+        '<form method="post" action="{{ item.url }}" data-dsgovbr-link-post hidden>'
+        in base
+    )
+    assert "{% csrf_token %}" in base
+    js = (PACOTE / "static" / "dsgovbr" / "js" / "dsgovbr_componentes.js").read_text(
+        encoding="utf-8"
+    )
+    assert "form[data-dsgovbr-link-post]" in js
+
+
+def _changelist(**atributos) -> SimpleNamespace:
+    padrao = {
+        "get_query_string": lambda params=None, remove=None: "?"
+        + "&".join(f"{k}={v}" for k, v in (params or {}).items()),
+        "can_show_all": True,
+        "show_all": False,
+        "multi_page": True,
+    }
+    return SimpleNamespace(**{**padrao, **atributos})
+
+
+def test_pagina_href_tem_o_marcador_do_componente() -> None:
+    from dsgovbr.templatetags.dsgovbr_admin_list import dsgovbr_pagina_href
+
+    assert dsgovbr_pagina_href(_changelist()) == "?p={pagina}"
+
+
+def test_mostrar_todos_so_aparece_quando_ha_o_que_mostrar() -> None:
+    from dsgovbr.templatetags.dsgovbr_admin_list import dsgovbr_mostrar_todos_href
+
+    assert dsgovbr_mostrar_todos_href(_changelist()) == "?all="
+    assert dsgovbr_mostrar_todos_href(_changelist(show_all=True)) == ""
+    assert dsgovbr_mostrar_todos_href(_changelist(multi_page=False)) == ""
+    assert dsgovbr_mostrar_todos_href(_changelist(can_show_all=False)) == ""
+
+
+def test_filtros_do_changelist_viram_opcoes_com_os_parametros_da_opcao() -> None:
+    from dsgovbr.templatetags.dsgovbr_admin_list import dsgovbr_filtros
+
+    class Spec:
+        title = "data de criação"
+
+        def expected_parameters(self):
+            return ["criado__gte", "criado__lt"]
+
+        def choices(self, cl):
+            yield {"selected": True, "query_string": "?q=x", "display": "Todas"}
+            yield {
+                "selected": False,
+                "query_string": "?q=x&criado__gte=2026-11-01&criado__lt=2026-12-01&o=1",
+                "display": "Este mês",
+            }
+
+    resultado = dsgovbr_filtros(_changelist(filter_specs=[Spec()]))
+    assert resultado["parametros"] == ["criado__gte", "criado__lt"]
+    (filtro,) = resultado["filtros"]
+    assert filtro["nome"] == "filtro-1" and filtro["rotulo"] == "Data de criação"
+    # "Todas" não entra; da opção só os parâmetros do filtro (sem q nem o)
+    assert filtro["opcoes"] == [
+        {
+            "valor": "criado__gte=2026-11-01&criado__lt=2026-12-01",
+            "texto": "Este mês",
+            "selecionada": False,
+        }
+    ]
+
+
+def test_lista_usa_dsgovbr_tabela_com_post_e_selecao_do_django() -> None:
+    html = (TEMPLATES / "admin" / "change_list.html").read_text(encoding="utf-8")
+    assert '<form id="changelist-form" method="post"' in html
+    assert "{% csrf_token %}" in html
+    for trecho in (
+        "<dsgovbr-tabela",
+        'selecao-nome="_selected_action"',
+        "paginacao-href",
+        "<dsgovbr-filtro",
+        "<dsgovbr-opcao",
+        "<dsgovbr-lote-acao",
+        'name="action"',
+        'name="index"',
+    ):
+        assert trecho in html, trecho
+    resultados = (TEMPLATES / "admin" / "change_list_dsgovbr_results.html").read_text(
+        encoding="utf-8"
+    )
+    assert '<tr data-valor="{{ result.pk }}">' in resultados
+
+
+def test_cola_js_cobre_busca_filtros_e_acoes_em_lote() -> None:
+    js = (PACOTE / "static" / "dsgovbr" / "js" / "dsgovbr_componentes.js").read_text(
+        encoding="utf-8"
+    )
+    for trecho in (
+        "data-busca-acao",
+        "dsgovbr:tabela-acao",
+        "form[data-tabela-consulta]",
+        "data-filtro-parametros",
+        "CAMINHO_LOCAL.test(acao)",
+        "CAMINHO_LOCAL.test(sugestoes)",
+    ):
+        assert trecho in js, trecho
+
+
+def test_base_carrega_web_components_e_cola_com_defer() -> None:
+    base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
+    head = base.split("</head>")[0]
+    assert re.search(
+        r"<script[^>]*dsgovbr-bootstrapped-componentes\.js[^>]*defer", head
+    )
+    # a API de cookies é síncrona; o cookiebar só com DSGOVBR_COOKIEBAR
+    assert "{% if dsgovbr.cookiebar.show %}" in head
+    assert not re.search(r"<script[^>]*bootstrapped-cookies[^>]*(defer|async)", head)
+    assert re.search(
+        r"<script[^>]*dsgovbr_componentes\.js[^>]*defer", base
+    ), "a cola roda depois da montagem dos componentes"
+    assert "<dsgovbr-cookiebar" in base
 
 
 def test_lista_usa_o_template_de_resultados_do_tema() -> None:
@@ -360,27 +436,14 @@ def test_licenca_sem_url_nao_gera_link_vazio() -> None:
     assert '{% if project_license_url %}<a href="{{ project_license_url }}"' in base
 
 
-def _avatar(login: dict, user: object) -> str:
-    return _render(
-        "dsgovbr/avatar.html", {"dsgovbr": {"header": {"login": login}}, "user": user}
-    )
-
-
-def test_avatar_fotografico_usa_a_foto_padrao_configurada() -> None:
-    sem_foto = SimpleNamespace(avatar_url="", get_username=lambda: "ana")
-    html = _avatar(
-        {"type": "fotografico", "default_avatar_url": "/padrao.png"}, sem_foto
-    )
-    assert '<img src="/padrao.png" alt="">' in html
-    html = _avatar({"type": "fotografico", "default_avatar_url": ""}, sem_foto)
-    assert "fa-user" in html
-
-
 def test_botao_do_menu_some_sem_menu_na_pagina() -> None:
     scss = (PACOTE / "static" / "dsgovbr" / "scss" / "dsgovbr.scss").read_text(
         encoding="utf-8"
     )
-    assert "body:not(:has(#main-navigation)) #navigation" in scss
+    assert (
+        'body:not(:has(#main-navigation)) dsgovbr-header [data-bs-target="#main-navigation"]'
+        in scss
+    )
 
 
 # Widgets do admin sem o base.css do Django (issue #33)
@@ -503,27 +566,25 @@ def test_calendario_e_relogio_abrem_abaixo_do_link() -> None:
 
 
 def test_seletor_de_modo_no_header_e_script_no_head() -> None:
-    """Issue #41: botão de modo claro/escuro com o JS do dsgovbr-bootstraped."""
+    """Issue #41: botão de modo claro/escuro com o JS do dsgovbr-bootstrapped."""
     base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
     head = base.split("</head>")[0]
-    script = "vendors/dsgovbr-bootstraped/dsgovbr-bootstraped-modo.js"
+    script = "vendors/dsgovbr-bootstrapped/dsgovbr-bootstrapped-modo.js"
     assert script in head
     # síncrono e depois do CSS, para aplicar o modo antes da primeira pintura
-    assert head.index("dsgovbr-bootstraped.min.css") < head.index(script)
-    assert not re.search(r"<script[^>]*(defer|async)[^>]*bootstraped-modo", head)
+    assert head.index("dsgovbr-bootstrapped.min.css") < head.index(script)
+    assert not re.search(r"<script[^>]*(defer|async)[^>]*bootstrapped-modo", head)
     assert "{% if dsgovbr.header.modo.show %}" in head
 
-    header = (TEMPLATES / "dsgovbr" / "header.html").read_text(encoding="utf-8")
-    assert "{% if dsgovbr.header.modo.show %}" in header
-    assert re.search(r'<button[^>]*data-dsgovbr-modo aria-pressed="false"', header)
-    assert 'aria-label="{{ dsgovbr.header.modo.label }}"' in header
+    # o botão é desenhado pelo <dsgovbr-header modo>
+    assert "{% if cab.modo.show %}modo{% endif %}" in base
 
     js = (
         PACOTE
         / "static"
         / "vendors"
-        / "dsgovbr-bootstraped"
-        / "dsgovbr-bootstraped-modo.js"
+        / "dsgovbr-bootstrapped"
+        / "dsgovbr-bootstrapped-modo.js"
     ).read_text(encoding="utf-8")
     assert "[data-dsgovbr-modo]" in js
-    assert "dsgovbr-bootstraped:modo" in js
+    assert "dsgovbr-bootstrapped:modo" in js

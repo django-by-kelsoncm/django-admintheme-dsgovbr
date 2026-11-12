@@ -466,7 +466,9 @@ def test_icone_padrao_do_item_por_settings(clean_registry):
     assert item.to_dict()["icon"] == "fas fa-star"
 
 
-def test_template_renderiza_submenu_badge_e_cor(clean_registry, sem_admin):
+def test_template_renderiza_pasta_e_achata_subitens_com_badge(
+    clean_registry, sem_admin
+):
     from pathlib import Path
 
     from django.template import Context, Engine
@@ -480,7 +482,6 @@ def test_template_renderiza_submenu_badge_e_cor(clean_registry, sem_admin):
         "app",
         "Filho",
         "/filho/",
-        color="warning",
         badge=menus.MenuItemBadge("3", "danger"),
         parent="Grupo",
     )
@@ -488,11 +489,11 @@ def test_template_renderiza_submenu_badge_e_cor(clean_registry, sem_admin):
     html = engine.get_template("admin/app_list.html").render(
         Context({"app_list": menus.get_menu_list(request), "request": request})
     )
-    assert 'data-bs-target="#menu-app-1"' in html
-    assert 'class="collapse dsgovbr-menu-sub show" id="menu-app-1"' in html
-    assert "text-warning" in html
-    assert 'class="badge rounded-pill text-bg-danger float-end">3</span>' in html
-    assert 'href="/filho/" aria-current="page"' in html
+    # o <dsgovbr-pasta> só aceita itens: o subitem leva o nome do pai e o badge vira texto
+    assert '<dsgovbr-pasta rotulo="' in html and " aberta>" in html
+    assert 'id="menu-app-' in html
+    assert 'href="/filho/"' in html and " atual>" in html
+    assert "Grupo › Filho (3)" in html
 
 
 def test_menu_nao_guarda_pastas_entre_requisicoes(clean_registry, monkeypatch):

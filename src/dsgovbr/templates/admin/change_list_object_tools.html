@@ -2,7 +2,7 @@
 
 {% block object-tools-items %}
     {% for action in object_tool_actions %}
-        <a href="{% url action.admin_url_name %}" class="dropdown-item {{ action.css_class }}">
+        <a href="{% url action.admin_url_name %}" class="btn btn-outline-primary {{ action.css_class }}">
             {{ action.label }}
         </a>
     {% endfor %}

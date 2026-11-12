@@ -61,24 +61,23 @@ Em produção com `whitenoise` (ou outro servidor de estáticos que só serve o 
 
 O item "Sair" do usuário usa a rota `logout` do projeto ou, se ela não existir, `admin:logout`.
 
-Detalhes opcionais do header, do menu e do rodapé, como no exemplo "Painel administrativo" do dsgovbr-bootstraped
-(todos vazios por padrão; o exemplo completo está em `sandbox/config/settings.py`):
+Detalhes opcionais do header, do menu e do rodapé, como no exemplo "Painel administrativo" do dsgovbr-bootstrapped
+(todos vazios por padrão; o exemplo completo está em `sandbox/config/settings.py`). Header, menu, rodapé e
+cookiebar são web components do dsgovbr-bootstrapped (ver "Aparência" abaixo):
 
 ```python
 REDES = [{"label": "YouTube", "icon": "fab fa-youtube", "url": "https://www.youtube.com/..."}]
 
 DSGOVBR_HEADER = {
-    # em_linha: links e ícones na linha do header a partir de 1200px (dropdown abaixo disso)
-    "links": {"show": True, "em_linha": True, "items": [{"label": "Documentação", "url": "/docs/"}]},
+    # links e ícones ficam na linha do header a partir de 1200px (dropdown abaixo disso)
+    "links": {"show": True, "items": [{"label": "Documentação", "url": "/docs/"}]},
     "funcionalidades": {
         "show": True,
-        "em_linha": True,
         "items": [{"label": "Suporte", "icon": "fas fa-headset", "url": "/suporte/"}],
     },
-    # o dict "menu" substitui o padrão inteiro: repita "show" e "localizacao"
+    # o dict "menu" substitui o padrão inteiro: repita "show"
     "menu": {
         "show": True,
-        "localizacao": "flutuante",
         "footer": {
             "logos": [{"src": "/static/img/orgao.svg", "alt": "Logo do órgão"}],
             "links": [{"label": "Ajuda", "url": "https://...", "target": "_blank"}],
@@ -94,6 +93,13 @@ DSGOVBR_FOOTER = {
     "assinatura": {"src": "/static/img/orgao-negativo.svg", "alt": "Assinatura do órgão"},
     "texto": "Texto antes do copyright.",
 }
+# aviso de cookies (<dsgovbr-cookiebar>); desligado por padrão. O botão das configurações vai para o header
+DSGOVBR_COOKIEBAR = {
+    "show": True,
+    "declaracao": "/cookies/",
+    "texto": "Usamos cookies para melhorar sua experiência. Veja a nossa",
+    "grupos": [{"nome": "desempenho", "rotulo": "Desempenho", "descricao": "Medem o uso do sistema."}],
+}
 PROJECT_RELEASES_URL = "https://github.com/org/projeto/releases/tag/"  # + PROJECT_VERSION
 ```
 
@@ -102,13 +108,20 @@ Para o `DSGovBrModelAdmin` com importação/exportação, instale o extra: `pip 
 ### 3. Aparência: Bootstrap 5 com o GOV.BR DS
 
 Desde a versão 7.0.0 os templates usam classes do [Bootstrap 5.3](https://getbootstrap.com/docs/5.3/) com o tema
-[dsgovbr-bootstraped](https://github.com/abrasileirado/dsgovbr-bootstraped), que dá ao Bootstrap a aparência do
-GOV.BR DS. O CSS e o JS do tema (v0.11.2) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`; o JS
-do GOV.BR DS (`core-init.js`) não é mais carregado.
+[dsgovbr-bootstrapped](https://github.com/abrasileirado/dsgovbr-bootstrapped), que dá ao Bootstrap a aparência do
+GOV.BR DS. O CSS e os JS do tema (v1.0.0) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`;
+o JS do GOV.BR DS (`core-init.js`) não é mais carregado.
+
+Desde a 8.0.0 o header, o menu, o rodapé, o cookiebar e a lista do admin são **web components** do
+dsgovbr-bootstrapped (`dsgovbr-bootstrapped-componentes.js` e `-cookies.js`), em vez de markup próprio do tema.
+Um pouco de JS do tema (`dsgovbr/js/dsgovbr_componentes.js`) liga os componentes ao Django: busca do header,
+"Sair" por POST, filtros, busca e ações em lote da lista. O que o componente ainda não cobre está nas issues
+[#76 a #81](https://github.com/abrasileirado/dsgovbr-bootstrapped/issues) da lib; a cola sai do tema quando elas
+forem entregues.
 
 - **Nos seus templates**: use classes do Bootstrap (`btn btn-primary`, `alert alert-success`, `card`, `form-control`…)
   em vez de `br-*`. Exemplos de cada componente no
-  [catálogo do dsgovbr-bootstraped](https://abrasileirado.github.io/dsgovbr-bootstraped/componentes/).
+  [catálogo do dsgovbr-bootstrapped](https://abrasileirado.github.io/dsgovbr-bootstrapped/componentes/).
 - **Formulários**: o `dsgovbr/js/dsgovbr_forms.js` aplica `.form-control`, `.form-select` e `.form-check-input` aos
   campos do Django, com qualquer `FORM_RENDERER`. Para ignorar um campo ou bloco, use `data-dsgovbr-ignore`.
 - **Widgets do admin**: o `admin/css/base.css` do Django não é carregado; o `dsgovbr.scss` define as variáveis dele
@@ -116,16 +129,25 @@ do GOV.BR DS (`core-init.js`) não é mais carregado.
   `dsgovbr`, com largura total e a aparência de `.form-select`/`.form-control` (badges no múltiplo); calendário,
   relógio e os links de alterar/adicionar/remover/ver dos relacionamentos também têm estilo próprio.
 - **Modo escuro**: `data-bs-theme="dark"` no `<html>` (ou num contêiner). O `dsgovbr.scss` troca as cores fixas do
-  modo claro do dsgovbr-bootstraped (header, breadcrumb, campos, botões vazados, menu, paginação…) pelas `--bs-*`. O
+  modo claro do dsgovbr-bootstrapped (header, breadcrumb, campos, botões vazados, menu, paginação…) pelas `--bs-*`. O
   header traz um botão que alterna o modo (segue o sistema até o usuário escolher; a escolha fica no `localStorage`).
   Para tirar: `DSGOVBR_HEADER = {"modo": {"show": False}}`; `label` e `icon` mudam o texto e o ícone.
-- **Layout**: segue o exemplo "Painel administrativo" do dsgovbr-bootstraped. Header, conteúdo e rodapé usam
-  `container-lg` (`DSGOVBR_HEADER["width_style"]`: `sm`, `md`, `lg`, `xl`, `xxl` ou `fluid`).
-- **Menu**: offcanvas aberto pelo botão (`DSGOVBR_HEADER["menu"]["localizacao"] = "flutuante"`, padrão); com `"fixo"`
-  fica aberto ao lado do conteúdo a partir de 1200px.
-- **Usuário no header**: Sign-in com avatar como o `avatar-dropdown` do GOV.BR DS (avatar, "Olá, **Nome**" e seta).
-  Itens de `DSGOVBR_HEADER["login"]["dropdown"]["items"]` com `"method": "post"` viram um formulário com CSRF; o
-  "Sair" padrão usa isso, porque o `LogoutView` do Django 5+ recusa GET.
+- **Layout**: segue o exemplo "Painel administrativo" do dsgovbr-bootstrapped. O conteúdo usa `container-lg`
+  (`DSGOVBR_HEADER["width_style"]`: `sm`, `md`, `lg`, `xl`, `xxl` ou `fluid`); o header e o rodapé (web components)
+  usam sempre `container-lg`.
+- **Header** (`<dsgovbr-header>`): fica fixo no topo com o breadcrumb, o título da página e as ações (bloco
+  `title_actions`). Traz logo, assinatura, título e subtítulo, acesso rápido, funcionalidades, busca do site, botão de
+  modo claro/escuro, botão de cookies e o usuário. O bloco `page_title` muda o título e `header_home_url` o link do
+  logo e do título.
+- **Menu** (`<dsgovbr-menu>`): offcanvas aberto pelo botão do header, com uma pasta por app. O `<dsgovbr-pasta>`
+  aceita só itens, então os subitens do `menus.py` são achatados ("Pai › Filho"), o badge vira texto entre parênteses e
+  a cor do ícone (`color`) não é aplicada. O menu fixo (`localizacao`) não existe mais.
+- **Usuário no header**: o nome e um menu com `DSGOVBR_HEADER["login"]["dropdown"]["items"]`. Itens com
+  `"method": "post"` viram um formulário com CSRF; o "Sair" padrão usa isso, porque o `LogoutView` do Django 5+
+  recusa GET. Avatar, foto e papel do usuário não são mais exibidos.
+- **Lista do admin** (`<dsgovbr-tabela>`): busca, filtros (uma opção por filtro), densidade, barra de selecionados com
+  as ações do admin em lote (POST) e paginação. A ordenação continua nos links do cabeçalho. Importar e Exportar e o
+  "Adicionar" ficam na barra da página. Com `list_editable` aparece o botão "Salvar" abaixo da tabela.
 - **Página inicial e página do app**: os models aparecem em cards (ícone, nome, "Ver lista" e "Adicionar"), agrupados
   por app na página inicial, com as permissões do usuário.
 - **Ícones**: app pelo atributo `icon` do `AppConfig`; model pelo atributo `icon` do ModelAdmin (o `class Meta` do model
@@ -174,12 +196,11 @@ do GOV.BR DS (`core-init.js`) não é mais carregado.
   (bloco `breadcrumb_home_url` do `dsgovbr/base.html`). Fora do admin, leva a `PROJECT_HOME_URL` ou ao prefixo do
   script, o que funciona com `FORCE_SCRIPT_NAME`.
 - **Menu e permissões**: o menu mostra só os apps e models que o usuário pode ver no admin.
-- **Avatar**: com `DSGOVBR_HEADER["login"]["type"] = "fotografico"`, usa `user.avatar_url` ou, sem ela,
-  `DSGOVBR_HEADER["login"]["default_avatar_url"]`; sem nenhuma, o ícone de usuário.
-- **Título da página**: o bloco `title_actions` do `dsgovbr/base.html` põe ações à direita do título (na lista: busca,
-  filtros, mais opções e "Adicionar").
-- **Cookiebar**: o bloco `cookie_consent` do `dsgovbr/base.html` vem vazio; sobrescreva-o com um
-  `.offcanvas.offcanvas-bottom` para exibir o aviso.
+- **Título da página**: o bloco `title_actions` do `dsgovbr/base.html` põe ações à direita do título, na barra do
+  header (na lista: Importar, Exportar e "Adicionar").
+- **Cookiebar**: ligue com `DSGOVBR_COOKIEBAR = {"show": True, ...}` (ver acima). A barra aparece até haver escolha; a
+  API `window.dsgovbrCookies` e o evento `dsgovbr:cookies` ficam disponíveis. O bloco `cookie_consent` do
+  `dsgovbr/base.html` pode ser sobrescrito.
 
 ---
 
