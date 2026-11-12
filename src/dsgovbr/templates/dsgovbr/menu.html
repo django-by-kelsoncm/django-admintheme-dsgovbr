@@ -1,51 +1,27 @@
 {% load i18n %}
 {% comment %}
-  Menu do GOV.BR DS: offcanvas lateral com list group e pastas por Collapse.
-  DSGOVBR_HEADER["menu"]["localizacao"] = "flutuante" (padrão) abre só pelo
-  botão; "fixo" deixa o menu sempre visível a partir de 1200px (.offcanvas-xl).
+  Menu do GOV.BR DS como web component do dsgovbr-bootstraped: offcanvas lateral
+  com as pastas e itens do admin (admin/app_list.html) e o rodapé do menu.
+  O <dsgovbr-pasta> aceita só itens: os subitens do dsgovbr.menus são
+  achatados com o nome do pai como prefixo (dsgovbr/menu_items.html).
 {% endcomment %}
-<div class="{% if dsgovbr.header.menu.localizacao == 'flutuante' %}offcanvas{% else %}offcanvas-xl dsgovbr-menu-fixo{% endif %} offcanvas-start dsgovbr-menu" tabindex="-1" id="main-navigation" aria-labelledby="main-navigation-title">
-  <div class="offcanvas-header">
-    <div class="d-flex align-items-center gap-2 me-auto">
-      {% if dsgovbr.header.logo.show %}<img src="{{ dsgovbr.header.logo.compact_url }}" height="32" alt="">{% endif %}
-      <span id="main-navigation-title">{{ dsgovbr.header.titulo.label }}</span>
-    </div>
-    <button type="button" class="btn btn-link rounded-circle" data-bs-dismiss="offcanvas" data-bs-target="#main-navigation" aria-label="Fechar o menu"><i class="fas fa-times" aria-hidden="true"></i></button>
-  </div>
-  <div class="offcanvas-body d-flex flex-column p-0">
-    <nav aria-label="Menu principal">
-      {% include 'admin/app_list.html' with app_list=available_apps show_changelinks=False %}
-    </nav>
+<dsgovbr-menu id="main-navigation" titulo="{{ dsgovbr.header.titulo.label }}"{% if dsgovbr.header.logo.show %} logo="{{ dsgovbr.header.logo.compact_url }}"{% endif %}>
+  {% include 'admin/app_list.html' with app_list=available_apps show_changelinks=False %}
 
-    {% with rodape=dsgovbr.header.menu.footer %}
-      {% if rodape.logos or rodape.links or rodape.redes_sociais or rodape.licenca %}
-        {# rodapé do menu: logos, links externos, redes sociais e licença #}
-        <div class="mt-auto border-top">
-          {% if rodape.logos %}
-            <div class="d-flex flex-wrap gap-3 px-4 py-2 border-bottom">
-              {% for logo in rodape.logos %}<img src="{{ logo.src }}" height="33" alt="{{ logo.alt }}">{% endfor %}
-            </div>
-          {% endif %}
-          {% if rodape.links %}
-            <div class="px-4 py-3 border-bottom">
-              {% for link in rodape.links %}
-                <a class="d-block py-1 text-decoration-none" href="{{ link.url }}"{% if link.target %} target="{{ link.target }}" rel="noopener"{% endif %}>
-                  {{ link.label }}<i class="{{ link.icon|default:'fas fa-external-link-square-alt' }} ms-1" aria-hidden="true"></i>
-                </a>
-              {% endfor %}
-            </div>
-          {% endif %}
-          {% if rodape.redes_sociais %}
-            <div class="px-4 py-2 border-bottom">
-              <p class="fw-semibold mb-1">Redes sociais</p>
-              {% include 'dsgovbr/redes_sociais.html' with redes=rodape.redes_sociais %}
-            </div>
-          {% endif %}
-          {% if rodape.licenca %}
-            <p class="small text-center p-3 m-0">{{ rodape.licenca }}</p>
-          {% endif %}
-        </div>
-      {% endif %}
-    {% endwith %}
-  </div>
-</div>
+  {% with rodape=dsgovbr.header.menu.footer %}
+    {% if rodape.logos or rodape.links or rodape.redes_sociais or rodape.licenca %}
+      <dsgovbr-menu-rodape>
+        {% for logo in rodape.logos %}
+          <dsgovbr-logo src="{{ logo.src }}" alt="{{ logo.alt }}"></dsgovbr-logo>
+        {% endfor %}
+        {% for link in rodape.links %}
+          <dsgovbr-item href="{{ link.url }}" externo>{{ link.label }}</dsgovbr-item>
+        {% endfor %}
+        {% for rede in rodape.redes_sociais %}
+          <dsgovbr-rede href="{{ rede.url }}" icone="{{ rede.icon|default:'fas fa-link' }}">{{ rede.label }}</dsgovbr-rede>
+        {% endfor %}
+        {% if rodape.licenca %}<dsgovbr-aviso>{{ rodape.licenca }}</dsgovbr-aviso>{% endif %}
+      </dsgovbr-menu-rodape>
+    {% endif %}
+  {% endwith %}
+</dsgovbr-menu>

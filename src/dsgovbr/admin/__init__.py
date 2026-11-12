@@ -355,10 +355,6 @@ class DSGovBrBaseModelAdmin(ModelAdmin):
             "urlify.js",
             "prepopulate.js",
             "vendor/xregexp/xregexp%s.js" % extra,
-            # JS customizado dos filtros DSGovBR
-            "dsgovbr_admin_filters.js",
-            "dsgovbr_admin_actions.js",
-            "dsgovbr_admin_density.js",
         ]
         return parent_media + Media(js=["admin/js/%s" % url for url in js])
 

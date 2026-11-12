@@ -22,6 +22,9 @@
 
 {% block menu %}{% endblock %}
 
+{# o login não usa o header com o título da página: o h1 fica só para leitores de tela #}
+{% block pretitle %}<h1 class="visually-hidden">{{ title }}</h1>{% endblock pretitle %}
+
 {% block content %}
 <div class="row justify-content-center g-4 py-3">
   <!-- formulário -->

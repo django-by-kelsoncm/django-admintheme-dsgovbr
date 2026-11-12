@@ -1,16 +1,10 @@
 {% load i18n %}
-
-{% if app_list %}
-  <div class="list-group list-group-flush">
-    {% for app in app_list %}
-      <button class="list-group-item list-group-item-action{% if app.app_url not in request.path|urlencode and not app.open %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#menu-app-{{ app.app_label }}" aria-expanded="{% if app.app_url in request.path|urlencode or app.open %}true{% else %}false{% endif %}" aria-controls="menu-app-{{ app.app_label }}">
-        {% include 'dsgovbr/menu_item_label.html' with item=app icone_padrao='fas fa-folder' %}
-      </button>
-      <div class="collapse{% if app.app_url in request.path|urlencode or app.open %} show{% endif %}" id="menu-app-{{ app.app_label }}">
-        {% include 'dsgovbr/menu_items.html' with items=app.models %}
-      </div>
-    {% endfor %}
-  </div>
-{% else %}
-  <p class="px-4 py-3">{% translate 'You don’t have permission to view or edit anything.' %}</p>
-{% endif %}
+{% comment %}
+  Pastas do menu (um <dsgovbr-pasta> por app). Usado dentro do <dsgovbr-menu>
+  (dsgovbr/menu.html), que lê os filhos uma vez e monta o HTML final.
+{% endcomment %}
+{% for app in app_list %}
+  <dsgovbr-pasta rotulo="{{ app.name }}" icone="{{ app.icon|default:'fas fa-folder' }}" id="menu-app-{{ app.app_label }}"{% if app.app_url in request.path|urlencode or app.open %} aberta{% endif %}>
+    {% include 'dsgovbr/menu_items.html' with items=app.models %}
+  </dsgovbr-pasta>
+{% endfor %}

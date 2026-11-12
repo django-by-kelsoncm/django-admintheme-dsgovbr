@@ -209,7 +209,8 @@ Header Mobile nos botões agrupadores de ações (links ou funcionalidades)
 Header Menu
 """""""""""
 
-O Menu pode ser do tipo flutuante (flutua sobre o conteúdo) ou fixo (empurra o conteúdo) e é constituído por:
+O Menu é o ``<dsgovbr-menu>``, um offcanvas que flutua sobre o conteúdo (a partir da 8.0.0 não há mais o menu
+fixo) e é constituído por:
 
 .. list-table::
    :header-rows: 1

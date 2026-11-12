@@ -1,9 +1,3 @@
 {% extends ie_base_change_list_template|default:"admin/change_list.html" %}
 
-{% block object-tools %}
-    {% block object-tools-items %}
-      {% if has_add_permission %}
-        {{ block.super }}
-      {% endif %}
-    {% endblock object-tools-items %}
-{% endblock object-tools %}
+{# Importar e Exportar vêm de get_object_tool_actions (dsgovbr.admin.import_export) e aparecem como botões na barra da página (change_list.html). #}

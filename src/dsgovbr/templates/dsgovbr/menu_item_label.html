@@ -1,4 +1,0 @@
-{% comment %}
-  Ícone (com a cor do Bootstrap em item.color), nome e badge de um item ou pasta do menu.
-  Variáveis: item, icone_padrao (opcional).
-{% endcomment %}<i class="{% if item.icon %}{{ item.icon }}{% elif icone_padrao %}{{ icone_padrao }}{% else %}fas fa-table{% endif %}{% if item.color %} text-{{ item.color }}{% endif %}" aria-hidden="true"></i>{{ item.name }}{% if item.badge %} <span class="badge rounded-pill text-bg-{{ item.badge.color }} float-end">{{ item.badge.label }}</span>{% endif %}

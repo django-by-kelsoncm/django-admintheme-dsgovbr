@@ -1,72 +1,10 @@
 // Ajustes do tema sobre o dsgovbr-bootstraped (Bootstrap 5 com a aparência
 // do GOV.BR DS, carregado antes deste arquivo). Só variáveis CSS do Bootstrap.
 
-$dsgovbr-menu-width: 18rem;
 $dsgovbr-autocomplete-max-height: 280px;
-$dsgovbr-breakpoint-xl: 1200px;
 
-// Conteúdo pode encolher ao lado do menu fixo (tabelas largas rolam).
-#main {
-  min-width: 0;
-}
-
-// Menu fixo (DSGOVBR_HEADER["menu"]["localizacao"] = "fixo"): a partir de
-// 1200px o .offcanvas-xl fica aberto à esquerda do conteúdo.
-@media (min-width: $dsgovbr-breakpoint-xl) {
-  .dsgovbr-menu-fixo {
-    flex-shrink: 0;
-    width: $dsgovbr-menu-width;
-    border-right: var(--bs-border-width) solid var(--bs-border-color);
-
-    .offcanvas-body {
-      flex-grow: 1;
-    }
-  }
-}
-
-// Submenus do menu (dsgovbr/menu_items.html): cada nível recua um pouco mais.
-$dsgovbr-menu-sub-indent: 1rem;
-
-.dsgovbr-menu-sub {
-  padding-left: $dsgovbr-menu-sub-indent;
-}
-
-// Avatar do usuário (dsgovbr/avatar.html); cores por .text-bg-primary.
-$dsgovbr-avatar-size: 2rem;
-$dsgovbr-avatar-size-lg: 5rem;
-$dsgovbr-signin-avatar-gap: 0.5rem;
-
-.dsgovbr-avatar {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: $dsgovbr-avatar-size;
-  height: $dsgovbr-avatar-size;
-  overflow: hidden;
-  font-weight: bolder;
-  border-radius: 50%;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-.dsgovbr-avatar-lg {
-  width: $dsgovbr-avatar-size-lg;
-  height: $dsgovbr-avatar-size-lg;
-}
-
-// Sign-in com avatar (avatar-dropdown do GOV.BR DS): o avatar encosta na
-// borda esquerda da pílula.
-.dsgovbr-signin-avatar {
-  gap: $dsgovbr-signin-avatar-gap;
-  padding-left: $dsgovbr-signin-avatar-gap / 2;
-}
-
-// Sugestões da busca do header (dsgovbr/js/searchbox.js).
+// Sugestões da busca do header (dsgovbr/js/searchbox.js; o formulário é criado
+// pelo <dsgovbr-header> e configurado por dsgovbr/js/dsgovbr_componentes.js).
 .dsgovbr-autocomplete {
   position: absolute;
   top: 100%;
@@ -84,19 +22,6 @@ $dsgovbr-signin-avatar-gap: 0.5rem;
   .empty-result {
     font-style: italic;
   }
-}
-
-// Lista do admin: barra de selecionados (mostrada por dsgovbr_admin_actions.js)
-// e densidade "Baixa" da tabela (dsgovbr_admin_density.js).
-$dsgovbr-table-lg-padding-y: 1rem;
-
-.selected-bar {
-  display: none;
-}
-
-.dsgovbr-table-lg > :not(caption) > * > * {
-  padding-top: $dsgovbr-table-lg-padding-y;
-  padding-bottom: $dsgovbr-table-lg-padding-y;
 }
 
 // Formulários do admin (admin/includes/fieldset.html): rótulos, erros do
@@ -195,8 +120,9 @@ $dsgovbr-selector-gap: 0.5rem;
   }
 }
 
-// Página que esvazia o bloco "menu" (sem #main-navigation): esconde o botão que abriria o menu.
-body:not(:has(#main-navigation)) #navigation {
+// Página que esvazia o bloco "menu" (sem #main-navigation): esconde o botão do
+// <dsgovbr-header> que abriria o menu.
+body:not(:has(#main-navigation)) dsgovbr-header [data-bs-target="#main-navigation"] {
   display: none !important;
 }
 

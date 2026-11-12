@@ -2,5 +2,5 @@
 {% load admin_urls %}
 
 {% if has_export_permission %}
-<a href="{% url opts|admin_urlname:'export' %}{{cl.get_query_string}}" class="dropdown-item export_link">{% translate "Export" %}</a>
+<a href="{% url opts|admin_urlname:'export' %}{{cl.get_query_string}}" class="btn btn-outline-primary export_link">{% translate "Export" %}</a>
 {% endif %}

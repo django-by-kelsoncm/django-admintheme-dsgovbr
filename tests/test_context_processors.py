@@ -158,17 +158,10 @@ def test_sair_usa_post_na_mesma_aba(request_with_user):
     assert "target" not in sair
 
 
-def test_saudacao_padrao(request_with_user):
-    assert (
-        layout_settings(request_with_user)["dsgovbr"]["header"]["login"]["saudacao"]
-        == "Olá, "
-    )
-
-
 def test_detalhes_de_header_menu_e_rodape_vem_vazios(request_with_user):
     dsgovbr = layout_settings(request_with_user)["dsgovbr"]
-    assert dsgovbr["header"]["links"]["em_linha"] is False
-    assert dsgovbr["header"]["funcionalidades"]["em_linha"] is False
+    assert dsgovbr["header"]["links"] == {"show": False, "items": []}
+    assert dsgovbr["header"]["funcionalidades"] == {"show": False, "items": []}
     assert dsgovbr["header"]["menu"]["footer"] == {
         "logos": [],
         "links": [],
@@ -179,6 +172,18 @@ def test_detalhes_de_header_menu_e_rodape_vem_vazios(request_with_user):
     assert footer["logo"] is None and footer["assinatura"] is None
     assert footer["colunas"] == [] and footer["redes_sociais"] == []
     assert footer["texto"] == ""
+
+
+def test_cookiebar_vem_desligado_e_aceita_ajustes(request_with_user):
+    cookiebar = layout_settings(request_with_user)["dsgovbr"]["cookiebar"]
+    assert cookiebar["show"] is False and cookiebar["grupos"] == []
+    grupos = [
+        {"nome": "desempenho", "rotulo": "Desempenho", "descricao": "Mede o uso."}
+    ]
+    with override_settings(DSGOVBR_COOKIEBAR={"show": True, "grupos": grupos}):
+        cookiebar = layout_settings(request_with_user)["dsgovbr"]["cookiebar"]
+        assert cookiebar["show"] is True and cookiebar["grupos"] == grupos
+        assert cookiebar["texto"]  # mantém o texto padrão
 
 
 def test_project_home_url_respeita_subcaminho(request_with_user):

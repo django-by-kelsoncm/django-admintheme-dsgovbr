@@ -51,16 +51,14 @@ def layout_settings(request: HttpRequest) -> dict:
                     "show": str(project_subtitle or "") != "",
                     "label": project_subtitle,
                 },
+                # acesso rápido: [{label, url}] (em linha a partir de 1200px, dropdown abaixo)
                 "links": {
                     "show": False,
-                    # True: links em linha a partir de 1200px (dropdown abaixo disso)
-                    "em_linha": False,
                     "items": [],
                 },
+                # funcionalidades: [{label, url, icon}]
                 "funcionalidades": {
                     "show": False,
-                    # True: ícones em linha a partir de 1200px (dropdown abaixo disso)
-                    "em_linha": False,
                     "items": [],
                 },
                 # seletor de modo claro/escuro (JS do dsgovbr-bootstraped): segue o
@@ -70,17 +68,10 @@ def layout_settings(request: HttpRequest) -> dict:
                     "label": "Modo escuro",
                     "icon": "fas fa-adjust",
                 },
+                # usuário autenticado: o nome abre o menu com os "items"
                 "login": {
                     "show": True,
-                    "type": "default",
-                    "default_avatar_url": "",
-                    "saudacao": "Olá, ",
-                    "name_to_show": "first",
                     "dropdown": {
-                        "show": True,
-                        "show_large_avatar": True,
-                        "show_full_name": True,
-                        "show_role": True,
                         "items": [
                             {
                                 "label": "Sair",
@@ -94,9 +85,6 @@ def layout_settings(request: HttpRequest) -> dict:
                 },
                 "menu": {
                     "show": True,
-                    "localizacao": "flutuante",  # flutuante (offcanvas)|fixo (aberto a partir de 1200px)
-                    "padding": {},
-                    "header": {},
                     # rodapé do menu: logos [{src, alt}], links [{label, url, icon, target}],
                     # redes_sociais [{label, icon, url}] e licenca (texto)
                     "footer": {
@@ -135,6 +123,18 @@ def layout_settings(request: HttpRequest) -> dict:
                 "alternative_methods": [],
             },
             **getattr(settings, "DSGOVBR_LOGIN", {}),
+        },
+        # consentimento de cookies (<dsgovbr-cookiebar>): desligado por padrão.
+        # grupos: [{nome, rotulo, descricao}]; o grupo "estritamente necessários"
+        # é criado pelo componente. Com show, o header ganha o botão de configurações.
+        "cookiebar": {
+            **{
+                "show": False,
+                "declaracao": "",
+                "texto": "Usamos cookies para melhorar sua experiência. Veja a nossa",
+                "grupos": [],
+            },
+            **getattr(settings, "DSGOVBR_COOKIEBAR", {}),
         },
     }
 

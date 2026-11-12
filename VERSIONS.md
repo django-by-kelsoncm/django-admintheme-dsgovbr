@@ -1,5 +1,42 @@
 # Histórico de Versões
 
+## 8.0.0
+
+### Web components do dsgovbr-bootstraped 0.18.0 (issue #51)
+
+- **Vendor**: `dsgovbr-bootstraped` passa para a 0.18.0, com `dsgovbr-bootstraped-componentes.js` e
+  `dsgovbr-bootstraped-cookies.js`.
+- **Header, breadcrumb, título e ações**: o `dsgovbr/base.html` usa o `<dsgovbr-header>`, que fica fixo no topo com o
+  breadcrumb (`<dsgovbr-breadcrumb>`), o título da página e as ações (bloco `title_actions`). Blocos novos:
+  `page_title` e `header_home_url`. Os blocos `content_title` e `content_subtitle` saíram (o título vai para o header
+  por `page_title`; em popup, `<h1>` direto). `breadcrumb`, `breadcrumb_home_url` e `title_actions` continuam, mas o
+  `breadcrumb` passa a receber `<dsgovbr-item>` no lugar de `<li class="breadcrumb-item">`.
+- **Menu**: `<dsgovbr-menu>` com `<dsgovbr-pasta>` por app. Subitens são achatados ("Pai › Filho"), o badge vira texto
+  e a cor do ícone não é aplicada.
+- **Rodapé**: `<dsgovbr-footer>` (sempre no modo escuro).
+- **Cookiebar**: `<dsgovbr-cookiebar>` pela nova configuração `DSGOVBR_COOKIEBAR` (desligada por padrão); com ela
+  ligada o header ganha o botão de configurações.
+- **Lista do admin**: `<dsgovbr-tabela>` com busca, filtros (um valor por filtro, inclusive os de data com vários
+  parâmetros), densidade, barra de selecionados com as ações em lote por POST e paginação (`<dsgovbr-paginacao>`).
+  O formulário da lista passou de GET para POST com CSRF, o que faz as ações em lote funcionarem (antes enviavam GET).
+  Tags novas: `dsgovbr_filtros`, `dsgovbr_pagina_href` e `dsgovbr_mostrar_todos_href`.
+- **Cola JS**: `dsgovbr/js/dsgovbr_componentes.js` (busca do header, "Sair" por POST, filtros e ações em lote). O que
+  falta nos componentes foi aberto como issues na lib (#76 a #81).
+- **Removido** (breaking):
+  - Templates `dsgovbr/header.html`, `dsgovbr/avatar.html`, `dsgovbr/menu_item_label.html`,
+    `dsgovbr/redes_sociais.html`, `admin/nav_sidebar.html`, `admin/change_list_header.html`,
+    `admin/change_list_footer.html`, `admin/change_list_tools.html`, `admin/search_form.html`,
+    `admin/pagination.html`, `admin/filters.html`, `admin/filter.html`, `admin/actions.html` e
+    `admin/change_list_admin_actions.html`.
+  - JS `admin/js/dsgovbr_admin_actions.js`, `dsgovbr_admin_filters.js` e `dsgovbr_admin_density.js`, e as tags
+    `page_item`, `choices`, `first_query_param` e `dsgovbr_admin_list_filter`.
+  - Configurações `DSGOVBR_HEADER`: `links.em_linha`, `funcionalidades.em_linha`, `menu.localizacao`, `menu.padding`,
+    `menu.header` e, em `login`, `type`, `default_avatar_url`, `saudacao`, `name_to_show` e `dropdown.show*`. Avatar,
+    foto e papel do usuário não são mais exibidos; o link do logo agora é o do título.
+  - SCSS: avatar, menu fixo, submenus, barra de selecionados e densidade "Baixa" (os componentes cuidam disso).
+  - Sandbox: `header-behavior.js` e `_header-custom.scss`, que usavam o `.br-header` e nenhum template referenciava.
+- Importar e Exportar (`DSGovBrModelAdmin`) aparecem como botões na barra da página.
+
 ## 7.5.4
 
 ### Atualização para o dsgovbr-bootstraped v0.11.2 (issue #49)
