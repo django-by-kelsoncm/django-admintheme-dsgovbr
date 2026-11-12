@@ -346,6 +346,8 @@ def test_cola_js_cobre_busca_filtros_e_acoes_em_lote() -> None:
         "dsgovbr:tabela-acao",
         "form[data-tabela-consulta]",
         "data-filtro-parametros",
+        "urlDaOrigem(header.getAttribute('data-busca-acao'))",
+        "urlDaOrigem(header.getAttribute('data-busca-autocomplete'))",
     ):
         assert trecho in js, trecho
 

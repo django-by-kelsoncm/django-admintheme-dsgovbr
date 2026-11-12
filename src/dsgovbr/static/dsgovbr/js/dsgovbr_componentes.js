@@ -28,8 +28,24 @@
   // ---- header: busca do site (action, name, id e autocomplete) ----------------
   // O <dsgovbr-header busca> gera o formulário sem action, sem name no campo e
   // sem id fixo; os dados vêm de data-busca-acao e data-busca-autocomplete.
+  // Só aceita URL da própria origem (http/https), devolvida como caminho +
+  // query: um data-* adulterado não leva a busca para outro site nem a um
+  // "javascript:". Devolve null se a URL não servir.
+  function urlDaOrigem(valor) {
+    if (!valor) return null;
+    try {
+      var url = new URL(valor, window.location.href);
+      if (url.origin !== window.location.origin || (url.protocol !== 'http:' && url.protocol !== 'https:')) {
+        return null;
+      }
+      return url.pathname + url.search;
+    } catch (erro) {
+      return null;
+    }
+  }
+
   function configurarBusca(header) {
-    var acao = header.getAttribute('data-busca-acao');
+    var acao = urlDaOrigem(header.getAttribute('data-busca-acao'));
     var form = header.querySelector('form[role="search"]');
     var campo = form && form.querySelector('input[type="search"]');
     if (acao === null || !campo) return;
@@ -42,7 +58,7 @@
     var rotulo = form.querySelector('label');
     if (rotulo) rotulo.setAttribute('for', 'searchbox');
 
-    var sugestoes = header.getAttribute('data-busca-autocomplete');
+    var sugestoes = urlDaOrigem(header.getAttribute('data-busca-autocomplete'));
     if (sugestoes) {
       campo.setAttribute('data-autocomplete-url', sugestoes);
       campo.setAttribute('aria-controls', 'searchbox-autocomplete-results');
