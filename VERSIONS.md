@@ -1,5 +1,16 @@
 # Histórico de Versões
 
+## 8.1.2
+
+### Sandbox: ícone duplicado do modo claro/escuro (issue #57)
+
+- O item "Ajustes" das funcionalidades do sandbox usava o mesmo ícone (`fas fa-adjust`) do botão de modo
+  claro/escuro; passa a usar `fas fa-cog`.
+- README: desde a 8.0.0 o `<dsgovbr-header>` fixa o rótulo e o ícone do botão de modo; `DSGOVBR_HEADER["modo"]` só
+  liga e desliga o botão (`label` e `icon` ficam sem efeito).
+
+Sem mudanças no código do pacote.
+
 ## 8.1.1
 
 ### Documentação: figuras do Header e do Menu (issue #55)
