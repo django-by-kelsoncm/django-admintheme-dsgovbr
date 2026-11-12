@@ -312,12 +312,14 @@ def dsgovbr_pagina_href(cl) -> str:
 def dsgovbr_filtros(cl) -> dict:
     """Filtros do ChangeList no formato do ``<dsgovbr-filtro>``.
 
-    Retorna ``{"filtros": [...], "parametros": [...], "busca": "q"}`` (``busca`` é o nome do parâmetro da busca). Cada filtro tem ``nome``
+    Retorna ``{"filtros": [...], "parametros": [...], "busca": "q", "preservados": [...]}``
+    (``busca`` é o nome do parâmetro da busca; ``preservados``, os parâmetros atuais que não são
+    busca nem filtro, como a ordenação). Cada filtro tem ``nome``
     (único na página), ``rotulo`` e ``opcoes``. O ``valor`` de cada opção são os
     parâmetros de query da própria opção (``urlencode``), pois uma opção do Django
     pode ter vários (intervalo de data: ``__gte`` e ``__lt``). A opção "Todos" não
     entra: sem opção marcada o filtro sai da URL. ``parametros`` lista todos os
-    parâmetros de filtro, para a cola JS tirá-los da URL antes de aplicar a escolha.
+    parâmetros de filtro.
     """
     filtros = []
     parametros: list[str] = []
@@ -348,7 +350,18 @@ def dsgovbr_filtros(cl) -> dict:
                     "opcoes": opcoes,
                 }
             )
-    return {"filtros": filtros, "parametros": parametros, "busca": SEARCH_VAR}
+    # parâmetros atuais que não são busca nem filtro (ordenação, _facets...): seguem no GET
+    preservados = [
+        {"nome": nome, "valor": valor}
+        for nome, valor in cl.params.items()
+        if nome != SEARCH_VAR and nome not in parametros
+    ]
+    return {
+        "filtros": filtros,
+        "parametros": parametros,
+        "busca": SEARCH_VAR,
+        "preservados": preservados,
+    }
 
 
 @register.simple_tag

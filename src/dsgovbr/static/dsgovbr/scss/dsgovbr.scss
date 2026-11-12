@@ -1,29 +1,6 @@
 // Ajustes do tema sobre o dsgovbr-bootstrapped (Bootstrap 5 com a aparência
 // do GOV.BR DS, carregado antes deste arquivo). Só variáveis CSS do Bootstrap.
 
-$dsgovbr-autocomplete-max-height: 280px;
-
-// Sugestões da busca do header (dsgovbr/js/searchbox.js; o formulário é criado
-// pelo <dsgovbr-header> e configurado por dsgovbr/js/dsgovbr_componentes.js).
-.dsgovbr-autocomplete {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  left: 0;
-  z-index: var(--bs-dropdown-zindex, 1000);
-  display: none;
-  max-height: $dsgovbr-autocomplete-max-height;
-  overflow-y: auto;
-
-  &.active {
-    display: flex;
-  }
-
-  .empty-result {
-    font-style: italic;
-  }
-}
-
 // Formulários do admin (admin/includes/fieldset.html): rótulos, erros do
 // Django (ul.errorlist) e campos com erro.
 $dsgovbr-label-gap: 0.5rem;

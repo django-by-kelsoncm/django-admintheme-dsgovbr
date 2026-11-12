@@ -61,23 +61,14 @@
             {# POST: as ações em lote e a edição na lista (list_editable) enviam este formulário #}
             <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>{% csrf_token %}
                 {% if cl.formset %}{{ cl.formset.management_form }}{% endif %}
-                {% if action_form and cl.show_admin_actions %}
-                    {# a cola JS (dsgovbr_componentes.js) preenche o action da <dsgovbr-lote-acao> clicada e envia #}
-                    <input type="hidden" name="action" value="">
-                    <input type="hidden" name="index" value="0">
-                    <input type="hidden" name="select_across" value="0">
-                {% endif %}
 
                 {% block result_content %}
                     {# Tabela do GOV.BR DS (web component): busca, filtros, densidade, selecionados, ações em lote e paginação #}
                     <dsgovbr-tabela
-                        data-dsgovbr-changelist
-                        data-filtro-parametros="{{ filtros.parametros|join:',' }}"
-                        data-busca-parametro="{{ filtros.busca }}"
                         {% if cl.search_fields %}busca busca-nome="{{ filtros.busca }}" busca-valor="{{ cl.query }}" busca-placeholder="{{ cl.search_help_text|default:'Buscar nesta listagem' }}"{% endif %}
                         acao=""
                         ferramentas
-                        {% if action_form and cl.show_admin_actions %}selecionavel selecao-nome="_selected_action"{% endif %}
+                        {% if action_form and cl.show_admin_actions %}selecionavel selecao-nome="_selected_action" lote-metodo="post" lote-campo="action"{% endif %}
                         total="{{ cl.result_count }}"
                         por-pagina="{% if cl.show_all %}{{ cl.result_count|default:1 }}{% else %}{{ cl.list_per_page }}{% endif %}"
                         pagina="{{ cl.page_num }}"
@@ -87,8 +78,8 @@
                         {% dsgovbr_result_list cl %}
 
                         {% for filtro in filtros.filtros %}
-                            {# unico: uma opção por filtro (o Django usa um valor só); a cola JS garante isso na 0.18.0 #}
-                            <dsgovbr-filtro nome="{{ filtro.nome }}" rotulo="{{ filtro.rotulo }}" unico>
+                            {# unico: uma opção por filtro (o Django usa um valor só); valor-consulta: o valor da opção são os parâmetros dela (a=1&b=2) #}
+                            <dsgovbr-filtro nome="{{ filtro.nome }}" rotulo="{{ filtro.rotulo }}" unico valor-consulta>
                                 {% for opcao in filtro.opcoes %}
                                     <dsgovbr-opcao valor="{{ opcao.valor }}"{% if opcao.selecionada %} selecionada{% endif %}>{{ opcao.texto }}</dsgovbr-opcao>
                                 {% endfor %}
@@ -99,7 +90,15 @@
                             {% for valor, rotulo in action_form.fields.action.choices %}
                                 {% if valor %}<dsgovbr-lote-acao acao="{{ valor }}">{{ rotulo }}</dsgovbr-lote-acao>{% endif %}
                             {% endfor %}
+                            {# o ChangeList espera o CSRF, o index e o select_across no POST das ações #}
+                            <dsgovbr-campo-oculto nome="csrfmiddlewaretoken" valor="{{ csrf_token }}"></dsgovbr-campo-oculto>
+                            <dsgovbr-campo-oculto nome="index" valor="0"></dsgovbr-campo-oculto>
+                            <dsgovbr-campo-oculto nome="select_across" valor="0"></dsgovbr-campo-oculto>
                         {% endif %}
+                        {# ordenação e demais parâmetros atuais seguem na busca e nos filtros (GET) #}
+                        {% for param in filtros.preservados %}
+                            <dsgovbr-campo-oculto nome="{{ param.nome }}" valor="{{ param.valor }}" para="consulta"></dsgovbr-campo-oculto>
+                        {% endfor %}
                     </dsgovbr-tabela>
 
                     {% if cl.formset %}

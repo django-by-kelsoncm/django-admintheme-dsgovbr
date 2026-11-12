@@ -109,15 +109,14 @@ Para o `DSGovBrModelAdmin` com importação/exportação, instale o extra: `pip 
 
 Desde a versão 7.0.0 os templates usam classes do [Bootstrap 5.3](https://getbootstrap.com/docs/5.3/) com o tema
 [dsgovbr-bootstrapped](https://github.com/abrasileirado/dsgovbr-bootstrapped), que dá ao Bootstrap a aparência do
-GOV.BR DS. O CSS e os JS do tema (v1.0.0) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`;
+GOV.BR DS. O CSS e os JS do tema (v3.7.1) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`;
 o JS do GOV.BR DS (`core-init.js`) não é mais carregado.
 
 Desde a 8.0.0 o header, o menu, o rodapé, o cookiebar e a lista do admin são **web components** do
 dsgovbr-bootstrapped (`dsgovbr-bootstrapped-componentes.js` e `-cookies.js`), em vez de markup próprio do tema.
-Um pouco de JS do tema (`dsgovbr/js/dsgovbr_componentes.js`) liga os componentes ao Django: busca do header,
-"Sair" por POST, filtros, busca e ações em lote da lista. O que o componente ainda não cobre está nas issues
-[#76 a #81](https://github.com/abrasileirado/dsgovbr-bootstrapped/issues) da lib; a cola sai do tema quando elas
-forem entregues.
+Desde a 8.1.0 o tema não tem mais JS para ligar os componentes ao Django: a busca do header com autocomplete, o
+"Sair" por POST, os filtros e as ações em lote da lista usam os atributos do dsgovbr-bootstrapped 3.7.1
+(`busca-acao`, `metodo="post"`, `lote-metodo`, `unico`, `valor-consulta`...).
 
 - **Nos seus templates**: use classes do Bootstrap (`btn btn-primary`, `alert alert-success`, `card`, `form-control`…)
   em vez de `br-*`. Exemplos de cada componente no
@@ -139,15 +138,18 @@ forem entregues.
   `title_actions`). Traz logo, assinatura, título e subtítulo, acesso rápido, funcionalidades, busca do site, botão de
   modo claro/escuro, botão de cookies e o usuário. O bloco `page_title` muda o título e `header_home_url` o link do
   logo e do título.
-- **Menu** (`<dsgovbr-menu>`): offcanvas aberto pelo botão do header, com uma pasta por app. O `<dsgovbr-pasta>`
-  aceita só itens, então os subitens do `menus.py` são achatados ("Pai › Filho"), o badge vira texto entre parênteses e
-  a cor do ícone (`color`) não é aplicada. O menu fixo (`localizacao`) não existe mais.
+- **Menu** (`<dsgovbr-menu>`): offcanvas aberto pelo botão do header, com uma pasta por app e
+  pastas aninhadas para os subitens do `menus.py`, com o badge (`badge`) e a cor do ícone (`color`). O menu fixo
+  (`localizacao`) não existe mais.
 - **Usuário no header**: o nome e um menu com `DSGOVBR_HEADER["login"]["dropdown"]["items"]`. Itens com
   `"method": "post"` viram um formulário com CSRF; o "Sair" padrão usa isso, porque o `LogoutView` do Django 5+
-  recusa GET. Avatar, foto e papel do usuário não são mais exibidos.
-- **Lista do admin** (`<dsgovbr-tabela>`): busca, filtros (uma opção por filtro), densidade, barra de selecionados com
-  as ações do admin em lote (POST) e paginação. A ordenação continua nos links do cabeçalho. Importar e Exportar e o
-  "Adicionar" ficam na barra da página. Com `list_editable` aparece o botão "Salvar" abaixo da tabela.
+  recusa GET. O botão mostra a foto (`user.avatar_url`) ou a inicial do nome, e o menu abre com o nome completo e o
+  papel (`user.main_role`), quando existem. Sem usuário autenticado aparece o botão "Entrar". O logo leva a
+  `DSGOVBR_HEADER["logo"]["link"]` e o título ao `admin:index`.
+- **Lista do admin** (`<dsgovbr-tabela>`): busca, filtros (uma opção por filtro, inclusive os de data com vários
+  parâmetros), densidade, barra de selecionados com as ações do admin em lote (POST) e paginação. A ordenação
+  continua nos links do cabeçalho. Importar e Exportar e o "Adicionar" ficam na barra da página. Com `list_editable`
+  aparece o botão "Salvar" abaixo da tabela.
 - **Página inicial e página do app**: os models aparecem em cards (ícone, nome, "Ver lista" e "Adicionar"), agrupados
   por app na página inicial, com as permissões do usuário.
 - **Ícones**: app pelo atributo `icon` do `AppConfig`; model pelo atributo `icon` do ModelAdmin (o `class Meta` do model

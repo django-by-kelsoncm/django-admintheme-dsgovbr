@@ -466,9 +466,7 @@ def test_icone_padrao_do_item_por_settings(clean_registry):
     assert item.to_dict()["icon"] == "fas fa-star"
 
 
-def test_template_renderiza_pasta_e_achata_subitens_com_badge(
-    clean_registry, sem_admin
-):
+def test_template_renderiza_pastas_aninhadas_com_badge_e_cor(clean_registry, sem_admin):
     from pathlib import Path
 
     from django.template import Context, Engine
@@ -482,6 +480,7 @@ def test_template_renderiza_pasta_e_achata_subitens_com_badge(
         "app",
         "Filho",
         "/filho/",
+        color="warning",
         badge=menus.MenuItemBadge("3", "danger"),
         parent="Grupo",
     )
@@ -489,11 +488,13 @@ def test_template_renderiza_pasta_e_achata_subitens_com_badge(
     html = engine.get_template("admin/app_list.html").render(
         Context({"app_list": menus.get_menu_list(request), "request": request})
     )
-    # o <dsgovbr-pasta> só aceita itens: o subitem leva o nome do pai e o badge vira texto
-    assert '<dsgovbr-pasta rotulo="' in html and " aberta>" in html
-    assert 'id="menu-app-' in html
+    # o subitem fica numa <dsgovbr-pasta> dentro da pasta do app (vários níveis)
+    assert html.count("<dsgovbr-pasta ") == 2
+    assert 'rotulo="Grupo"' in html and " aberta>" in html
     assert 'href="/filho/"' in html and " atual>" in html
-    assert "Grupo › Filho (3)" in html
+    # badge e cor do ícone vão nos atributos do item
+    assert 'icone-cor="warning"' in html
+    assert 'badge="3" badge-cor="danger"' in html
 
 
 def test_menu_nao_guarda_pastas_entre_requisicoes(clean_registry, monkeypatch):

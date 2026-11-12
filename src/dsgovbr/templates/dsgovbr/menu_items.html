@@ -1,9 +1,8 @@
 {% comment %}
-  Itens de uma pasta do menu (admin/app_list.html) como <dsgovbr-item>. O
-  <dsgovbr-pasta> só aceita itens, então os subitens (que o dsgovbr.menus permite
-  em vários níveis) são achatados: o item do subnível leva o nome do pai como
-  prefixo ("Pai › Filho"). Item sem link só entra se tiver subitens. O badge vira
-  texto entre parênteses. Variáveis: items (lista de dicts do dsgovbr.menus) e
-  prefixo (opcional).
+  Itens de uma pasta do menu (admin/app_list.html) como <dsgovbr-item> e
+  <dsgovbr-pasta>. Item com subitens vira uma pasta aninhada (o <dsgovbr-pasta> aceita
+  outras pastas); o badge e a cor do ícone vão nos atributos badge, badge-cor e
+  icone-cor. Item sem link e sem subitens não aparece. Variáveis: items (lista de
+  dicts do dsgovbr.menus).
 {% endcomment %}
-{% for model in items %}{% if model.admin_url %}<dsgovbr-item href="{{ model.admin_url }}" icone="{{ model.icon|default:'fas fa-table' }}"{% if model.admin_url in request.path|urlencode %} atual{% endif %}>{{ prefixo }}{{ model.name }}{% if model.badge %} ({{ model.badge.label }}){% endif %}</dsgovbr-item>{% endif %}{% if model.subitems %}{% include 'dsgovbr/menu_items.html' with items=model.subitems prefixo=prefixo|add:model.name|add:' › ' %}{% endif %}{% endfor %}
+{% for model in items %}{% if model.subitems %}<dsgovbr-pasta rotulo="{{ model.name }}" icone="{{ model.icon|default:'fas fa-table' }}"{% if model.color %} icone-cor="{{ model.color }}"{% endif %} id="{{ model.menu_id }}"{% if model.open %} aberta{% endif %}>{% include 'dsgovbr/menu_items.html' with items=model.subitems %}</dsgovbr-pasta>{% elif model.admin_url %}<dsgovbr-item href="{{ model.admin_url }}" icone="{{ model.icon|default:'fas fa-table' }}"{% if model.color %} icone-cor="{{ model.color }}"{% endif %}{% if model.badge %} badge="{{ model.badge.label }}" badge-cor="{{ model.badge.color }}"{% endif %}{% if model.admin_url in request.path|urlencode %} atual{% endif %}>{{ model.name }}</dsgovbr-item>{% endif %}{% endfor %}
