@@ -622,6 +622,8 @@
   // Usuário: `usuario-avatar` (URL da foto) ou `usuario-inicial` (1 ou 2 letras) no botão e
   // `usuario-papel` (texto pequeno abaixo do nome completo, no topo do dropdown). Sem `usuario`,
   // `entrar` (URL) e `entrar-rotulo` mostram o botão "Entrar".
+  // Modo: `modo-rotulo` (texto do botão; padrão "Modo escuro") e `modo-icone` (classes do
+  // ícone; padrão "fas fa-adjust").
   // Busca: `busca-acao` (URL do formulário GET; sem ela o formulário não envia a lugar nenhum),
   // `busca-nome` (name do campo; padrão q com `busca-acao`), `busca-valor` (valor inicial),
   // `busca-id` (id do campo, para atalhos) e `busca-autocomplete` (URL de sugestões, ver acima).
@@ -638,7 +640,8 @@
   class Header extends Base {
     static get observedAttributes() {
       return ["logo", "logo-alt", "href", "assinatura", "titulo", "subtitulo", "menu", "busca", "busca-acao", "busca-nome", "busca-valor", "busca-id", "busca-autocomplete", "modo", "cookies", "usuario", "pagina", "estatico",
-        "logo-href", "usuario-avatar", "usuario-inicial", "usuario-papel", "entrar", "entrar-rotulo"];
+        "logo-href", "usuario-avatar", "usuario-inicial", "usuario-papel", "entrar", "entrar-rotulo",
+        "modo-rotulo", "modo-icone"];
     }
 
     connectedCallback() {
@@ -796,12 +799,13 @@
           );
         }
         if (modo) {
-          var rotuloModo = "Modo escuro";
+          var rotuloModo = this.attr("modo-rotulo", "Modo escuro");
+          var iconeModo = this.attr("modo-icone", "fas fa-adjust");
           var bd = botaoModo(botaoRedondo, { "aria-label": rotuloModo, title: rotuloModo });
-          bd.append(icone("fas fa-adjust"));
+          bd.append(icone(iconeModo));
           desktop.append(bd);
           var bc = botaoModo("dropdown-item");
-          bc.append(icone("fas fa-adjust", "me-2"), rotuloModo);
+          bc.append(icone(iconeModo, "me-2"), rotuloModo);
           itensCelular.push(h("li", {}, bc));
         }
         acoesTopo.append(desktop, dropdown("Abrir funcionalidades do sistema", "fas fa-th", "Funcionalidades do sistema", itensCelular, "d-xl-none"));

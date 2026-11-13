@@ -587,8 +587,11 @@ def test_seletor_de_modo_no_header_e_script_no_head() -> None:
     assert not re.search(r"<script[^>]*(defer|async)[^>]*bootstrapped-modo", head)
     assert "{% if dsgovbr.header.modo.show %}" in head
 
-    # o botão é desenhado pelo <dsgovbr-header modo>
-    assert "{% if cab.modo.show %}modo{% endif %}" in base
+    # o botão é desenhado pelo <dsgovbr-header modo>; rótulo e ícone vêm do
+    # DSGOVBR_HEADER["modo"] (issue #59, dsgovbr-bootstrapped 3.7.2)
+    assert "{% if cab.modo.show %}modo" in base
+    assert 'modo-rotulo="{{ cab.modo.label }}"' in base
+    assert 'modo-icone="{{ cab.modo.icon }}"' in base
 
     js = (
         PACOTE
@@ -599,3 +602,12 @@ def test_seletor_de_modo_no_header_e_script_no_head() -> None:
     ).read_text(encoding="utf-8")
     assert "[data-dsgovbr-modo]" in js
     assert "dsgovbr-bootstrapped:modo" in js
+
+    componentes = (
+        PACOTE
+        / "static"
+        / "vendors"
+        / "dsgovbr-bootstrapped"
+        / "dsgovbr-bootstrapped-componentes.js"
+    ).read_text(encoding="utf-8")
+    assert '"modo-rotulo", "modo-icone"' in componentes

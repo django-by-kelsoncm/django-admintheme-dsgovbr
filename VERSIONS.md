@@ -1,5 +1,14 @@
 # Histórico de Versões
 
+## 8.2.0
+
+### dsgovbr-bootstrapped 3.7.2: rótulo e ícone do botão de modo (issue #59)
+
+- **Vendor**: `dsgovbr-bootstrapped` 3.7.2, que entregou abrasileirado/dsgovbr-bootstrapped#87 (atributos
+  `modo-rotulo` e `modo-icone` no `<dsgovbr-header>`).
+- `DSGOVBR_HEADER["modo"]["label"]` e `["icon"]` voltam a valer (estavam sem efeito desde a 8.0.0). Os padrões
+  (`Modo escuro`, `fas fa-adjust`) são os mesmos da lib: sem personalização, nada muda.
+
 ## 8.1.2
 
 ### Sandbox: ícone duplicado do modo claro/escuro (issue #57)
