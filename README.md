@@ -109,7 +109,7 @@ Para o `DSGovBrModelAdmin` com importação/exportação, instale o extra: `pip 
 
 Desde a versão 7.0.0 os templates usam classes do [Bootstrap 5.3](https://getbootstrap.com/docs/5.3/) com o tema
 [dsgovbr-bootstrapped](https://github.com/abrasileirado/dsgovbr-bootstrapped), que dá ao Bootstrap a aparência do
-GOV.BR DS. O CSS e os JS do tema (v3.7.1) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`;
+GOV.BR DS. O CSS e os JS do tema (v3.7.2) e o `bootstrap.bundle.min.js` (5.3.8) vêm no pacote, em `static/vendors/`;
 o JS do GOV.BR DS (`core-init.js`) não é mais carregado.
 
 Desde a 8.0.0 o header, o menu, o rodapé, o cookiebar e a lista do admin são **web components** do
@@ -130,8 +130,8 @@ Desde a 8.1.0 o tema não tem mais JS para ligar os componentes ao Django: a bus
 - **Modo escuro**: `data-bs-theme="dark"` no `<html>` (ou num contêiner). O `dsgovbr.scss` troca as cores fixas do
   modo claro do dsgovbr-bootstrapped (header, breadcrumb, campos, botões vazados, menu, paginação…) pelas `--bs-*`. O
   header traz um botão que alterna o modo (segue o sistema até o usuário escolher; a escolha fica no `localStorage`).
-  Para tirar: `DSGOVBR_HEADER = {"modo": {"show": False}}`. O rótulo e o ícone do botão são fixos no
-  `<dsgovbr-header>` (ícone `fas fa-adjust`): evite o mesmo ícone em `funcionalidades`.
+  Para tirar: `DSGOVBR_HEADER = {"modo": {"show": False}}`. Rótulo e ícone do botão: `DSGOVBR_HEADER["modo"]["label"]`
+  e `["icon"]` (padrões `Modo escuro` e `fas fa-adjust`; desde a 8.2.0); evite o mesmo ícone em `funcionalidades`.
 - **Layout**: segue o exemplo "Painel administrativo" do dsgovbr-bootstrapped. O conteúdo usa `container-lg`
   (`DSGOVBR_HEADER["width_style"]`: `sm`, `md`, `lg`, `xl`, `xxl` ou `fluid`); o header e o rodapé (web components)
   usam sempre `container-lg`.
