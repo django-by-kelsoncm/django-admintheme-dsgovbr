@@ -212,3 +212,47 @@ def test_seletor_de_modo_pode_ser_desligado(request_with_user):
     with override_settings(DSGOVBR_HEADER={"modo": {"show": False}}):
         modo = layout_settings(request_with_user)["dsgovbr"]["header"]["modo"]
         assert modo["show"] is False
+
+
+# Select2 em todo FK (issue #61)
+def test_forms_select2_todos_fk_desligado_por_padrao(request_with_user):
+    forms = layout_settings(request_with_user)["dsgovbr"]["forms"]
+    assert forms["select2_todos_fk"] is False
+    assert "select2_idioma" in forms
+
+
+def test_forms_select2_todos_fk_ligado(request_with_user):
+    with override_settings(DSGOVBR_FORMS={"select2_todos_fk": True}):
+        forms = layout_settings(request_with_user)["dsgovbr"]["forms"]
+    assert forms["select2_todos_fk"] is True
+
+
+def test_select2_media_so_com_a_opcao_ligada():
+    from dsgovbr.admin import _select2_media
+
+    assert _select2_media("").render() == ""
+    with override_settings(DSGOVBR_FORMS={"select2_todos_fk": True}):
+        media = _select2_media(".min")
+    js = list(media._js)
+    assert js.index("admin/js/vendor/jquery/jquery.min.js") < js.index(
+        "admin/js/vendor/select2/select2.full.min.js"
+    )
+    assert js.index("admin/js/vendor/select2/select2.full.min.js") < js.index(
+        "admin/js/jquery.init.js"
+    )
+    assert "admin/css/vendor/select2/select2.min.css" in media._css["screen"]
+
+
+def test_select2_media_nao_duplica_com_autocomplete():
+    from django.contrib.admin.widgets import AutocompleteSelect
+    from django.contrib.auth.models import User
+
+    from dsgovbr.admin import _select2_media
+
+    campo = User._meta.get_field("groups")
+    autocomplete = AutocompleteSelect(campo, admin_site=None)
+    with override_settings(DSGOVBR_FORMS={"select2_todos_fk": True}):
+        media = _select2_media("") + autocomplete.media
+    js = list(media._js)
+    assert len(js) == len(set(js))
+    assert js.count("admin/js/vendor/select2/select2.full.js") == 1

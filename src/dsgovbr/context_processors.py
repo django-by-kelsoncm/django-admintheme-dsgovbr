@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.http import HttpRequest
 from django.contrib import admin
+from django.contrib.admin.widgets import get_select2_language
 from django.urls import get_script_prefix, reverse
 from django.utils import timezone
 
@@ -20,6 +21,18 @@ def _logout_url() -> str:
         except NoReverseMatch:
             continue
     return ""
+
+
+def forms_settings() -> dict:
+    """Opções dos formulários (``DSGOVBR_FORMS``) com os padrões do tema.
+
+    ``select2_todos_fk``: o select simples de todo campo de relacionamento (FK)
+    vira Select2 local, como os ``autocomplete_fields``. Desligado por padrão.
+    """
+    return {
+        "select2_todos_fk": False,
+        **getattr(settings, "DSGOVBR_FORMS", {}),
+    }
 
 
 def layout_settings(request: HttpRequest) -> dict:
@@ -123,6 +136,11 @@ def layout_settings(request: HttpRequest) -> dict:
                 "alternative_methods": [],
             },
             **getattr(settings, "DSGOVBR_LOGIN", {}),
+        },
+        "forms": {
+            **forms_settings(),
+            # idioma do Select2 (arquivo de i18n que o admin carrega); "" sem tradução
+            "select2_idioma": get_select2_language() or "",
         },
         # consentimento de cookies (<dsgovbr-cookiebar>): desligado por padrão.
         # grupos: [{nome, rotulo, descricao}]; o grupo "estritamente necessários"

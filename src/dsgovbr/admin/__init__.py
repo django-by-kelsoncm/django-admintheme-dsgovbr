@@ -356,7 +356,39 @@ class DSGovBrBaseModelAdmin(ModelAdmin):
             "prepopulate.js",
             "vendor/xregexp/xregexp%s.js" % extra,
         ]
-        return parent_media + Media(js=["admin/js/%s" % url for url in js])
+        return (
+            parent_media
+            + Media(js=["admin/js/%s" % url for url in js])
+            + _select2_media(extra)
+        )
+
+
+def _select2_media(extra: str) -> Media:
+    """Select2 do admin quando ``DSGOVBR_FORMS["select2_todos_fk"]`` está ligado.
+
+    Mesma ordem do ``AutocompleteMixin.media`` do Django (Select2 entre o jQuery
+    e o ``jquery.init.js``), para o merge do ``Media`` não duplicar os arquivos
+    nas páginas que já têm ``autocomplete_fields``. O ``autocomplete.css`` do
+    admin fica de fora: o tema "dsgovbr" do Select2 vem do ``dsgovbr.scss``.
+    """
+    from django.contrib.admin.widgets import get_select2_language
+
+    from dsgovbr.context_processors import forms_settings
+
+    if not forms_settings().get("select2_todos_fk"):
+        return Media()
+    idioma = get_select2_language()
+    js = [
+        "admin/js/vendor/jquery/jquery%s.js" % extra,
+        "admin/js/vendor/select2/select2.full%s.js" % extra,
+    ]
+    if idioma:
+        js.append("admin/js/vendor/select2/i18n/%s.js" % idioma)
+    js.append("admin/js/jquery.init.js")
+    return Media(
+        js=js,
+        css={"screen": ["admin/css/vendor/select2/select2%s.css" % extra]},
+    )
 
 
 class DSGovBrAdminSite(AdminSite):

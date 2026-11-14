@@ -101,6 +101,8 @@ DSGOVBR_COOKIEBAR = {
     "grupos": [{"nome": "desempenho", "rotulo": "Desempenho", "descricao": "Medem o uso do sistema."}],
 }
 PROJECT_RELEASES_URL = "https://github.com/org/projeto/releases/tag/"  # + PROJECT_VERSION
+# formulários: Select2 em todo FK do DSGovBrModelAdmin (desligado por padrão; desde a 8.3.0)
+DSGOVBR_FORMS = {"select2_todos_fk": True}
 ```
 
 Para o `DSGovBrModelAdmin` com importação/exportação, instale o extra: `pip install django-dsgovbr[import-export]`.
@@ -125,8 +127,14 @@ Desde a 8.1.0 o tema não tem mais JS para ligar os componentes ao Django: a bus
   campos do Django, com qualquer `FORM_RENDERER`. Para ignorar um campo ou bloco, use `data-dsgovbr-ignore`.
 - **Widgets do admin**: o `admin/css/base.css` do Django não é carregado; o `dsgovbr.scss` define as variáveis dele
   (`--border-color`, `--body-bg`, `--primary`…) a partir das `--bs-*`. Os `autocomplete_fields` (Select2) usam o tema
-  `dsgovbr`, com largura total e a aparência de `.form-select`/`.form-control` (badges no múltiplo); calendário,
-  relógio e os links de alterar/adicionar/remover/ver dos relacionamentos também têm estilo próprio.
+  `dsgovbr`, com largura total e a aparência de `.form-select`/`.form-control` (badges no múltiplo); calendário e
+  relógio também têm estilo próprio.
+- **Relacionamentos (FK)**: os links de alterar, adicionar, remover e ver usam ícones do Font Awesome. Nos campos com
+  Select2 eles vão para o rodapé do dropdown (desde a 8.3.0); os originais ficam ocultos, mas alcançáveis com Tab.
+  Com `DSGOVBR_FORMS = {"select2_todos_fk": True}`, todo FK de select simples dos admins que herdam do
+  `DSGovBrModelAdmin` (inclusive os inlines) vira Select2 local, sobre as opções já carregadas. Ficam de fora os
+  campos múltiplos, `raw_id_fields`, `radio_fields` e os marcados com `data-dsgovbr-ignore`. Em FK com muitos
+  registros, prefira `autocomplete_fields`, que busca no servidor.
 - **Modo escuro**: `data-bs-theme="dark"` no `<html>` (ou num contêiner). O `dsgovbr.scss` troca as cores fixas do
   modo claro do dsgovbr-bootstrapped (header, breadcrumb, campos, botões vazados, menu, paginação…) pelas `--bs-*`. O
   header traz um botão que alterna o modo (segue o sistema até o usuário escolher; a escolha fica no `localStorage`).

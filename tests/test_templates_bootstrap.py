@@ -493,6 +493,49 @@ def test_related_widget_wrapper_tem_o_wrapper_e_os_popups() -> None:
         assert f'id="{link}"' in html
 
 
+def test_related_widget_wrapper_usa_icones_do_govbr() -> None:
+    html = _render(
+        "admin/widgets/related_widget_wrapper.html",
+        {
+            "rendered_widget": '<select name="orgao"></select>',
+            "name": "orgao",
+            "model": "órgão",
+            "model_name": "orgao",
+            "can_change_related": True,
+            "can_add_related": True,
+            "can_delete_related": True,
+            "can_view_related": True,
+        },
+    )
+    assert "admin/img/icon-" not in html
+    for icone in ("fa-pen", "fa-plus", "fa-trash-alt", "fa-eye"):
+        assert f'<i class="fas {icone}" aria-hidden="true"></i>' in html
+    # rótulo lido pelo leitor de tela e repetido no dropdown do Select2
+    assert html.count('<span class="visually-hidden">') == 4
+
+
+def test_acoes_do_fk_no_dropdown_do_select2() -> None:
+    """Issue #61: links do related_widget_wrapper no rodapé do dropdown."""
+    js = (PACOTE / "static" / "dsgovbr" / "js" / "dsgovbr_forms.js").read_text(
+        encoding="utf-8"
+    )
+    # links originais ocultos, mas no DOM e focáveis (RelatedObjectLookups.js)
+    assert "link.classList.add('visually-hidden-focusable')" in js
+    assert "barra.className = 'dsgovbr-select2-acoes'" in js
+    assert "link.click();" in js
+    assert "acoesNoDropdown(evento.target);" in js
+    # Select2 em todo FK (DSGOVBR_FORMS["select2_todos_fk"])
+    assert "data-dsgovbr-select2-todos-fk" in js
+    assert "select2EmTodoFk(evento.target);" in js
+    css = _scss_compilado()
+    assert ".select2-container--dsgovbr .dsgovbr-select2-acoes" in css
+    base = (TEMPLATES / "dsgovbr" / "base.html").read_text(encoding="utf-8")
+    assert (
+        '{% if dsgovbr.forms.select2_todos_fk %} data-dsgovbr-select2-todos-fk="'
+        '{{ dsgovbr.forms.select2_idioma }}"{% endif %}'
+    ) in base
+
+
 @pytest.mark.parametrize("arquivo", ["autocomplete.css", "widgets.css"])
 def test_variaveis_do_admin_usadas_nos_widgets_sao_definidas(arquivo: str) -> None:
     usadas = set(
