@@ -418,6 +418,20 @@ Select2 com o tema ``dsgovbr``: largura total, aparência de ``.form-select``
 manter o tema ``admin-autocomplete`` do Django num campo, use
 ``data-dsgovbr-ignore``.
 
+Nos relacionamentos (FK), os links de alterar, adicionar, remover e ver usam
+ícones do Font Awesome. Nos campos com Select2 eles aparecem no rodapé do
+dropdown; os originais ficam ocultos, mas alcançáveis com Tab. Para que todo FK
+de select simples dos admins que herdam do ``DSGovBrModelAdmin`` (inclusive os
+inlines) vire Select2 local, sobre as opções já carregadas:
+
+.. code-block:: python
+
+   DSGOVBR_FORMS = {"select2_todos_fk": True}  # padrão: False
+
+Ficam de fora os campos múltiplos, ``raw_id_fields``, ``radio_fields`` e os
+marcados com ``data-dsgovbr-ignore``. Em FK com muitos registros, prefira
+``autocomplete_fields``, que busca no servidor.
+
 Os campos dos formulários renderizados nas páginas do tema recebem as classes do
 Bootstrap (``.form-control``, ``.form-select``, ``.form-check-input``) pelo
 ``dsgovbr/js/dsgovbr_forms.js``, com qualquer ``FORM_RENDERER``. Para declarar

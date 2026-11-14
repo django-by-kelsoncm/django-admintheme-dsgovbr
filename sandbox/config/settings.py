@@ -212,6 +212,9 @@ DSGOVBR_HEADER = {
     },
 }
 
+# formulários: Select2 em todo FK, com as ações no dropdown (issue #61)
+DSGOVBR_FORMS = {"select2_todos_fk": True}
+
 # consentimento de cookies (<dsgovbr-cookiebar>)
 DSGOVBR_COOKIEBAR = {
     "show": True,

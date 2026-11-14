@@ -349,6 +349,35 @@ $dsgovbr-input-line-height: 1.5em;
   }
 }
 
+// Ações do campo de relacionamento (alterar/adicionar/remover/ver) no rodapé
+// do dropdown do Select2, criadas pelo dsgovbr_forms.js (issue #61).
+$dsgovbr-select2-acoes-gap: 0.25rem;
+$dsgovbr-select2-acoes-padding-y: 0.25rem;
+$dsgovbr-select2-acoes-padding-x: 0.5rem;
+
+.select2-container--dsgovbr .dsgovbr-select2-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $dsgovbr-select2-acoes-gap;
+  justify-content: flex-end;
+  padding: $dsgovbr-select2-acoes-padding-y $dsgovbr-select2-acoes-padding-x;
+  border-top: var(--bs-border-width) solid var(--bs-border-color);
+
+  .btn {
+    display: inline-flex;
+    gap: $dsgovbr-select2-acoes-gap;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .dsgovbr-select2-acao--delete-related {
+    --bs-btn-color: var(--bs-danger);
+    --bs-btn-hover-color: var(--bs-danger-text-emphasis);
+    --bs-btn-active-color: var(--bs-danger-text-emphasis);
+    --bs-btn-disabled-color: var(--bs-danger);
+  }
+}
+
 .errors .select2-container--dsgovbr .select2-selection {
   border-color: var(--bs-form-invalid-border-color);
 }
@@ -372,10 +401,14 @@ $dsgovbr-related-disabled-opacity: 0.4;
 
 .related-widget-wrapper-link {
   flex-shrink: 0;
+  text-decoration: none;
 
-  img {
-    width: $dsgovbr-related-icon-size;
-    height: $dsgovbr-related-icon-size;
+  i {
+    font-size: $dsgovbr-related-icon-size;
+  }
+
+  &.delete-related {
+    color: var(--bs-danger);
   }
 
   // Sem href: nada selecionado para alterar, ver ou remover.

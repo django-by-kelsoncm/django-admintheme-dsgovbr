@@ -1,5 +1,26 @@
 # Histórico de Versões
 
+## 8.3.0
+
+### Ações do FK dentro do dropdown do Select2 (issue #61)
+
+- Os links de alterar, adicionar, remover e ver do `related_widget_wrapper.html` usam ícones do Font Awesome
+  (`fa-pen`, `fa-plus`, `fa-trash-alt`, `fa-eye`) no lugar dos SVGs do admin, com o rótulo em `.visually-hidden`.
+- Nos campos com Select2, os links vão para o rodapé do dropdown, liberando a largura do campo. Os originais ficam
+  ocultos (`visually-hidden-focusable`), mas no lugar: o `RelatedObjectLookups.js` do Django continua atualizando o
+  `href` e abrindo os popups, e o teclado os alcança com Tab.
+- Nova opção `DSGOVBR_FORMS = {"select2_todos_fk": True}` (padrão `False`): todo FK de select simples dos admins que
+  herdam do `DSGovBrModelAdmin` vira Select2 local (sem AJAX), padronizando com os `autocomplete_fields`. O
+  `DSGovBrModelAdmin` carrega o Select2 do admin só com a opção ligada. Ficam de fora os campos múltiplos,
+  `raw_id_fields`, `radio_fields` e `data-dsgovbr-ignore`.
+
+Por que a opção é desligada por padrão:
+
+- **Prós**: aparência e busca iguais em todo FK, e as ações no dropdown valem para todos.
+- **Contras**: o Select2 local filtra só as `<option>` já renderizadas (não reduz a carga de FK grandes; para isso,
+  `autocomplete_fields`). Admins que não herdam do `DSGovBrModelAdmin` não recebem o Select2. Ligar por padrão mudaria
+  a aparência e o comportamento dos projetos que já usam o tema.
+
 ## 8.2.0
 
 ### dsgovbr-bootstrapped 3.7.2: rótulo e ícone do botão de modo (issue #59)

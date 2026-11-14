@@ -3,6 +3,9 @@
     O .related-widget-wrapper e o data-popup="yes" são usados pelo
     RelatedObjectLookups.js do Django: sem eles os links de alterar, ver e
     remover ficam sem href e o "adicionar" não abre o popup.
+    Ícones do Font Awesome (GOV.BR DS). Com Select2, o dsgovbr_forms.js oculta
+    os links (visually-hidden-focusable) e os repete no rodapé do dropdown,
+    usando o ícone e o rótulo (.visually-hidden) de cada um (issue #61).
 {% endcomment %}
 <div class="related-widget-wrapper" {% if not model_has_limit_choices_to %}data-model-ref="{{ model_name }}"{% endif %}>
     {{ rendered_widget }}
@@ -14,7 +17,7 @@
                        data-href-template="{{ change_related_template_url }}?{{ url_params }}"
                        data-popup="yes"
                        title="{% blocktranslate %}Change selected {{ model }}{% endblocktranslate %}">
-                        <img src="{% static 'admin/img/icon-changelink.svg' %}" alt="{% translate 'Change' %}">
+                        <i class="fas fa-pen" aria-hidden="true"></i><span class="visually-hidden">{% translate 'Change' %}</span>
                     </a>
                 {% endif %}
                 {% if can_add_related %}
@@ -22,7 +25,7 @@
                        data-popup="yes"
                        href="{{ add_related_url }}?{{ url_params }}"
                        title="{% blocktranslate %}Add another {{ model }}{% endblocktranslate %}">
-                        <img src="{% static 'admin/img/icon-addlink.svg' %}" alt="{% translate 'Add' %}">
+                        <i class="fas fa-plus" aria-hidden="true"></i><span class="visually-hidden">{% translate 'Add' %}</span>
                     </a>
                 {% endif %}
                 {% if can_delete_related %}
@@ -30,14 +33,14 @@
                        data-href-template="{{ delete_related_template_url }}?{{ url_params }}"
                        data-popup="yes"
                        title="{% blocktranslate %}Delete selected {{ model }}{% endblocktranslate %}">
-                        <img src="{% static 'admin/img/icon-deletelink.svg' %}" alt="{% translate 'Delete' %}">
+                        <i class="fas fa-trash-alt" aria-hidden="true"></i><span class="visually-hidden">{% translate 'Delete' %}</span>
                     </a>
                 {% endif %}
                 {% if can_view_related %}
                     <a class="related-widget-wrapper-link view-related" id="view_id_{{ name }}"
                        data-href-template="{{ change_related_template_url }}?{{ view_related_url_params }}"
                        title="{% blocktranslate %}View selected {{ model }}{% endblocktranslate %}">
-                        <img src="{% static 'admin/img/icon-viewlink.svg' %}" alt="{% translate 'View' %}">
+                        <i class="fas fa-eye" aria-hidden="true"></i><span class="visually-hidden">{% translate 'View' %}</span>
                     </a>
                 {% endif %}
             {% endif %}
